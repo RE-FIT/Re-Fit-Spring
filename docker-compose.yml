@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  web:
+  spring:
     container_name: spring
     image: cswcsm02/refit-spring
     expose:
@@ -15,4 +15,4 @@ services:
     ports:
       - 80:80
     depends_on:
-      - web
+      - spring
