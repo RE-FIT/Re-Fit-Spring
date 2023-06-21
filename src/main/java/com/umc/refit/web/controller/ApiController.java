@@ -20,7 +20,7 @@ public class ApiController {
         return "hello";
     }
 
-    @GetMapping("/{name}")
+    @GetMapping("/save/{name}")
     public String name(@PathVariable("name") String name) {
 
         memberRepository.save(new Member(name));
