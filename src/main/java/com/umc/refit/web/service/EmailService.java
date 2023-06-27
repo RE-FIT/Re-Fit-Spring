@@ -1,6 +1,7 @@
 package com.umc.refit.web.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -20,6 +21,9 @@ public class EmailService {
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
 
+    @Value("${spring.mail.username}")
+    private String from;
+
     //8자리 숫자로 된 랜덤 코드 생성 메서드
     public String generateCode() {
         Random random = new Random();
@@ -36,7 +40,6 @@ public class EmailService {
     public MimeMessage joinEmailForm(String email) throws MessagingException {
 
         String code = generateCode(); //인증 코드 생성
-        String from = "cswcsm02@gmail.com";
         String title = "리핏 회원가입 인증번호 이메일 입니다.";
 
         MimeMessage message = mailSender.createMimeMessage();
