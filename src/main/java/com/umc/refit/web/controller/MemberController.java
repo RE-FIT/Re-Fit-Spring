@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.mail.MessagingException;
+
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -17,10 +19,10 @@ public class MemberController {
 
     /*이메일 인증 API*/
     @PostMapping("/email")
-    public String email(@RequestBody EmailDto emailDto) {
+    public String email(@RequestBody EmailDto emailDto) throws MessagingException {
 
-        emailService.sendEmail("cswcsm02@gmail.com", "Hello", "This is a test email.");
+        String auth = emailService.sendEmail(emailDto.getEmail());
 
-        return emailDto.getEmail();
+        return auth;
     }
 }
