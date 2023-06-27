@@ -30,6 +30,8 @@ jobs:
         spring.datasource.url: ${{ secrets.DATABASE_URL }}
         spring.datasource.username: ${{ secrets.DATABASE_USERNAME }}
         spring.datasource.password: ${{ secrets.DATABASE_PASSWORD }}
+        spring.mail.username: ${{ secrets.EMAILHOST }}
+        spring.mail.password: ${{ secrets.EMAILPASSWORD }}
 
     - name: Set up JDK 17
       uses: actions/setup-java@v3

@@ -1,6 +1,6 @@
 package com.umc.refit.web.controller;
 
-import com.umc.refit.domain.Member;
+import com.umc.refit.domain.entity.Member;
 import com.umc.refit.web.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
