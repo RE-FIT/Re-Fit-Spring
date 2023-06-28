@@ -1,8 +1,6 @@
 package com.umc.refit.web.controller;
 
-import com.umc.refit.domain.dto.member.EmailDto;
-import com.umc.refit.domain.dto.member.EmailResDto;
-import com.umc.refit.domain.dto.member.JoinDto;
+import com.umc.refit.domain.dto.member.*;
 import com.umc.refit.domain.entity.Member;
 import com.umc.refit.exception.member.JoinException;
 import com.umc.refit.exception.validator.MemberValidator;
@@ -16,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.mail.MessagingException;
 
+import java.util.Optional;
+
 import static com.umc.refit.exception.ExceptionType.*;
 
 @RestController
@@ -28,14 +28,14 @@ public class MemberController {
 
     /*이메일 인증 API*/
     @PostMapping("/email")
-    public EmailResDto email(@RequestBody EmailDto emailDto) throws MessagingException {
+    public ResEmailDto email(@RequestBody EmailDto emailDto) throws MessagingException {
 
         String email = emailDto.getEmail();
         emailCheck(email);
 
         String auth = emailService.sendEmail(emailDto.getEmail());
 
-        return new EmailResDto(auth);
+        return new ResEmailDto(auth);
     }
 
     /*회원 가입 API*/
@@ -57,6 +57,30 @@ public class MemberController {
 
         /*예외 처리가 끝나면 회원 저장*/
         memberService.save(new Member(joinDto));
+    }
+
+    /*아이디 찾기 API*/
+    @PostMapping("/find/id")
+    public ResIdFindDto findId(@RequestBody IdFindDto idFindDto) {
+
+        String email = idFindDto.getEmail();
+        String name = idFindDto.getName();
+
+        /*예외 체크*/
+        emailCheck(email);
+        nameCheck(name);
+
+        /*예외 처리가 끝나면 회원 조회*/
+        Optional<Member> member = memberService.findMemberByEmail(email);
+        if (member.isEmpty()) {
+            throw new JoinException(ID_INVALID, ID_INVALID.getCode(), ID_INVALID.getErrorMessage());
+        }
+
+        /*뒤 세글자 ***로 변환*/
+        String lastThreeReplaced = "***";
+        String exceptLastThree = member.get().getLoginId().substring(0, member.get().getLoginId().length() - 3);
+
+        return new ResIdFindDto(exceptLastThree + lastThreeReplaced);
     }
 
     /*로그인 아이디 체크 메서드*/
