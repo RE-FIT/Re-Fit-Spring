@@ -30,6 +30,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Optional;
+import java.util.Random;
 
 import static com.umc.refit.exception.ExceptionType.BASIC_MEMBER_EXIST;
 
@@ -51,6 +52,9 @@ public class JwtKakaoAuthenticationFilter extends UsernamePasswordAuthentication
     @Value("${token.default.password}")
     private String defaultPassword;
 
+    //랜덤 문자열
+    private String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+
     /*카카오 로그인 인증 시작*/
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
@@ -70,7 +74,20 @@ public class JwtKakaoAuthenticationFilter extends UsernamePasswordAuthentication
                         BASIC_MEMBER_EXIST.getCode(), BASIC_MEMBER_EXIST.getErrorMessage());
             }
         } else {
-            Member member = new Member(EMAIL, DEFAULT_PASSWORD, "환경지킴이");
+
+            /*카카오 로그인 시 유일한 멤버 닉네임 생성*/
+            String name;
+            while (true) {
+                String randomString = generateRandomString(4);
+                name = "환경지킴이" + randomString;
+
+                Optional<Member> member = memberService.findMemberByName(name);
+                if (member.isEmpty()) {
+                    break;
+                }
+            }
+
+            Member member = new Member(EMAIL, DEFAULT_PASSWORD, name);
             member.getRoles().add("USER");
             memberService.save(member);
         }
@@ -131,5 +148,18 @@ public class JwtKakaoAuthenticationFilter extends UsernamePasswordAuthentication
             exception.printStackTrace();
         }
         return email;
+    }
+
+    /*랜덤 문자열 생성 메서드*/
+    public String generateRandomString(int length) {
+        Random random = new Random();
+        StringBuilder stringBuilder = new StringBuilder(length);
+
+        for (int i = 0; i < length; i++) {
+            int randomIndex = random.nextInt(CHARACTERS.length());
+            stringBuilder.append(CHARACTERS.charAt(randomIndex));
+        }
+
+        return stringBuilder.toString();
     }
 }
