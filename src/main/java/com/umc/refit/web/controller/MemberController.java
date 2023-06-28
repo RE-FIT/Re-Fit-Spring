@@ -2,8 +2,10 @@ package com.umc.refit.web.controller;
 
 import com.umc.refit.domain.dto.member.EmailDto;
 import com.umc.refit.domain.dto.member.EmailResDto;
-import com.umc.refit.exception.member.EmailException;
-import com.umc.refit.exception.validator.EmailValidator;
+import com.umc.refit.domain.dto.member.JoinDto;
+import com.umc.refit.domain.entity.Member;
+import com.umc.refit.exception.member.JoinException;
+import com.umc.refit.exception.validator.MemberValidator;
 import com.umc.refit.web.service.EmailService;
 import com.umc.refit.web.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -29,24 +31,106 @@ public class MemberController {
     public EmailResDto email(@RequestBody EmailDto emailDto) throws MessagingException {
 
         String email = emailDto.getEmail();
-
-        //예외 1. 이메일이 비어있을 경우
-        if (email.strip().equals("")) {
-            throw new EmailException(EMAIL_EMPTY, EMAIL_EMPTY.getCode(), EMAIL_EMPTY.getErrorMessage());
-        }
-
-        //예외 2. 이미 존재하는 회원일 경우
-        if (memberService.findMember(email).isPresent()) {
-            throw new EmailException(EMAIL_ALREADY_EXIST, EMAIL_ALREADY_EXIST.getCode(), EMAIL_ALREADY_EXIST.getErrorMessage());
-        }
-
-        //예외 3. 이메일 형식에 맞지 않을 경우
-        if (!EmailValidator.isValid(email)) {
-            throw new EmailException(EMAIL_INVALID, EMAIL_INVALID.getCode(), EMAIL_INVALID.getErrorMessage());
-        }
+        emailCheck(email);
 
         String auth = emailService.sendEmail(emailDto.getEmail());
 
         return new EmailResDto(auth);
+    }
+
+    /*회원 가입 API*/
+    @PostMapping("/join")
+    public void join(@RequestBody JoinDto joinDto) {
+
+        String loginId = joinDto.getLoginId();
+        String password = joinDto.getPassword();
+        String email = joinDto.getEmail();
+        String name = joinDto.getName();
+        String birth = joinDto.getBirth();
+
+        /*예외 체크*/
+        loginIdCheck(loginId);
+        passwordCheck(password);
+        emailCheck(email);
+        nameCheck(name);
+        birthCheck(birth);
+
+        /*예외 처리가 끝나면 회원 저장*/
+        memberService.save(new Member(joinDto));
+    }
+
+    /*로그인 아이디 체크 메서드*/
+    private void loginIdCheck(String loginId) {
+        //예외 코드 10011: 아이디가 비어있을 경우
+        if (loginId.strip().equals("")) {
+            throw new JoinException(ID_EMPTY, ID_EMPTY.getCode(), ID_EMPTY.getErrorMessage());
+        }
+
+        //예외 코드 10012: 아이디가 형식에 맞지 않은 경우
+        if (!MemberValidator.isLoginValid(loginId)) {
+            throw new JoinException(ID_INVALID, ID_INVALID.getCode(), ID_INVALID.getErrorMessage());
+        }
+
+        //예외 코드 10013: 아이디가 이미 존재하는 경우
+        if (memberService.findMemberByLoginId(loginId).isPresent()) {
+            throw new JoinException(ID_ALREADY_EXIST, ID_ALREADY_EXIST.getCode(), ID_ALREADY_EXIST.getErrorMessage());
+        }
+    }
+
+    /*비밀번호 체크 메서드*/
+    private void passwordCheck(String password) {
+        //예외 코드 10014: 비밀번호는 필수 정보입니다.
+        if (password.strip().equals("")) {
+            throw new JoinException(PASSWORD_EMPTY, PASSWORD_EMPTY.getCode(), PASSWORD_EMPTY.getErrorMessage());
+        }
+
+        //예외 코드 10015: "8-16자의 영문 대소문자, 숫자, 특수문자 ((!), (_) , (-))를 포합해야합니다.
+        if (!MemberValidator.isPasswordValid(password)) {
+            throw new JoinException(PASSWORD_INVALID, PASSWORD_INVALID.getCode(), PASSWORD_INVALID.getErrorMessage());
+        }
+    }
+
+    /*이메일 체크 메서드*/
+    private void emailCheck(String email) {
+        //예외 코드 10016: 이메일이 비어있을 경우
+        if (email.strip().equals("")) {
+            throw new JoinException(EMAIL_EMPTY, EMAIL_EMPTY.getCode(), EMAIL_EMPTY.getErrorMessage());
+        }
+
+        //예외 코드 10017: 이미 존재하는 회원일 경우
+        if (memberService.findMemberByEmail(email).isPresent()) {
+            throw new JoinException(EMAIL_ALREADY_EXIST, EMAIL_ALREADY_EXIST.getCode(), EMAIL_ALREADY_EXIST.getErrorMessage());
+        }
+
+        //예외 코드 10018: 이메일 형식에 맞지 않을 경우
+        if (!MemberValidator.isEmailValid(email)) {
+            throw new JoinException(EMAIL_INVALID, EMAIL_INVALID.getCode(), EMAIL_INVALID.getErrorMessage());
+        }
+    }
+
+    /*닉네임 체크 메서드*/
+    private void nameCheck(String name) {
+        //예외 코드 10019: 이름이 비어있을 경우
+        if (name.strip().equals("")) {
+            throw new JoinException(NAME_EMPTY, NAME_EMPTY.getCode(), NAME_EMPTY.getErrorMessage());
+        }
+
+        //예외 코드 10020: 이미 존재하는 이름일 경우
+        if (memberService.findMemberByName(name).isPresent()) {
+            throw new JoinException(NAME_ALREADY_EXIST, NAME_ALREADY_EXIST.getCode(), NAME_ALREADY_EXIST.getErrorMessage());
+        }
+    }
+
+    /*이메일 체크 메서드*/
+    private void birthCheck(String birth) {
+        //예외 코드 10021: 생일이 비어있을 경우
+        if (birth.strip().equals("")) {
+            throw new JoinException(BIRTH_EMPTY, BIRTH_EMPTY.getCode(), BIRTH_EMPTY.getErrorMessage());
+        }
+
+        //예외 코드 10022: 생일이 형식에 맞지 않는 경우
+        if (!MemberValidator.isBirthValid(birth)) {
+            throw new JoinException(BIRTH_ALREADY_EXIST, BIRTH_ALREADY_EXIST.getCode(), BIRTH_ALREADY_EXIST.getErrorMessage());
+        }
     }
 }

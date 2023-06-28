@@ -1,5 +1,6 @@
 package com.umc.refit.domain.entity;
 
+import com.umc.refit.domain.dto.member.JoinDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,13 +21,19 @@ public class Member {
     private String email;
     private String name;
     private String birth;
-    private Integer region;
-    private String address;
     private String socialType;
 
 
     public Member(String name) {
         this.name = name;
+    }
+
+    public Member(JoinDto joinDto) {
+        this.loginId = joinDto.getLoginId();
+        this.password = joinDto.getPassword();
+        this.email = joinDto.getEmail();
+        this.name = joinDto.getName();
+        this.birth = joinDto.getBirth();
     }
 
     public Member() {

@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class EmailException extends RuntimeException {
+public class JoinException extends RuntimeException {
 
     private ExceptionType exceptionType;
     private int code;
