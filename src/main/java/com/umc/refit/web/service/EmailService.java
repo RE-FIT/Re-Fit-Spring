@@ -85,10 +85,10 @@ public class EmailService {
      * */
     //8자리 숫자로 된 랜덤 코드 생성 메서드
     public String generateResetPassword() {
-        StringBuilder result = new StringBuilder(16);
+        StringBuilder result = new StringBuilder(8);
 
         // Generate the initial random string
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < 8; i++) {
             result.append(ALL_CHARACTERS.charAt(RANDOM.nextInt(ALL_CHARACTERS.length())));
         }
 
