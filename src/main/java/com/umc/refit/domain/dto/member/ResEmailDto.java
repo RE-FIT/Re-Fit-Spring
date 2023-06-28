@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter @Setter
 @AllArgsConstructor
-public class EmailResDto {
+public class ResEmailDto {
 
     private String code;
 }

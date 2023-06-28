@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class JoinException extends RuntimeException {
+public class MemberException extends RuntimeException {
 
     private ExceptionType exceptionType;
     private int code;

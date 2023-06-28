@@ -27,7 +27,11 @@ public enum ExceptionType {
     //회원 이메일 예외
     EMAIL_EMPTY(BAD_REQUEST, 10016, "필수 정보입니다."),
     EMAIL_ALREADY_EXIST(BAD_REQUEST, 10017, "이미 존재하는 이메일입니다."),
-    EMAIL_INVALID(BAD_REQUEST, 10018, "이메일 형식이 올바르지 않습니다.");
+    EMAIL_INVALID(BAD_REQUEST, 10018, "이메일 형식이 올바르지 않습니다."),
+
+    //회원 아이디 찾기 및 패스워드 재설정 예외
+    MEMBER_IS_NOT_EXIST(BAD_REQUEST, 10004, "아이디 찾기에 실패했습니다."),
+    PASSWORD_RESET_FAIL(BAD_REQUEST, 10005, "비밀번호 재설정에 실패하였습니다.");
 
     private final HttpStatus httpStatus;
     private final int code;
