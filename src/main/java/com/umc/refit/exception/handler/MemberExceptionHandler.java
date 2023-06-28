@@ -1,7 +1,7 @@
 package com.umc.refit.exception.handler;
 
 import com.umc.refit.exception.ErrorResult;
-import com.umc.refit.exception.member.JoinException;
+import com.umc.refit.exception.member.MemberException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,8 +16,8 @@ public class MemberExceptionHandler {
 
     // Join Error 처리
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(JoinException.class)
-    public ErrorResult joinExceptionHandle(JoinException e, HttpServletRequest request) {
+    @ExceptionHandler(MemberException.class)
+    public ErrorResult joinExceptionHandle(MemberException e, HttpServletRequest request) {
         log.error("[CustomException] url: {} | errorType: {} | errorMessage: {} | cause Exception: ",
                 request.getRequestURL(), e.getExceptionType(), e.getMessage(), e.getCause());
         return new ErrorResult(String.valueOf(e.getCode()), e.getErrorMessage());

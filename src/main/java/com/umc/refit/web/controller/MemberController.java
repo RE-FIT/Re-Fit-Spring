@@ -2,7 +2,7 @@ package com.umc.refit.web.controller;
 
 import com.umc.refit.domain.dto.member.*;
 import com.umc.refit.domain.entity.Member;
-import com.umc.refit.exception.member.JoinException;
+import com.umc.refit.exception.member.MemberException;
 import com.umc.refit.exception.validator.MemberValidator;
 import com.umc.refit.web.service.EmailService;
 import com.umc.refit.web.service.MemberService;
@@ -73,7 +73,7 @@ public class MemberController {
         /*예외 처리가 끝나면 회원 조회*/
         Optional<Member> member = memberService.findMemberByEmail(email);
         if (member.isEmpty()) {
-            throw new JoinException(ID_INVALID, ID_INVALID.getCode(), ID_INVALID.getErrorMessage());
+            throw new MemberException(MEMBER_IS_NOT_EXIST, MEMBER_IS_NOT_EXIST.getCode(), MEMBER_IS_NOT_EXIST.getErrorMessage());
         }
 
         /*뒤 세글자 ***로 변환*/
@@ -87,17 +87,17 @@ public class MemberController {
     private void loginIdCheck(String loginId) {
         //예외 코드 10011: 아이디가 비어있을 경우
         if (loginId.strip().equals("")) {
-            throw new JoinException(ID_EMPTY, ID_EMPTY.getCode(), ID_EMPTY.getErrorMessage());
+            throw new MemberException(ID_EMPTY, ID_EMPTY.getCode(), ID_EMPTY.getErrorMessage());
         }
 
         //예외 코드 10012: 아이디가 형식에 맞지 않은 경우
         if (!MemberValidator.isLoginValid(loginId)) {
-            throw new JoinException(ID_INVALID, ID_INVALID.getCode(), ID_INVALID.getErrorMessage());
+            throw new MemberException(ID_INVALID, ID_INVALID.getCode(), ID_INVALID.getErrorMessage());
         }
 
         //예외 코드 10013: 아이디가 이미 존재하는 경우
         if (memberService.findMemberByLoginId(loginId).isPresent()) {
-            throw new JoinException(ID_ALREADY_EXIST, ID_ALREADY_EXIST.getCode(), ID_ALREADY_EXIST.getErrorMessage());
+            throw new MemberException(ID_ALREADY_EXIST, ID_ALREADY_EXIST.getCode(), ID_ALREADY_EXIST.getErrorMessage());
         }
     }
 
@@ -105,12 +105,12 @@ public class MemberController {
     private void passwordCheck(String password) {
         //예외 코드 10014: 비밀번호는 필수 정보입니다.
         if (password.strip().equals("")) {
-            throw new JoinException(PASSWORD_EMPTY, PASSWORD_EMPTY.getCode(), PASSWORD_EMPTY.getErrorMessage());
+            throw new MemberException(PASSWORD_EMPTY, PASSWORD_EMPTY.getCode(), PASSWORD_EMPTY.getErrorMessage());
         }
 
         //예외 코드 10015: "8-16자의 영문 대소문자, 숫자, 특수문자 ((!), (_) , (-))를 포합해야합니다.
         if (!MemberValidator.isPasswordValid(password)) {
-            throw new JoinException(PASSWORD_INVALID, PASSWORD_INVALID.getCode(), PASSWORD_INVALID.getErrorMessage());
+            throw new MemberException(PASSWORD_INVALID, PASSWORD_INVALID.getCode(), PASSWORD_INVALID.getErrorMessage());
         }
     }
 
@@ -118,17 +118,17 @@ public class MemberController {
     private void emailCheck(String email) {
         //예외 코드 10016: 이메일이 비어있을 경우
         if (email.strip().equals("")) {
-            throw new JoinException(EMAIL_EMPTY, EMAIL_EMPTY.getCode(), EMAIL_EMPTY.getErrorMessage());
+            throw new MemberException(EMAIL_EMPTY, EMAIL_EMPTY.getCode(), EMAIL_EMPTY.getErrorMessage());
         }
 
         //예외 코드 10017: 이미 존재하는 회원일 경우
         if (memberService.findMemberByEmail(email).isPresent()) {
-            throw new JoinException(EMAIL_ALREADY_EXIST, EMAIL_ALREADY_EXIST.getCode(), EMAIL_ALREADY_EXIST.getErrorMessage());
+            throw new MemberException(EMAIL_ALREADY_EXIST, EMAIL_ALREADY_EXIST.getCode(), EMAIL_ALREADY_EXIST.getErrorMessage());
         }
 
         //예외 코드 10018: 이메일 형식에 맞지 않을 경우
         if (!MemberValidator.isEmailValid(email)) {
-            throw new JoinException(EMAIL_INVALID, EMAIL_INVALID.getCode(), EMAIL_INVALID.getErrorMessage());
+            throw new MemberException(EMAIL_INVALID, EMAIL_INVALID.getCode(), EMAIL_INVALID.getErrorMessage());
         }
     }
 
@@ -136,12 +136,12 @@ public class MemberController {
     private void nameCheck(String name) {
         //예외 코드 10019: 이름이 비어있을 경우
         if (name.strip().equals("")) {
-            throw new JoinException(NAME_EMPTY, NAME_EMPTY.getCode(), NAME_EMPTY.getErrorMessage());
+            throw new MemberException(NAME_EMPTY, NAME_EMPTY.getCode(), NAME_EMPTY.getErrorMessage());
         }
 
         //예외 코드 10020: 이미 존재하는 이름일 경우
         if (memberService.findMemberByName(name).isPresent()) {
-            throw new JoinException(NAME_ALREADY_EXIST, NAME_ALREADY_EXIST.getCode(), NAME_ALREADY_EXIST.getErrorMessage());
+            throw new MemberException(NAME_ALREADY_EXIST, NAME_ALREADY_EXIST.getCode(), NAME_ALREADY_EXIST.getErrorMessage());
         }
     }
 
@@ -149,12 +149,12 @@ public class MemberController {
     private void birthCheck(String birth) {
         //예외 코드 10021: 생일이 비어있을 경우
         if (birth.strip().equals("")) {
-            throw new JoinException(BIRTH_EMPTY, BIRTH_EMPTY.getCode(), BIRTH_EMPTY.getErrorMessage());
+            throw new MemberException(BIRTH_EMPTY, BIRTH_EMPTY.getCode(), BIRTH_EMPTY.getErrorMessage());
         }
 
         //예외 코드 10022: 생일이 형식에 맞지 않는 경우
         if (!MemberValidator.isBirthValid(birth)) {
-            throw new JoinException(BIRTH_ALREADY_EXIST, BIRTH_ALREADY_EXIST.getCode(), BIRTH_ALREADY_EXIST.getErrorMessage());
+            throw new MemberException(BIRTH_ALREADY_EXIST, BIRTH_ALREADY_EXIST.getCode(), BIRTH_ALREADY_EXIST.getErrorMessage());
         }
     }
 }
