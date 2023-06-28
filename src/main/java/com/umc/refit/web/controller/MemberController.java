@@ -64,10 +64,18 @@ public class MemberController {
     public ResIdFindDto findId(@RequestBody IdFindDto idFindDto) {
 
         String email = idFindDto.getEmail();
+        String name = idFindDto.getName();
 
         /*예외 처리가 끝나면 회원 조회*/
         Optional<Member> member = memberService.findMemberByEmail(email);
+
+        /*회원이 조회되지 않으면 예외*/
         if (member.isEmpty()) {
+            throw new MemberException(MEMBER_IS_NOT_EXIST, MEMBER_IS_NOT_EXIST.getCode(), MEMBER_IS_NOT_EXIST.getErrorMessage());
+        }
+
+        /*회원이 조회됐지만 이름이 같지 않으면 예외*/
+        if (!member.get().getName().equals(name)) {
             throw new MemberException(MEMBER_IS_NOT_EXIST, MEMBER_IS_NOT_EXIST.getCode(), MEMBER_IS_NOT_EXIST.getErrorMessage());
         }
 
