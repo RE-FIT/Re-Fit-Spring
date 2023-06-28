@@ -42,16 +42,6 @@ public class JwtKakaoAuthenticationFilter extends UsernamePasswordAuthentication
     private final JWK jwk;
     private final MemberService memberService;
 
-    /*엑세스 토큰 및 리프레시 토큰 시간 설정*/
-    @Value("${token.accessToken}")
-    private Integer accessTokenTime;
-
-    @Value("${token.refreshToken}")
-    private Integer refreshTokenTime;
-
-    @Value("${token.default.password}")
-    private String defaultPassword;
-
     //랜덤 문자열
     private String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
 
@@ -61,7 +51,7 @@ public class JwtKakaoAuthenticationFilter extends UsernamePasswordAuthentication
             throws AuthenticationException {
 
         String KAKAO_API_URL = "https://kapi.kakao.com/v2/user/me";
-        String DEFAULT_PASSWORD = defaultPassword;
+        String DEFAULT_PASSWORD = "KAKAO_LOGIN";
         String accessToken = request.getHeader("Authorization");
 
         String EMAIL = getEmailFromKakao(accessToken, KAKAO_API_URL);
@@ -104,8 +94,8 @@ public class JwtKakaoAuthenticationFilter extends UsernamePasswordAuthentication
         User user = (User) authResult.getPrincipal();
         try {
             //엑세스 토큰 및 리프레쉬 토큰 발행
-            String accessToken = securitySigner.getJwtToken(user, jwk, accessTokenTime);
-            String refreshToken = securitySigner.getJwtToken(user, jwk, refreshTokenTime);
+            String accessToken = securitySigner.getJwtToken(user, jwk, 216000000);
+            String refreshToken = securitySigner.getJwtToken(user, jwk, 216000000);
 
             //엑세스 토큰 헤더를 통해 전달
             response.addHeader("Authorization", "Bearer " + accessToken); //발행받은 토큰을 response 헤더에 담아 응답

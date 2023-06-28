@@ -4,6 +4,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.umc.refit.web.filter.authentication.CustomUserDetailsService;
 import com.umc.refit.web.filter.authentication.JwtAuthenticationFilter;
 import com.umc.refit.web.filter.authentication.JwtKakaoAuthenticationFilter;
+import com.umc.refit.web.filter.authorization.JwtAuthorizationRsaFilter;
 import com.umc.refit.web.filter.entrypoint.CustomAuthenticationEntryPoint;
 import com.umc.refit.web.service.MemberService;
 import com.umc.refit.web.signature.RSASecuritySigner;
@@ -15,6 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
 public class OAuth2ResourceServer {
@@ -56,6 +58,10 @@ public class OAuth2ResourceServer {
         JwtKakaoAuthenticationFilter jwtKakaoAuthenticationFilter =
                 new JwtKakaoAuthenticationFilter(http, rsaSecuritySigner, rsaKey, memberService);
         jwtKakaoAuthenticationFilter.setFilterProcessesUrl("/auth/kakao");
+
+        //인가 필터 등록 필터
+        http.addFilter(jwtAuthenticationFilter).addFilter(jwtKakaoAuthenticationFilter)
+                .addFilterBefore(new JwtAuthorizationRsaFilter(rsaKey), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
