@@ -64,11 +64,6 @@ public class MemberController {
     public ResIdFindDto findId(@RequestBody IdFindDto idFindDto) {
 
         String email = idFindDto.getEmail();
-        String name = idFindDto.getName();
-
-        /*예외 체크*/
-        emailCheck(email);
-        nameCheck(name);
 
         /*예외 처리가 끝나면 회원 조회*/
         Optional<Member> member = memberService.findMemberByEmail(email);
