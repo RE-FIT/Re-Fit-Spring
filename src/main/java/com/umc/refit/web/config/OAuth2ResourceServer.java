@@ -3,6 +3,7 @@ package com.umc.refit.web.config;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.umc.refit.web.filter.authentication.CustomUserDetailsService;
 import com.umc.refit.web.filter.authentication.JwtAuthenticationFilter;
+import com.umc.refit.web.filter.authentication.JwtKakaoAuthenticationFilter;
 import com.umc.refit.web.filter.entrypoint.CustomAuthenticationEntryPoint;
 import com.umc.refit.web.service.MemberService;
 import com.umc.refit.web.signature.RSASecuritySigner;
@@ -50,6 +51,11 @@ public class OAuth2ResourceServer {
         JwtAuthenticationFilter jwtAuthenticationFilter =
                 new JwtAuthenticationFilter(http, rsaSecuritySigner, rsaKey, memberService);
         jwtAuthenticationFilter.setFilterProcessesUrl("/auth/login");
+
+        //카카오 로그인 URL 설정
+        JwtKakaoAuthenticationFilter jwtKakaoAuthenticationFilter =
+                new JwtKakaoAuthenticationFilter(http, rsaSecuritySigner, rsaKey, memberService);
+        jwtKakaoAuthenticationFilter.setFilterProcessesUrl("/auth/kakao");
 
         return http.build();
     }

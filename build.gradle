@@ -44,6 +44,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 	testImplementation 'org.springframework.security:spring-security-test'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	//JSON Parse 라이브러리
+	implementation 'com.google.code.gson:gson:2.8.9'
 }
 
 tasks.named('test') {

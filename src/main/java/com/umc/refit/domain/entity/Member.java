@@ -31,6 +31,13 @@ public class Member implements UserDetails {
         this.name = name;
     }
 
+    public Member(String email, String password, String name) {
+        this.password = password;
+        this.email = email;
+        this.name = name;
+        this.socialType = "KAKAO";
+    }
+
     public Member(JoinDto joinDto) {
         this.loginId = joinDto.getLoginId();
         this.password = joinDto.getPassword();

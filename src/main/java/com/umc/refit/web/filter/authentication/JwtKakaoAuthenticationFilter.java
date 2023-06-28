@@ -1,12 +1,13 @@
 package com.umc.refit.web.filter.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.JWK;
 import com.umc.refit.domain.dto.member.ResLoginDto;
 import com.umc.refit.domain.entity.Member;
 import com.umc.refit.exception.member.LoginException;
-import com.umc.refit.exception.member.MemberException;
 import com.umc.refit.web.service.MemberService;
 import com.umc.refit.web.signature.SecuritySigner;
 import lombok.RequiredArgsConstructor;
@@ -23,13 +24,17 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Optional;
 
-import static com.umc.refit.exception.ExceptionType.KAKAO_MEMBER_EXIST;
+import static com.umc.refit.exception.ExceptionType.BASIC_MEMBER_EXIST;
 
 @RequiredArgsConstructor
-public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+public class JwtKakaoAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final HttpSecurity httpSecurity;
     private final SecuritySigner securitySigner;
@@ -43,32 +48,40 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Value("${token.refreshToken}")
     private Integer refreshTokenTime;
 
-    /*일반 로그인 인증 시작 메서드*/
+    @Value("${token.default.password}")
+    private String defaultPassword;
+
+    /*카카오 로그인 인증 시작*/
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
 
-        String loginId = request.getParameter("loginId");
-        String password = request.getParameter("password");
+        String KAKAO_API_URL = "https://kapi.kakao.com/v2/user/me";
+        String DEFAULT_PASSWORD = defaultPassword;
+        String accessToken = request.getHeader("Authorization");
 
-        Optional<Member> findMember = memberService.findMemberByLoginId(loginId);
+        String EMAIL = getEmailFromKakao(accessToken, KAKAO_API_URL);
 
-        //이미 카카오 계정이 있는 경우, 예외 발생
-        if (findMember.isPresent()) {
-            if (!(findMember.get().getSocialType() == null)) {
-                request.setAttribute("exception", KAKAO_MEMBER_EXIST);
-                throw new LoginException(KAKAO_MEMBER_EXIST,
-                        KAKAO_MEMBER_EXIST.getCode(), KAKAO_MEMBER_EXIST.getErrorMessage());
+        Optional<Member> findMember = memberService.findMemberByEmail(EMAIL);
+        if (findMember.isPresent()) { //멤버가 존재할 경우
+            if (findMember.get().getSocialType() == (null)) { //일반 로그인일 경우
+                request.setAttribute("exception", BASIC_MEMBER_EXIST);
+                throw new LoginException(BASIC_MEMBER_EXIST,
+                        BASIC_MEMBER_EXIST.getCode(), BASIC_MEMBER_EXIST.getErrorMessage());
             }
+        } else {
+            Member member = new Member(EMAIL, DEFAULT_PASSWORD, "환경지킴이");
+            member.getRoles().add("USER");
+            memberService.save(member);
         }
 
         AuthenticationManager authenticationManager = httpSecurity.getSharedObject(AuthenticationManager.class);
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginId, password);
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(EMAIL, DEFAULT_PASSWORD);
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
         return authentication;
     }
 
-    /*일반 로그인 인증 성공시 토큰 발행하는 메소드*/
+    /*카카오 로그인 인증 성공시 토큰 발행하는 메소드*/
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws ServletException, IOException {
         User user = (User) authResult.getPrincipal();
@@ -90,5 +103,33 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         } catch (JOSEException e) {
             e.printStackTrace();
         }
+    }
+
+    /*카카오 인가 서버에 이메일 정보 요청*/
+    private String getEmailFromKakao(String accessToken, String KAKAO_API_URL) {
+        String email = "";
+        try {
+            URL url = new URL(KAKAO_API_URL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+            conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            StringBuilder result = new StringBuilder();
+
+            String line;
+            while ((line = br.readLine()) != null) {
+                result.append(line);
+            }
+
+            JsonElement element = JsonParser.parseString(result.toString());
+            email = element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email").getAsString();
+            br.close();
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+        return email;
     }
 }

@@ -104,8 +104,15 @@ public class MemberController {
         return new ResIdFindDto(exceptLastThree + lastThreeReplaced);
     }
 
+    /*일반 로그인 API*/
     @PostMapping("/login")
     public ResponseEntity<Void> login() {
+        return ResponseEntity.ok().build();
+    }
+
+    /*카카오 로그인 API*/
+    @PostMapping("/kakao")
+    public ResponseEntity<Void> kakao_login() {
         return ResponseEntity.ok().build();
     }
 
