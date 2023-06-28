@@ -59,6 +59,23 @@ public class MemberController {
         memberService.save(new Member(joinDto));
     }
 
+    /*이메일 인증 API*/
+    @PostMapping("/reset/password")
+    public void reset(@RequestBody PasswordResetDto passwordResetDto) throws MessagingException {
+
+        String email = passwordResetDto.getEmail();
+        String name = passwordResetDto.getName();
+        String loginId = passwordResetDto.getLoginId();
+
+        Optional<Member> member = memberService.findMemberForPasswordRest(name, email, loginId);
+
+        if (member.isEmpty()) {
+            throw new MemberException(PASSWORD_RESET_FAIL, PASSWORD_RESET_FAIL.getCode(), PASSWORD_RESET_FAIL.getErrorMessage());
+        }
+
+        emailService.resetEmail(email);
+    }
+
     /*아이디 찾기 API*/
     @PostMapping("/find/id")
     public ResIdFindDto findId(@RequestBody IdFindDto idFindDto) {
@@ -67,15 +84,10 @@ public class MemberController {
         String name = idFindDto.getName();
 
         /*예외 처리가 끝나면 회원 조회*/
-        Optional<Member> member = memberService.findMemberByEmail(email);
+        Optional<Member> member = memberService.findMemberForFindId(name, email);
 
         /*회원이 조회되지 않으면 예외*/
         if (member.isEmpty()) {
-            throw new MemberException(MEMBER_IS_NOT_EXIST, MEMBER_IS_NOT_EXIST.getCode(), MEMBER_IS_NOT_EXIST.getErrorMessage());
-        }
-
-        /*회원이 조회됐지만 이름이 같지 않으면 예외*/
-        if (!member.get().getName().equals(name)) {
             throw new MemberException(MEMBER_IS_NOT_EXIST, MEMBER_IS_NOT_EXIST.getCode(), MEMBER_IS_NOT_EXIST.getErrorMessage());
         }
 

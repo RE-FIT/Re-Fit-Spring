@@ -18,6 +18,14 @@ public class MemberService {
         return memberRepository.findByEmail(email);
     }
 
+    public Optional<Member> findMemberForPasswordRest(String name, String email, String loginId) {
+        return memberRepository.findMemberByNameAndEmailAndLoginId(name, email, loginId);
+    }
+
+    public Optional<Member> findMemberForFindId(String name, String email) {
+        return memberRepository.findMemberByNameAndEmail(name, email);
+    }
+
     public Optional<Member> findMemberByLoginId(String loginId) {
         return memberRepository.findByLoginId(loginId);
     }
