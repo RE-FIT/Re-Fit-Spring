@@ -37,3 +37,8 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
+
+token:
+  issuer: http://localhost:8080
+  accessToken: 216000000
+  refreshToken: 12960000000

@@ -6,7 +6,9 @@ import com.umc.refit.exception.member.MemberException;
 import com.umc.refit.exception.validator.MemberValidator;
 import com.umc.refit.web.service.EmailService;
 import com.umc.refit.web.service.MemberService;
+import com.umc.refit.web.signature.SecuritySigner;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -100,6 +102,11 @@ public class MemberController {
         String exceptLastThree = member.get().getLoginId().substring(0, member.get().getLoginId().length() - 3);
 
         return new ResIdFindDto(exceptLastThree + lastThreeReplaced);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<Void> login() {
+        return ResponseEntity.ok().build();
     }
 
     /*로그인 아이디 체크 메서드*/
