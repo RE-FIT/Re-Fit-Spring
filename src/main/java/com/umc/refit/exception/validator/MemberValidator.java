@@ -6,7 +6,7 @@ public class MemberValidator {
 
     private static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@(.+)$";
     private static final String ID_REGEX = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,16}$";
-    private static final String PASSWORD_REGEX = "^(?=.*[A-Za-z])(?=.*\\\\d)(?=.*[!_-])[A-Za-z\\\\d!_-]{8,16}$";
+    private static final String PASSWORD_REGEX = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!_-]).{8,16}$";
     private static final String BIRTH_REGEX = "^\\d{4}/(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])$";
 
     private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
