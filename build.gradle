@@ -39,6 +39,11 @@ dependencies {
 
 	//타임리프 라이브러리
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version: '2.7.12'
+
+	//스프링 시큐리티 라이브러리
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+	testImplementation 'org.springframework.security:spring-security-test'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 }
 
 tasks.named('test') {

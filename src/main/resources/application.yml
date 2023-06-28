@@ -27,6 +27,12 @@ spring:
             enable: true
           auth: true
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jws-algorithms: RS512
+
 logging:
   level:
     org.hibernate.SQL: debug
