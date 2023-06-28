@@ -5,6 +5,7 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.JWK;
 import com.umc.refit.domain.dto.member.ResLoginDto;
 import com.umc.refit.domain.entity.Member;
+import com.umc.refit.exception.member.LoginException;
 import com.umc.refit.exception.member.MemberException;
 import com.umc.refit.web.service.MemberService;
 import com.umc.refit.web.signature.SecuritySigner;
@@ -56,7 +57,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         if (findMember.isPresent()) {
             if (!findMember.get().getSocialType().equals(null)) {
                 request.setAttribute("exception", KAKAO_MEMBER_EXIST);
-                throw new MemberException(KAKAO_MEMBER_EXIST,
+                throw new LoginException(KAKAO_MEMBER_EXIST,
                         KAKAO_MEMBER_EXIST.getCode(), KAKAO_MEMBER_EXIST.getErrorMessage());
             }
         }
