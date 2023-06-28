@@ -73,7 +73,11 @@ public class MemberController {
             throw new MemberException(PASSWORD_RESET_FAIL, PASSWORD_RESET_FAIL.getCode(), PASSWORD_RESET_FAIL.getErrorMessage());
         }
 
-        emailService.resetEmail(email);
+        String password = emailService.resetEmail(email);
+
+        Member getMember = member.get();
+        getMember.setPassword(password);
+        memberService.save(getMember);
     }
 
     /*아이디 찾기 API*/
