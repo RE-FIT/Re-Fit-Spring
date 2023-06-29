@@ -8,6 +8,7 @@ import com.umc.refit.web.filter.authentication.JwtKakaoAuthenticationFilter;
 import com.umc.refit.web.filter.authorization.JwtAuthorizationRsaFilter;
 import com.umc.refit.web.filter.exception.CustomAuthenticationEntryPoint;
 import com.umc.refit.web.service.MemberService;
+import com.umc.refit.web.service.RefreshTokenService;
 import com.umc.refit.web.signature.RSASecuritySigner;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ public class OAuth2ResourceServer {
     private final CustomUserDetailsService userDetailsService;
     private final CustomAuthenticationFailureHandler authFailureHandler;
     private final MemberService memberService;
+    private final RefreshTokenService refreshTokenService;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -46,13 +48,13 @@ public class OAuth2ResourceServer {
 
         //일반 로그인 URL 설정
         JwtAuthenticationFilter jwtAuthenticationFilter =
-                new JwtAuthenticationFilter(http, rsaSecuritySigner, rsaKey, memberService);
+                new JwtAuthenticationFilter(http, rsaSecuritySigner, rsaKey, memberService, refreshTokenService);
         jwtAuthenticationFilter.setAuthenticationFailureHandler(authFailureHandler);
         jwtAuthenticationFilter.setFilterProcessesUrl("/auth/login");
 
         //카카오 로그인 URL 설정
         JwtKakaoAuthenticationFilter jwtKakaoAuthenticationFilter =
-                new JwtKakaoAuthenticationFilter(http, rsaSecuritySigner, rsaKey, memberService);
+                new JwtKakaoAuthenticationFilter(http, rsaSecuritySigner, rsaKey, memberService, refreshTokenService);
         jwtKakaoAuthenticationFilter.setAuthenticationFailureHandler(authFailureHandler);
         jwtKakaoAuthenticationFilter.setFilterProcessesUrl("/auth/kakao");
 
