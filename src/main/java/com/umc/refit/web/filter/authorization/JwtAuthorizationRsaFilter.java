@@ -51,7 +51,7 @@ public class JwtAuthorizationRsaFilter extends OncePerRequestFilter {
 
         ExceptionType errorType = null;
 
-        //헤더 검사
+        /*토큰 헤더 검증*/
         if (tokenResolve(request, response, chain)){
             errorType = TOKEN_NOT_EXIST;
         } else {
@@ -95,7 +95,7 @@ public class JwtAuthorizationRsaFilter extends OncePerRequestFilter {
                 errorType = TOKEN_INVALID;
             }
         }
-        //예외가 발생할 경우 예외 저장
+        /*토큰 예외 처리*/
         if (errorType != null) {
             request.setAttribute("exception", errorType);
         }
