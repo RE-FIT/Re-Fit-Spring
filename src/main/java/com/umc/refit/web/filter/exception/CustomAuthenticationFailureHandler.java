@@ -1,4 +1,4 @@
-package com.umc.refit.web.filter.authentication;
+package com.umc.refit.web.filter.exception;
 
 import com.nimbusds.jose.shaded.json.JSONObject;
 import com.umc.refit.exception.member.LoginException;
@@ -30,6 +30,14 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
         int code;
 
         if ((exception instanceof UsernameNotFoundException) || (exception instanceof BadCredentialsException)){
+
+            if (exception instanceof UsernameNotFoundException) {
+                System.out.println("하이하이");
+            } else  {
+                System.out.println("이하이하");
+            }
+
+
             errorMessage = LOGIN_FAILED.getErrorMessage();
             code = LOGIN_FAILED.getCode();
         } else if (exception instanceof LoginException) {

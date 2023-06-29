@@ -34,6 +34,7 @@ public class Member implements UserDetails {
     public Member(String email, String password, String name) {
         this.password = password;
         this.email = email;
+        this.loginId = email;
         this.name = name;
         this.socialType = "KAKAO";
     }

@@ -1,4 +1,4 @@
-package com.umc.refit.web.filter.entrypoint;
+package com.umc.refit.web.filter.exception;
 
 import com.nimbusds.jose.shaded.json.JSONObject;
 import com.umc.refit.exception.ExceptionType;
