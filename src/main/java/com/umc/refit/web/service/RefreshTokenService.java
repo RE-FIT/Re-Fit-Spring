@@ -28,4 +28,9 @@ public class RefreshTokenService {
     public void deleteRefreshToken(String username) {
         redisTemplate.delete(username);
     }
+
+    /*저장된 모든 리프레쉬 토큰 삭제*/
+    public void deleteAll() {
+        redisTemplate.getConnectionFactory().getConnection().flushDb();
+    }
 }
