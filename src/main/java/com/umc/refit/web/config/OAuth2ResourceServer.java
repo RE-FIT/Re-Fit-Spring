@@ -9,32 +9,24 @@ import com.umc.refit.web.filter.authorization.JwtAuthorizationRsaFilter;
 import com.umc.refit.web.filter.exception.CustomAuthenticationEntryPoint;
 import com.umc.refit.web.service.MemberService;
 import com.umc.refit.web.signature.RSASecuritySigner;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class OAuth2ResourceServer {
 
-    @Autowired
-    private RSASecuritySigner rsaSecuritySigner;
-
-    @Autowired
-    private RSAKey rsaKey;
-
-    @Autowired
-    private CustomUserDetailsService userDetailsService;
-
-    @Autowired
-    private CustomAuthenticationFailureHandler authFailureHandler;
-
-    @Autowired
-    private MemberService memberService;
+    private final RSASecuritySigner rsaSecuritySigner;
+    private final RSAKey rsaKey;
+    private final CustomUserDetailsService userDetailsService;
+    private final CustomAuthenticationFailureHandler authFailureHandler;
+    private final MemberService memberService;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
