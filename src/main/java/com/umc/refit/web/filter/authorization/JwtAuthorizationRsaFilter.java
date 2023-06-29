@@ -38,9 +38,12 @@ public class JwtAuthorizationRsaFilter extends OncePerRequestFilter {
         String path = request.getServletPath();
         request.getMethod();
         AntPathMatcher pathMatcher = new AntPathMatcher();
-        return (pathMatcher.match("/auth/join", path)
-                || pathMatcher.match("/auth/kakao", path)
-                || pathMatcher.match("/auth/login", path));
+        return (pathMatcher.match("/auth/join", path) //일반 회원 가입
+                || pathMatcher.match("/auth/kakao", path) //카카오 로그인
+                || pathMatcher.match("/auth/email", path) //이메일 인증
+                || pathMatcher.match("/auth/find/id", path) //아이디 찾기
+                || pathMatcher.match("/auth/reset/password", path) //패스워드 찾기
+                || pathMatcher.match("/auth/login", path)); //일반 로그인
     }
 
     @Override
