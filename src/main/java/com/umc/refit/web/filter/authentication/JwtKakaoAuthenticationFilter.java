@@ -59,7 +59,6 @@ public class JwtKakaoAuthenticationFilter extends UsernamePasswordAuthentication
         Optional<Member> findMember = memberService.findMemberByEmail(EMAIL);
         if (findMember.isPresent()) { //멤버가 존재할 경우
             if (findMember.get().getSocialType() == (null)) { //일반 로그인일 경우
-                request.setAttribute("exception", BASIC_MEMBER_EXIST);
                 throw new LoginException(BASIC_MEMBER_EXIST,
                         BASIC_MEMBER_EXIST.getCode(), BASIC_MEMBER_EXIST.getErrorMessage());
             }

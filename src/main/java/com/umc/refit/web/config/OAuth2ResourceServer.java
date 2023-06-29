@@ -1,6 +1,7 @@
 package com.umc.refit.web.config;
 
 import com.nimbusds.jose.jwk.RSAKey;
+import com.umc.refit.web.filter.authentication.CustomAuthenticationFailureHandler;
 import com.umc.refit.web.filter.authentication.CustomUserDetailsService;
 import com.umc.refit.web.filter.authentication.JwtAuthenticationFilter;
 import com.umc.refit.web.filter.authentication.JwtKakaoAuthenticationFilter;
@@ -31,6 +32,9 @@ public class OAuth2ResourceServer {
     private CustomUserDetailsService userDetailsService;
 
     @Autowired
+    private CustomAuthenticationFailureHandler authFailureHandler;
+
+    @Autowired
     private MemberService memberService;
 
     @Bean
@@ -52,11 +56,13 @@ public class OAuth2ResourceServer {
         //일반 로그인 URL 설정
         JwtAuthenticationFilter jwtAuthenticationFilter =
                 new JwtAuthenticationFilter(http, rsaSecuritySigner, rsaKey, memberService);
+        jwtAuthenticationFilter.setAuthenticationFailureHandler(authFailureHandler);
         jwtAuthenticationFilter.setFilterProcessesUrl("/auth/login");
 
         //카카오 로그인 URL 설정
         JwtKakaoAuthenticationFilter jwtKakaoAuthenticationFilter =
                 new JwtKakaoAuthenticationFilter(http, rsaSecuritySigner, rsaKey, memberService);
+        jwtKakaoAuthenticationFilter.setAuthenticationFailureHandler(authFailureHandler);
         jwtKakaoAuthenticationFilter.setFilterProcessesUrl("/auth/kakao");
 
         //인가 필터 등록 필터
