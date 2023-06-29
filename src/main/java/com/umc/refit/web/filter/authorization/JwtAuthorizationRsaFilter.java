@@ -17,11 +17,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import static com.umc.refit.exception.ExceptionType.TOKEN_INVALID;
-import static com.umc.refit.exception.ExceptionType.TOKEN_NOT_EXIST;
+import static com.umc.refit.exception.ExceptionType.*;
 
 /*Bearer 토큰을 RSA 알고리즘에 의해 검증하며 검증 성공시 인증 및 인가를 처리하는 필터*/
 public class JwtAuthorizationRsaFilter extends OncePerRequestFilter {
@@ -64,23 +64,32 @@ public class JwtAuthorizationRsaFilter extends OncePerRequestFilter {
                 //header와 payload와 signature 값이 속성으로 매핑됨
                 signedJWT = SignedJWT.parse(token);
                 RSASSAVerifier jwsVerifier = new RSASSAVerifier(jwk.toRSAPublicKey());
-                boolean verify = signedJWT.verify(jwsVerifier);
 
-                if (verify) {
-                    String username = signedJWT.getJWTClaimsSet().getClaim("id").toString();
-                    List<String> authority = (List) signedJWT.getJWTClaimsSet().getClaim("role");
-
-                    //사용자 정보를 만들어서 인증 객체 생성 후 Security Context에 보관
-                    if (username != null) {
-                        UserDetails user = User.builder().username(username)
-                                .password(UUID.randomUUID().toString())
-                                .authorities(authority.get(0))
-                                .build();
-                        Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
-                    }
+                /*토큰 만료기간 검증*/
+                Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+                Date now = new Date();
+                if (now.after(expirationTime)) {
+                    errorType = TOKEN_EXPIRED;
                 } else {
-                    errorType = TOKEN_INVALID;
+
+                    boolean verify = signedJWT.verify(jwsVerifier);
+
+                    if (verify) {
+                        String username = signedJWT.getJWTClaimsSet().getClaim("id").toString();
+                        List<String> authority = (List) signedJWT.getJWTClaimsSet().getClaim("role");
+
+                        //사용자 정보를 만들어서 인증 객체 생성 후 Security Context에 보관
+                        if (username != null) {
+                            UserDetails user = User.builder().username(username)
+                                    .password(UUID.randomUUID().toString())
+                                    .authorities(authority.get(0))
+                                    .build();
+                            Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                            SecurityContextHolder.getContext().setAuthentication(authentication);
+                        }
+                    } else {
+                        errorType = TOKEN_INVALID;
+                    }
                 }
             } catch (Exception e) {
                 errorType = TOKEN_INVALID;

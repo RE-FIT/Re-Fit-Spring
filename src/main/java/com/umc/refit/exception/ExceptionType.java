@@ -36,12 +36,13 @@ public enum ExceptionType {
     // Token 예외
     TOKEN_NOT_EXIST(BAD_REQUEST, 10100, "JWT Token이 존재하지 않습니다."),
     TOKEN_INVALID(BAD_REQUEST, 10101, "유효하지 않은 JWT Token 입니다."),
+    TOKEN_EXPIRED(BAD_REQUEST, 10102, "토큰 만료기간이 지났습니다."),
 
     //로그인 예외
-    LOGIN_FAILED(BAD_REQUEST, 10102, "존재하지 않는 계정입니다."),
-    LOGIN_FAILED_ALL(BAD_REQUEST, 10103, "알 수 없는 이유로 로그인 할 수 없습니다."),
-    KAKAO_MEMBER_EXIST(BAD_REQUEST, 10104, "카카오 로그인 계정이 존재합니다."),
-    BASIC_MEMBER_EXIST(BAD_REQUEST, 10105, "일반 로그인 계정이 존재합니다.");
+    LOGIN_FAILED(BAD_REQUEST, 10103, "존재하지 않는 계정입니다."),
+    LOGIN_FAILED_ALL(BAD_REQUEST, 10104, "알 수 없는 이유로 로그인 할 수 없습니다."),
+    KAKAO_MEMBER_EXIST(BAD_REQUEST, 10105, "카카오 로그인 계정이 존재합니다."),
+    BASIC_MEMBER_EXIST(BAD_REQUEST, 10106, "일반 로그인 계정이 존재합니다.");
 
     private final HttpStatus httpStatus;
     private final int code;
