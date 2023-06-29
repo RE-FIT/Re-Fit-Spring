@@ -30,14 +30,6 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
         int code;
 
         if ((exception instanceof UsernameNotFoundException) || (exception instanceof BadCredentialsException)){
-
-            if (exception instanceof UsernameNotFoundException) {
-                System.out.println("하이하이");
-            } else  {
-                System.out.println("이하이하");
-            }
-
-
             errorMessage = LOGIN_FAILED.getErrorMessage();
             code = LOGIN_FAILED.getCode();
         } else if (exception instanceof LoginException) {
