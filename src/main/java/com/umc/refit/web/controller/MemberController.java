@@ -9,10 +9,7 @@ import com.umc.refit.web.service.MemberService;
 import com.umc.refit.web.signature.SecuritySigner;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 
@@ -113,6 +110,12 @@ public class MemberController {
     /*카카오 로그인 API*/
     @PostMapping("/kakao")
     public ResponseEntity<Void> kakao_login() {
+        return ResponseEntity.ok().build();
+    }
+
+    /*엑세스 토큰 체크 API*/
+    @GetMapping("/token/check")
+    public ResponseEntity<Void> token_check() {
         return ResponseEntity.ok().build();
     }
 
