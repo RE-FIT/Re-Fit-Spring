@@ -6,11 +6,10 @@ import com.umc.refit.exception.member.MemberException;
 import com.umc.refit.exception.validator.MemberValidator;
 import com.umc.refit.web.service.EmailService;
 import com.umc.refit.web.service.MemberService;
+import com.umc.refit.web.signature.SecuritySigner;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 
@@ -100,6 +99,24 @@ public class MemberController {
         String exceptLastThree = member.get().getLoginId().substring(0, member.get().getLoginId().length() - 3);
 
         return new ResIdFindDto(exceptLastThree + lastThreeReplaced);
+    }
+
+    /*일반 로그인 API*/
+    @PostMapping("/login")
+    public ResponseEntity<Void> login() {
+        return ResponseEntity.ok().build();
+    }
+
+    /*카카오 로그인 API*/
+    @PostMapping("/kakao")
+    public ResponseEntity<Void> kakao_login() {
+        return ResponseEntity.ok().build();
+    }
+
+    /*엑세스 토큰 체크 API*/
+    @GetMapping("/token/check")
+    public ResponseEntity<Void> token_check() {
+        return ResponseEntity.ok().build();
     }
 
     /*로그인 아이디 체크 메서드*/
