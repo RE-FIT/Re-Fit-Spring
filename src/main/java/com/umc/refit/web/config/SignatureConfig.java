@@ -7,6 +7,8 @@ import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
 import com.umc.refit.web.signature.RSASecuritySigner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class SignatureConfig {
@@ -23,5 +25,10 @@ public class SignatureConfig {
                 .keyID("rsaKey")
                 .algorithm(JWSAlgorithm.RS512)
                 .generate();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
     }
 }
