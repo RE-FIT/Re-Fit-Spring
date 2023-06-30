@@ -32,6 +32,8 @@ jobs:
         spring.datasource.password: ${{ secrets.DATABASE_PASSWORD }}
         spring.mail.username: ${{ secrets.EMAILHOST }}
         spring.mail.password: ${{ secrets.EMAILPASSWORD }}
+        spring.redis.host: ${{ secrets.REDISHOST }}
+        token.issuer: ${{ secrets.ISSUER }}
 
     - name: Set up JDK 17
       uses: actions/setup-java@v3

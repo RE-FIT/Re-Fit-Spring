@@ -9,6 +9,7 @@ import com.umc.refit.domain.dto.member.ResLoginDto;
 import com.umc.refit.domain.entity.Member;
 import com.umc.refit.exception.member.LoginException;
 import com.umc.refit.web.service.MemberService;
+import com.umc.refit.web.service.RefreshTokenService;
 import com.umc.refit.web.signature.SecuritySigner;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,6 +43,7 @@ public class JwtKakaoAuthenticationFilter extends UsernamePasswordAuthentication
     private final SecuritySigner securitySigner;
     private final JWK jwk;
     private final MemberService memberService;
+    private final RefreshTokenService refreshTokenService;
 
     //랜덤 문자열
     private String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
@@ -99,6 +101,9 @@ public class JwtKakaoAuthenticationFilter extends UsernamePasswordAuthentication
 
             //엑세스 토큰 헤더를 통해 전달
             response.addHeader("Authorization", "Bearer " + accessToken); //발행받은 토큰을 response 헤더에 담아 응답
+
+            //리프레쉬 토큰 저장
+            refreshTokenService.saveRefreshToken(user.getUsername(), refreshToken);
 
             //리프레쉬 토큰 바디에 담아 전달
             ResLoginDto resEmailDto = new ResLoginDto(refreshToken);

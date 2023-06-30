@@ -33,6 +33,10 @@ spring:
         jwt:
           jws-algorithms: RS512
 
+  redis:
+    host: localhost
+    port: 6379
+
 logging:
   level:
     org.hibernate.SQL: debug
