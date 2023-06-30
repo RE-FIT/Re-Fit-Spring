@@ -45,6 +45,7 @@ public class Member implements UserDetails {
         this.email = joinDto.getEmail();
         this.name = joinDto.getName();
         this.birth = joinDto.getBirth();
+        this.getRoles().add("USER");
     }
 
     public Member() {
