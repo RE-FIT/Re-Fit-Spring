@@ -113,6 +113,12 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
+    /*로그아웃 API*/
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        return ResponseEntity.ok().build();
+    }
+
     /*엑세스 토큰 체크 API*/
     @GetMapping("/token/check")
     public ResponseEntity<Void> token_check() {
