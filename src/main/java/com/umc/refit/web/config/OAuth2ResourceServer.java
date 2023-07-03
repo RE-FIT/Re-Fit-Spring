@@ -42,6 +42,7 @@ public class OAuth2ResourceServer {
                 requests.antMatchers("/auth/logout" //로그아웃
                                 , "/auth/join" //회원 가입
                                 , "/auth/email" //이메일 찾기
+                                , "/auth/find/id" //아이디 찾기
                                 , "/auth/reset/password" //패스워드 찾기
 //                                , "/**"
                         ).permitAll()
