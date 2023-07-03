@@ -2,16 +2,21 @@ package com.umc.refit.web.controller;
 
 import com.umc.refit.domain.dto.member.*;
 import com.umc.refit.domain.entity.Member;
+import com.umc.refit.exception.ExceptionType;
 import com.umc.refit.exception.member.MemberException;
+import com.umc.refit.exception.member.TokenException;
 import com.umc.refit.exception.validator.MemberValidator;
 import com.umc.refit.web.service.EmailService;
 import com.umc.refit.web.service.MemberService;
-import com.umc.refit.web.signature.SecuritySigner;
+import com.umc.refit.web.service.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import java.util.Optional;
 
@@ -24,6 +29,7 @@ public class MemberController {
 
     private final EmailService emailService;
     private final MemberService memberService;
+    private final RefreshTokenService refreshTokenService;
 
     /*이메일 인증 API*/
     @PostMapping("/email")
@@ -119,7 +125,16 @@ public class MemberController {
 
     /*로그아웃 API*/
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout() {
+    public ResponseEntity<Void> logout(Authentication authentication, HttpServletRequest request) {
+
+        if (authentication == null) {
+            ExceptionType exception = (ExceptionType) request.getAttribute("exception");
+            throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
+        }
+
+        String loginId = authentication.getName();
+        refreshTokenService.deleteRefreshToken(loginId);
+
         return ResponseEntity.ok().build();
     }
 
