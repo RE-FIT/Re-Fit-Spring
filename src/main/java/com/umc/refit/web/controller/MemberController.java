@@ -72,7 +72,7 @@ public class MemberController {
             throw new MemberException(PASSWORD_RESET_FAIL, PASSWORD_RESET_FAIL.getCode(), PASSWORD_RESET_FAIL.getErrorMessage());
         }
 
-        String password = emailService.resetEmail(email);
+        String password = emailService.resetEmail(email, name);
 
         Member getMember = member.get();
         getMember.setPassword(password);

@@ -39,8 +39,10 @@ public class OAuth2ResourceServer {
 
         //인증을 거치지 않을 URL 처리 및 인증, 인가 예외 EntryPoint 등록
         http.authorizeRequests((requests) ->
-                requests.antMatchers("/auth/logout"
-                                , "/auth/join"
+                requests.antMatchers("/auth/logout" //로그아웃
+                                , "/auth/join" //회원 가입
+                                , "/auth/email" //이메일 찾기
+                                , "/auth/reset/password" //패스워드 찾기
 //                                , "/**"
                         ).permitAll()
                 .anyRequest().authenticated())
