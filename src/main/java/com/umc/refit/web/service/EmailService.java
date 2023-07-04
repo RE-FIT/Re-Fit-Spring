@@ -56,7 +56,7 @@ public class EmailService {
     public MimeMessage joinEmailForm(String email) throws MessagingException {
 
         String code = generateCode(); //인증 코드 생성
-        String title = "리핏 회원가입 인증번호 이메일 입니다.";
+        String title = "[RE-FIT] 회원가입 인증번호 안내 이메일 입니다.";
 
         MimeMessage message = mailSender.createMimeMessage();
         message.addRecipients(MimeMessage.RecipientType.TO, email); //보낼 이메일 설정
@@ -104,10 +104,10 @@ public class EmailService {
     }
 
     //비밀번호 재설정 메일 양식 작성 메서드
-    public MimeMessage resetEmailForm(String email) throws MessagingException {
+    public MimeMessage resetEmailForm(String email, String name) throws MessagingException {
 
         String code = generateResetPassword(); //인증 코드 생성
-        String title = "리핏 비밀번호 재설정 이메일 입니다.";
+        String title = "[RE-FIT] 임시 비밀번호 안내 이메일 입니다.";
 
         MimeMessage message = mailSender.createMimeMessage();
         message.addRecipients(MimeMessage.RecipientType.TO, email); //보낼 이메일 설정
@@ -117,6 +117,7 @@ public class EmailService {
         //타임리프를 통해 본문 내용 구성
         Context context = new Context();
         context.setVariable("code", code);
+        context.setVariable("name", name);
         String process = templateEngine.process("passwordReset", context);
         message.setText(process, "utf-8", "html");
 
@@ -124,8 +125,8 @@ public class EmailService {
     }
 
     //비밀번호 재설정 이메일 전송 메서드
-    public String resetEmail(String to) throws MessagingException {
-        MimeMessage emailForm = resetEmailForm(to);
+    public String resetEmail(String to, String name) throws MessagingException {
+        MimeMessage emailForm = resetEmailForm(to, name);
         mailSender.send(emailForm);
         return resetPassword;
     }
