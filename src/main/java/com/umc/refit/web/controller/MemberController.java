@@ -1,5 +1,9 @@
 package com.umc.refit.web.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.jwk.JWK;
 import com.umc.refit.domain.dto.member.*;
 import com.umc.refit.domain.entity.Member;
 import com.umc.refit.exception.ExceptionType;
@@ -9,15 +13,18 @@ import com.umc.refit.exception.validator.MemberValidator;
 import com.umc.refit.web.service.EmailService;
 import com.umc.refit.web.service.MemberService;
 import com.umc.refit.web.service.RefreshTokenService;
+import com.umc.refit.web.signature.SecuritySigner;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import static com.umc.refit.exception.ExceptionType.*;
@@ -30,6 +37,10 @@ public class MemberController {
     private final EmailService emailService;
     private final MemberService memberService;
     private final RefreshTokenService refreshTokenService;
+
+    //토큰 재발급
+    private final SecuritySigner securitySigner;
+    private final JWK jwk;
 
     /*이메일 인증 API*/
     @PostMapping("/email")
@@ -141,6 +152,38 @@ public class MemberController {
     /*엑세스 토큰 체크 API*/
     @GetMapping("/token/check")
     public ResponseEntity<Void> token_check() {
+        return ResponseEntity.ok().build();
+    }
+
+    /*토큰 재발급 API*/
+    @PostMapping("/token/refresh")
+    public ResponseEntity<Void> token_reissue(Authentication authentication, HttpServletRequest request
+            , HttpServletResponse response) throws JOSEException, IOException {
+
+        if (authentication == null) {
+            ExceptionType exception = (ExceptionType) request.getAttribute("exception");
+            throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
+        }
+
+        //토큰 재발급 코드
+        User user = (User) authentication.getPrincipal();
+
+        String accessToken = securitySigner.getJwtToken(user, jwk, 216000000);
+        String refreshToken = securitySigner.getJwtToken(user, jwk, 216000000);
+
+        //리프레쉬 토큰 저장
+        refreshTokenService.saveRefreshToken(user.getUsername(), refreshToken);
+
+        //엑세스 토큰 헤더를 통해 전달
+        response.addHeader("Authorization", "Bearer " + accessToken); //발행받은 토큰을 response 헤더에 담아 응답
+
+        //리프레쉬 토큰 바디에 담아 전달
+        ResLoginDto resEmailDto = new ResLoginDto(refreshToken);
+        response.setContentType("application/json");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = objectMapper.writeValueAsString(resEmailDto);
+        response.getWriter().write(jsonString);
+
         return ResponseEntity.ok().build();
     }
 
