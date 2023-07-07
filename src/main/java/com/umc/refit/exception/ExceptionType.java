@@ -42,7 +42,23 @@ public enum ExceptionType {
     LOGIN_FAILED(BAD_REQUEST, 10103, "존재하지 않는 계정입니다."),
     LOGIN_FAILED_ALL(BAD_REQUEST, 10104, "알 수 없는 이유로 로그인 할 수 없습니다."),
     KAKAO_MEMBER_EXIST(BAD_REQUEST, 10105, "카카오 로그인 계정이 존재합니다."),
-    BASIC_MEMBER_EXIST(BAD_REQUEST, 10106, "일반 로그인 계정이 존재합니다.");
+    BASIC_MEMBER_EXIST(BAD_REQUEST, 10106, "일반 로그인 계정이 존재합니다."),
+
+
+
+
+    /*커뮤니티 관련 예외*/
+
+    //커뮤니티 게시글 작성 예외
+    Author_EMPTY(BAD_REQUEST, 30001, "작성자 정보를 찾을 수 없습니다."),
+    TITLE_EMPTY(BAD_REQUEST, 30002, "필수 정보입니다."),
+    GENDER_EMPTY(BAD_REQUEST, 30003, "필수 정보입니다."),
+    POST_TYPE_EMPTY(BAD_REQUEST, 30004, "필수 정보입니다."),
+    CATEGORY_EMPTY(BAD_REQUEST, 30005, "필수 정보입니다."),
+    SIZE_EMPTY(BAD_REQUEST, 30006, "필수 정보입니다."),
+    DELIVERY_TYPE_EMPTY(BAD_REQUEST, 30007, "필수 정보입니다."),
+    DETAIL_EMPTY(BAD_REQUEST, 30008, "필수 정보입니다."),
+    IMAGE_EMPTY(BAD_REQUEST, 30009, "필수 정보입니다.");
 
     private final HttpStatus httpStatus;
     private final int code;
