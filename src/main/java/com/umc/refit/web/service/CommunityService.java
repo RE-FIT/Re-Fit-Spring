@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class CommunityService {
 
     private final CommunityRepository communityRepository;
-    private final BlockService blockService;
+    //private final BlockService blockService;
     private final MemberService memberService;
     private final CmImgService cmImgService;
 
