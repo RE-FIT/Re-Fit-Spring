@@ -5,6 +5,7 @@ import com.umc.refit.exception.ExceptionType;
 import com.umc.refit.exception.community.CommunityException;
 import com.umc.refit.exception.member.TokenException;
 import com.umc.refit.web.service.CommunityService;
+import com.umc.refit.web.service.ScrapService;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.impl.FileCountLimitExceededException;
 import org.springframework.security.core.Authentication;
@@ -25,6 +26,7 @@ public class CommunityController {
 
     private final CommunityService communityService;
 
+    private final ScrapService scrapService;
 
     /*글 등록 API*/
      @PostMapping
@@ -77,5 +79,19 @@ public class CommunityController {
 
         communityService.create(postDto, multipartFiles, authentication);
      }
+
+
+    /*게시글 스크랩 API*/
+    @PostMapping("/{postId}/scrap")
+    public void scrap(
+            @PathVariable Long postId, Authentication authentication, HttpServletRequest request) throws IOException {
+
+        if (authentication == null) {
+            ExceptionType exception = (ExceptionType) request.getAttribute("exception");
+            throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
+        }
+
+        scrapService.scrap(postId, authentication);
+    }
 
 }

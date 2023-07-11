@@ -14,7 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +24,7 @@ import java.util.Optional;
 public class CommunityService {
 
     private final CommunityRepository communityRepository;
+    //private final BlockService blockService;
     private final MemberService memberService;
     private final CmImgService cmImgService;
 
@@ -57,14 +60,10 @@ public class CommunityService {
     /*들어온 값에 따라 postDto 값 설정*/
     private PostDto setPostDto(Authentication authentication, PostDto postDto) {
         String userId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(userId)
+                .orElseThrow(() -> new NoSuchElementException("No member found with this user id"));
 
-        Optional<Member> findMember = memberService.findMemberByLoginId(userId);
-
-        if(findMember.isEmpty()) {
-            throw new IllegalStateException("회원 계정이 존재하지 않습니다.");
-        }
-
-        postDto.setMember(findMember.get());
+        postDto.setMember(member);
 
         //나눔 글이면 상품 가격 0원, 글 상태를 나눔 중으로 설정
         if (postDto.getPostType() == 0){
@@ -85,5 +84,9 @@ public class CommunityService {
         return postDto;
     }
 
+    /*post id로 게시글 찾기*/
+    public Optional<Posts> findPostById(Long postId) {
+        return communityRepository.findById(postId);
+    }
 
 }
