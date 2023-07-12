@@ -138,6 +138,19 @@ public class CommunityController {
         communityService.deletePost(postId, authentication);
     }
 
+    /*게시글 상태 변경 API*/
+    @PatchMapping("/{postId}")
+    public void changeState(
+            @PathVariable Long postId, Authentication authentication, HttpServletRequest request){
+
+        if (authentication == null) {
+            ExceptionType exception = (ExceptionType) request.getAttribute("exception");
+            throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
+        }
+
+        communityService.changeState(postId, authentication);
+    }
+
 
     /*게시글 스크랩 API*/
     @PostMapping("/{postId}/scrap")
