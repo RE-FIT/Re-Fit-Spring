@@ -28,6 +28,22 @@ public class CommunityController {
 
     private final ScrapService scrapService;
 
+
+    /*게시글 조회 API*/
+    @GetMapping("/{postId}")
+    public PostClickResponseDto clickPost(@PathVariable Long postId,
+                                          Authentication authentication, HttpServletRequest request) {
+        if (authentication == null) {
+            ExceptionType exception = (ExceptionType) request.getAttribute("exception");
+            throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
+        }
+
+        PostClickResponseDto post = communityService.clickPost(postId, authentication);
+
+        return post;
+    }
+
+
     /*글 등록 API*/
      @PostMapping
      public void post(
