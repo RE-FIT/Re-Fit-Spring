@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class CommunityService {
 
     private final CommunityRepository communityRepository;
-    //private final BlockService blockService;
+    private final BlockService blockService;
     private final MemberService memberService;
     private final CmImgService cmImgService;
 
@@ -87,6 +87,41 @@ public class CommunityService {
     /*post id로 게시글 찾기*/
     public Optional<Posts> findPostById(Long postId) {
         return communityRepository.findById(postId);
+    }
+
+    public PostClickResponseDto clickPost(Long postId, Authentication authentication) {
+
+        //로그인 유저
+        String userId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(userId)
+                .orElseThrow(() -> new NoSuchElementException("No member found with this user id"));
+
+        //유저가 차단한 멤버 아이디 목록
+        List<Long> blockMemIds = blockService.getBlockMemIds(member);
+
+        Posts findPost = findPostById(postId)
+                .orElseThrow(() -> new NoSuchElementException("No post found with this post id"));
+
+        if(blockMemIds.contains(findPost.getMember().getId())){
+            throw new IllegalStateException("차단한 유저의 글입니다.");
+        }
+
+        List<String> imgUrls = findPost.getImage().stream()
+                .map(PostImage::getImageUrl)
+                .collect(Collectors.toList());
+
+        PostClickResponseDto clickedPost = new PostClickResponseDto(
+                findPost.getId(),
+                findPost.getTitle(),
+                findPost.getMember().getName(),
+                imgUrls,
+                findPost.getSize(),
+                findPost.getDeliveryType(),
+                findPost.getDeliveryFee(),
+                findPost.getRegion(),
+                findPost.getPrice(),
+                findPost.getDetail());
+        return clickedPost;
     }
 
 }

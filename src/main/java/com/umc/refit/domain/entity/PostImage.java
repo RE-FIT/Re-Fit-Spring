@@ -3,12 +3,14 @@ package com.umc.refit.domain.entity;
 import com.umc.refit.domain.dto.s3.ImageDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class PostImage {
     @Id
     @GeneratedValue
