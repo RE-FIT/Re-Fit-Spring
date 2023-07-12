@@ -52,6 +52,78 @@ public class CommunityService {
         }
     }
 
+
+
+    /*커뮤니티 메인 화면 - 나눔*/
+    public List<PostMainResponseDto> communityShareMain(Integer postType, Integer gender, Integer category, Authentication authentication){
+        //로그인 유저
+        String userId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(userId)
+                .orElseThrow(() -> new NoSuchElementException("No member found with this user id"));
+
+        //유저가 차단한 멤버
+        List<Long> blockMemIds = blockService.getBlockMemIds(member);
+
+        List<Posts> posts = findSharePost(postType, gender, category, blockMemIds);
+        List<PostMainResponseDto> sharePosts = convertToDtoList(posts);
+
+        return sharePosts;
+    }
+
+    /*커뮤니티 메인 화면 - 판매*/
+    public List<PostMainResponseDto> communitySellMain(Integer postType, Integer gender, Integer category, String region, Authentication authentication){
+
+        //로그인 유저
+        String userId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(userId)
+                .orElseThrow(() -> new NoSuchElementException("No member found with this user id"));
+
+        //유저가 차단한 멤버 아이디 목록
+        List<Long> blockMemIds = blockService.getBlockMemIds(member);
+
+        List<Posts> posts = findSellPost(postType, gender, category, region, blockMemIds);
+        List<PostMainResponseDto> sellPosts = convertToDtoList(posts);
+
+        return sellPosts;
+    }
+
+
+    /*선택한 카테고리에 맞는 나눔 글 리스트*/
+    public List<Posts> findSharePost(Integer postType, Integer gender, Integer category, List<Long> blockMemIds){
+        List<Posts> posts = communityRepository.findByPostTypeAndGenderAndCategory(postType, gender, category);
+        posts = filterBlockedPosts(posts, blockMemIds);
+        return posts;
+    }
+
+    /*선택한 카테고리에 맞는 판매 글 리스트*/
+    public List<Posts> findSellPost(Integer postType, Integer gender, Integer category, String region, List<Long> blockMemIds){
+        List<Posts> posts = communityRepository.findByPostTypeAndGenderAndCategoryAndRegion(postType, gender, category, region);
+        posts = filterBlockedPosts(posts, blockMemIds);
+        return posts;
+    }
+
+    /*차단한 유저의 글 제외*/
+    public List<Posts> filterBlockedPosts(List<Posts> posts, List<Long> blockedMemberIds) {
+        return posts.stream()
+                .filter(post -> !blockedMemberIds.contains(post.getMember().getId()))
+                .collect(Collectors.toList());
+    }
+
+    /*Posts 객체를 PostMainResponseDto 객체로 변환*/
+    public List<PostMainResponseDto> convertToDtoList(List<Posts> postsList) {
+        return postsList.stream()
+                .map(posts -> new PostMainResponseDto(
+                        posts.getId(),
+                        posts.getTitle(),
+                        posts.getImage().get(0).getImageUrl(),
+                        posts.getGender(),
+                        posts.getDeliveryType(),
+                        posts.getRegion(),
+                        posts.getPrice()
+                ))
+                .collect(Collectors.toList());
+    }
+
     public Posts save(Posts post) {
         return communityRepository.save(post);
     }
