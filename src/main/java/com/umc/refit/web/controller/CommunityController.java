@@ -125,6 +125,19 @@ public class CommunityController {
         communityService.create(postDto, multipartFiles, authentication);
      }
 
+     /*게시글 삭제 API*/
+    @DeleteMapping("/{postId}")
+    public void deletePost(
+            @PathVariable Long postId, Authentication authentication, HttpServletRequest request){
+
+        if (authentication == null) {
+            ExceptionType exception = (ExceptionType) request.getAttribute("exception");
+            throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
+        }
+
+        communityService.deletePost(postId, authentication);
+    }
+
 
     /*게시글 스크랩 API*/
     @PostMapping("/{postId}/scrap")
