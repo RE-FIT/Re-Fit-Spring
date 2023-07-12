@@ -55,4 +55,8 @@ public class Posts {
         this.detail = postDto.getDetail();
         this.postState = postDto.getPostState();
     }
+
+    public void changeState(Integer newState){
+        this.postState = newState;
+    }
 }

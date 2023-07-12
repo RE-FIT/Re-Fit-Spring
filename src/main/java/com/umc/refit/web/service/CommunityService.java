@@ -212,4 +212,39 @@ public class CommunityService {
             throw new IllegalStateException("삭제 권한이 없습니다.");
         }
     }
+
+    /*게시글 상태 변경*/
+    public void changeState(Long postId, Authentication authentication) {
+        //로그인 유저
+        String userId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(userId)
+                .orElseThrow(() -> new NoSuchElementException("No member found with this user id"));
+
+        Posts findPost = findPostById(postId)
+                .orElseThrow(() -> new NoSuchElementException("No post found with this post id"));
+
+        if(!member.getId().equals(findPost.getMember().getId())){
+            throw new IllegalStateException("이 게시글 상태 변경 권한이 없습니다.");
+        }
+
+        //나눔중 -> 나눔완료
+        if(findPost.getPostState().equals(0)){
+            findPost.changeState(2);
+            return;
+        }
+        if(findPost.getPostState().equals(2)){
+            findPost.changeState(0);
+            return;
+        }
+
+        //판매중 -> 판매완료
+        if(findPost.getPostState().equals(1)){
+            findPost.changeState(3);
+            return;
+        }
+        if(findPost.getPostState().equals(3)){
+            findPost.changeState(1);
+            return;
+        }
+    }
 }
