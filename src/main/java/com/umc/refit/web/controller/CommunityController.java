@@ -29,6 +29,33 @@ public class CommunityController {
     private final ScrapService scrapService;
 
 
+    /*커뮤니티 메인 화면 API*/
+    @GetMapping
+    public List<PostMainResponseDto> communityMain(
+            @RequestParam(value = "postType", defaultValue = "0") Integer postType,
+            @RequestParam(value = "gender", defaultValue = "0") Integer gender,
+            @RequestParam(value = "category", defaultValue = "0") Integer category,
+            @RequestParam(value = "region", defaultValue = "서울") String region,
+            Authentication authentication, HttpServletRequest request){
+
+        if (authentication == null) {
+            ExceptionType exception = (ExceptionType) request.getAttribute("exception");
+            throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
+        }
+
+        /*카테고리 선택에 맞는 게시글 리스트*/
+        List<PostMainResponseDto> postList = null;
+        /*선택된 카테고리가 나눔일 경우*/
+        if (postType == 0){
+            postList = communityService.communityShareMain(postType, gender, category, authentication);
+        } else if (postType == 1) {
+            /*선택된 카테고리가 판매일 경우*/
+            communityService.communitySellMain(postType, gender, category, region, authentication);
+        }
+        return postList;
+    }
+
+
     /*게시글 조회 API*/
     @GetMapping("/{postId}")
     public PostClickResponseDto clickPost(@PathVariable Long postId,
@@ -65,6 +92,7 @@ public class CommunityController {
          if(postDto.getGender() == null){
              throw new CommunityException(GENDER_EMPTY, GENDER_EMPTY.getCode(), GENDER_EMPTY.getErrorMessage());
          }
+         //판매글일 때 price 값 안 들어왔을 때 예외처리 추가해야함
          if(postDto.getPostType() == null){
              throw new CommunityException(POST_TYPE_EMPTY, POST_TYPE_EMPTY.getCode(), POST_TYPE_EMPTY.getErrorMessage());
          }
@@ -74,6 +102,7 @@ public class CommunityController {
          if(postDto.getSize() == null){
              throw new CommunityException(SIZE_EMPTY, SIZE_EMPTY.getCode(), SIZE_EMPTY.getErrorMessage());
          }
+         //거래 방식이 택배인데 deliveryfee 값 안 들어왔을 때 예외처리 추가해야함
          if(postDto.getDeliveryType() == null){
              throw new CommunityException(DELIVERY_TYPE_EMPTY, DELIVERY_TYPE_EMPTY.getCode(), DELIVERY_TYPE_EMPTY.getErrorMessage());
          }
