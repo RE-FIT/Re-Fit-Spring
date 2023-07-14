@@ -63,6 +63,7 @@ public class MemberController {
         String email = joinDto.getEmail();
         String name = joinDto.getName();
         String birth = joinDto.getBirth();
+        Integer gender = joinDto.getGender();
 
         /*예외 체크*/
         loginIdCheck(loginId);
@@ -70,6 +71,7 @@ public class MemberController {
         emailCheck(email);
         nameCheck(name);
         birthCheck(birth);
+        genderCheck(gender);
 
         /*예외 처리가 끝나면 회원 저장*/
         memberService.save(new Member(joinDto));
@@ -249,7 +251,7 @@ public class MemberController {
         }
     }
 
-    /*이메일 체크 메서드*/
+    /*생일 체크 메서드*/
     private void birthCheck(String birth) {
         //예외 코드 10021: 생일이 비어있을 경우
         if (birth.strip().equals("")) {
@@ -259,6 +261,14 @@ public class MemberController {
         //예외 코드 10022: 생일이 형식에 맞지 않는 경우
         if (!MemberValidator.isBirthValid(birth)) {
             throw new MemberException(BIRTH_ALREADY_EXIST, BIRTH_ALREADY_EXIST.getCode(), BIRTH_ALREADY_EXIST.getErrorMessage());
+        }
+    }
+
+    /*성별 체크 메서드*/
+    private void genderCheck(Integer gender) {
+        //예외 코드 10021: 생일이 비어있을 경우
+        if (gender == null) {
+            throw new MemberException(GENDER_EMPTY, GENDER_EMPTY.getCode(), GENDER_EMPTY.getErrorMessage());
         }
     }
 }

@@ -26,6 +26,7 @@ public class Member implements UserDetails {
     private String name;
     private String birth;
     private String socialType;
+    private Integer gender;
 
     public Member(String name) {
         this.name = name;
@@ -45,6 +46,7 @@ public class Member implements UserDetails {
         this.email = joinDto.getEmail();
         this.name = joinDto.getName();
         this.birth = joinDto.getBirth();
+        this.gender = joinDto.getGender();
         this.getRoles().add("USER");
     }
 
