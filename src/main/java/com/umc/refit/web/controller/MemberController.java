@@ -6,13 +6,11 @@ import com.umc.refit.exception.member.MemberException;
 import com.umc.refit.exception.validator.MemberValidator;
 import com.umc.refit.web.service.EmailService;
 import com.umc.refit.web.service.MemberService;
-import com.umc.refit.web.signature.SecuritySigner;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
-
 import java.util.Optional;
 
 import static com.umc.refit.exception.ExceptionType.*;

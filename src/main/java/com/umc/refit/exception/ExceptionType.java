@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @Getter
 @RequiredArgsConstructor
@@ -43,6 +42,9 @@ public enum ExceptionType {
     LOGIN_FAILED_ALL(BAD_REQUEST, 10104, "알 수 없는 이유로 로그인 할 수 없습니다."),
     KAKAO_MEMBER_EXIST(BAD_REQUEST, 10105, "카카오 로그인 계정이 존재합니다."),
     BASIC_MEMBER_EXIST(BAD_REQUEST, 10106, "일반 로그인 계정이 존재합니다.");
+
+
+    /* 옷장 관련 예외 */
 
     private final HttpStatus httpStatus;
     private final int code;
