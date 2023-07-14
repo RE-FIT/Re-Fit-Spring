@@ -8,7 +8,9 @@ import com.umc.refit.web.filter.authorization.JwtAuthorizationRsaFilter;
 import com.umc.refit.web.filter.exception.CustomAuthenticationEntryPoint;
 import com.umc.refit.web.filter.exception.CustomAuthenticationFailureHandler;
 import com.umc.refit.web.service.MemberService;
+import com.umc.refit.web.service.RefreshTokenService;
 import com.umc.refit.web.signature.RSASecuritySigner;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,22 +20,15 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class OAuth2ResourceServer {
 
-    @Autowired
-    private RSASecuritySigner rsaSecuritySigner;
-
-    @Autowired
-    private RSAKey rsaKey;
-
-    @Autowired
-    private CustomUserDetailsService userDetailsService;
-
-    @Autowired
-    private CustomAuthenticationFailureHandler authFailureHandler;
-
-    @Autowired
-    private MemberService memberService;
+    private final RSASecuritySigner rsaSecuritySigner;
+    private final RSAKey rsaKey;
+    private final CustomUserDetailsService userDetailsService;
+    private final CustomAuthenticationFailureHandler authFailureHandler;
+    private final MemberService memberService;
+    private final RefreshTokenService refreshTokenService;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -44,8 +39,16 @@ public class OAuth2ResourceServer {
 
         //인증을 거치지 않을 URL 처리 및 인증, 인가 예외 EntryPoint 등록
         http.authorizeRequests((requests) ->
-                        requests.antMatchers("/auth/logout", "/auth/join").permitAll()
-                                .anyRequest().authenticated())
+
+                requests.antMatchers("/auth/logout" //로그아웃
+                                , "/auth/join" //회원 가입
+                                , "/auth/email" //이메일 찾기
+                                , "/auth/find/id" //아이디 찾기
+                                , "/auth/reset/password" //패스워드 찾기
+                                , "/**" //임시로 모든 인증 처리 제외
+                        ).permitAll()
+                .anyRequest().authenticated())
+
                 .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint());
 
         //사용자 정보 로드해서 객체 생성
@@ -53,14 +56,15 @@ public class OAuth2ResourceServer {
 
         //일반 로그인 URL 설정
         JwtAuthenticationFilter jwtAuthenticationFilter =
-                new JwtAuthenticationFilter(http, rsaSecuritySigner, rsaKey, memberService);
+
+                new JwtAuthenticationFilter(http, rsaSecuritySigner, rsaKey, memberService, refreshTokenService);
 
         jwtAuthenticationFilter.setAuthenticationFailureHandler(authFailureHandler);
         jwtAuthenticationFilter.setFilterProcessesUrl("/auth/login");
 
         //카카오 로그인 URL 설정
         JwtKakaoAuthenticationFilter jwtKakaoAuthenticationFilter =
-                new JwtKakaoAuthenticationFilter(http, rsaSecuritySigner, rsaKey, memberService);
+                new JwtKakaoAuthenticationFilter(http, rsaSecuritySigner, rsaKey, memberService, refreshTokenService);
         jwtKakaoAuthenticationFilter.setAuthenticationFailureHandler(authFailureHandler);
         jwtKakaoAuthenticationFilter.setFilterProcessesUrl("/auth/kakao");
 
