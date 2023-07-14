@@ -247,4 +247,9 @@ public class CommunityService {
             return;
         }
     }
+
+    /*게시글 검색*/
+    public List<PostMainResponseDto> searchPosts(String keyword) {
+        return convertToDtoList(communityRepository.findByTitleContainingIgnoreCaseCustom(keyword));
+    }
 }

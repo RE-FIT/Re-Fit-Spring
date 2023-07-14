@@ -47,7 +47,7 @@ public class ReportMemService {
         }
 
         //신고 사유가 '기타'일 경우
-        if(reportMemDto.getReason().equals(4)){
+        if(reportMemDto.getReason().equals(5)){
             if(reportMemDto.getReasonDetail() == null){
                 throw new IllegalStateException("기타 신고 사유 작성은 필수입니다.");
             }
