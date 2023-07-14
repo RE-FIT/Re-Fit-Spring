@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @Getter
 @RequiredArgsConstructor
@@ -59,6 +58,9 @@ public enum ExceptionType {
     DELIVERY_TYPE_EMPTY(BAD_REQUEST, 30007, "필수 정보입니다."),
     DETAIL_EMPTY(BAD_REQUEST, 30008, "필수 정보입니다."),
     IMAGE_EMPTY(BAD_REQUEST, 30009, "필수 정보입니다.");
+
+
+    /* 옷장 관련 예외 */
 
     private final HttpStatus httpStatus;
     private final int code;

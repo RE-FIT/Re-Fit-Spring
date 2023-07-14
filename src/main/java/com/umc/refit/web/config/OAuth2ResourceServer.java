@@ -1,12 +1,12 @@
 package com.umc.refit.web.config;
 
 import com.nimbusds.jose.jwk.RSAKey;
-import com.umc.refit.web.filter.exception.CustomAuthenticationFailureHandler;
 import com.umc.refit.web.filter.authentication.CustomUserDetailsService;
 import com.umc.refit.web.filter.authentication.JwtAuthenticationFilter;
 import com.umc.refit.web.filter.authentication.JwtKakaoAuthenticationFilter;
 import com.umc.refit.web.filter.authorization.JwtAuthorizationRsaFilter;
 import com.umc.refit.web.filter.exception.CustomAuthenticationEntryPoint;
+import com.umc.refit.web.filter.exception.CustomAuthenticationFailureHandler;
 import com.umc.refit.web.service.MemberService;
 import com.umc.refit.web.service.RefreshTokenService;
 import com.umc.refit.web.signature.RSASecuritySigner;
@@ -39,14 +39,16 @@ public class OAuth2ResourceServer {
 
         //인증을 거치지 않을 URL 처리 및 인증, 인가 예외 EntryPoint 등록
         http.authorizeRequests((requests) ->
+
                 requests.antMatchers("/auth/logout" //로그아웃
                                 , "/auth/join" //회원 가입
                                 , "/auth/email" //이메일 찾기
                                 , "/auth/find/id" //아이디 찾기
                                 , "/auth/reset/password" //패스워드 찾기
-//                                , "/**" //임시로 모든 인증 처리 제외
+                                , "/**" //임시로 모든 인증 처리 제외
                         ).permitAll()
                 .anyRequest().authenticated())
+
                 .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint());
 
         //사용자 정보 로드해서 객체 생성
@@ -54,7 +56,9 @@ public class OAuth2ResourceServer {
 
         //일반 로그인 URL 설정
         JwtAuthenticationFilter jwtAuthenticationFilter =
+
                 new JwtAuthenticationFilter(http, rsaSecuritySigner, rsaKey, memberService, refreshTokenService);
+
         jwtAuthenticationFilter.setAuthenticationFailureHandler(authFailureHandler);
         jwtAuthenticationFilter.setFilterProcessesUrl("/auth/login");
 

@@ -12,18 +12,18 @@ import com.umc.refit.exception.member.TokenException;
 import com.umc.refit.exception.validator.MemberValidator;
 import com.umc.refit.web.service.EmailService;
 import com.umc.refit.web.service.MemberService;
+
 import com.umc.refit.web.service.RefreshTokenService;
 import com.umc.refit.web.signature.SecuritySigner;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
-
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 import java.util.Optional;
 
