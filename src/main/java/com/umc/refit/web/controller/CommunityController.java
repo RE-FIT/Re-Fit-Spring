@@ -165,4 +165,18 @@ public class CommunityController {
         scrapService.scrap(postId, authentication);
     }
 
+    /*게시글 검색*/
+    @GetMapping("/search")
+    public List<PostMainResponseDto> search(
+            @RequestParam String keyword,
+            Authentication authentication, HttpServletRequest request) {
+
+        if (authentication == null) {
+            ExceptionType exception = (ExceptionType) request.getAttribute("exception");
+            throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
+        }
+
+        return communityService.searchPosts(keyword);
+    }
+
 }
