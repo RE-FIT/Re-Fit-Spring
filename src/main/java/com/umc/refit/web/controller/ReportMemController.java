@@ -1,15 +1,20 @@
 package com.umc.refit.web.controller;
 
+import com.umc.refit.domain.dto.community.PostDto;
 import com.umc.refit.domain.dto.community.ReportMemDto;
 import com.umc.refit.exception.ExceptionType;
 import com.umc.refit.exception.member.TokenException;
 import com.umc.refit.web.service.ReportMemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/report")
@@ -22,15 +27,17 @@ public class ReportMemController {
     /*사용자 신고 API*/
     @PostMapping
     public void report(
-            @RequestBody ReportMemDto reportMemDto, Authentication authentication, HttpServletRequest request) throws IOException {
+            @Valid @RequestBody ReportMemDto reportMemDto,
+            BindingResult bindingResult,
+            Authentication authentication, HttpServletRequest request) throws IOException {
 
         if (authentication == null) {
             ExceptionType exception = (ExceptionType) request.getAttribute("exception");
             throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
         }
 
-        if (reportMemDto.getReason() == null) {
-            throw new IllegalStateException("신고 사유 선택은 필수입니다.");
+        if (bindingResult.hasErrors()) {
+            throw new IllegalArgumentException(bindingResult.getFieldError().getDefaultMessage());
         }
 
         reportMemService.report(reportMemDto, authentication);
