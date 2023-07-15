@@ -45,21 +45,18 @@ public enum ExceptionType {
 
 
 
+    //회원
+    GENDER_EMPTY(BAD_REQUEST, 30003, "필수 정보입니다."),
+
 
     /*커뮤니티 관련 예외*/
 
     //커뮤니티 게시글 작성 예외
     Author_EMPTY(BAD_REQUEST, 30001, "작성자 정보를 찾을 수 없습니다."),
-    TITLE_EMPTY(BAD_REQUEST, 30002, "필수 정보입니다."),
-    GENDER_EMPTY(BAD_REQUEST, 30003, "필수 정보입니다."),
-    POST_TYPE_EMPTY(BAD_REQUEST, 30004, "필수 정보입니다."),
-    PRICE_EMPTY(BAD_REQUEST, 30005, "필수 정보입니다."),
-    CATEGORY_EMPTY(BAD_REQUEST, 30006, "필수 정보입니다."),
-    SIZE_EMPTY(BAD_REQUEST, 30007, "필수 정보입니다."),
-    DELIVERY_TYPE_EMPTY(BAD_REQUEST, 30008, "필수 정보입니다."),
-    DELIVERY_FEE_EMPTY(BAD_REQUEST, 30009, "필수 정보입니다."),
-    DETAIL_EMPTY(BAD_REQUEST, 30010, "필수 정보입니다."),
-    IMAGE_EMPTY(BAD_REQUEST, 30011, "필수 정보입니다.");
+    PRICE_EMPTY(BAD_REQUEST, 30002, "판매 글일 경우 가격은 필수 입력값입니다."),
+    DELIVERY_FEE_EMPTY(BAD_REQUEST, 30003, "택배 배송의 경우 배송비는 필수 입력값입니다."),
+    REGION_EMPTY(BAD_REQUEST, 30004, "직거래의 경우 거래 지역은 필수 입력값입니다."),
+    IMAGE_EMPTY(BAD_REQUEST, 30005, "이미지는 1개 이상 필수입니다.");
 
 
     /* 옷장 관련 예외 */

@@ -8,14 +8,19 @@ import com.umc.refit.web.service.CommunityService;
 import com.umc.refit.web.service.ScrapService;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.impl.FileCountLimitExceededException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.util.CollectionUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.umc.refit.exception.ExceptionType.*;
 
@@ -74,12 +79,21 @@ public class CommunityController {
     /*게시글 등록 API*/
      @PostMapping
      public void post(
-     @RequestPart(value="image", required = false) List<MultipartFile> multipartFiles,
-     @RequestPart PostDto postDto, Authentication authentication, HttpServletRequest request) throws IOException{
+             @RequestPart(value="image", required = false) List<MultipartFile> multipartFiles,
+             @Valid @RequestPart PostDto postDto,
+             BindingResult bindingResult,
+             Authentication authentication, HttpServletRequest request) throws IOException{
 
          if (authentication == null) {
              ExceptionType exception = (ExceptionType) request.getAttribute("exception");
              throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
+         }
+
+         if (bindingResult.hasErrors()) {
+             String errors = bindingResult.getFieldErrors().stream()
+                     .map(FieldError::getDefaultMessage)
+                     .collect(Collectors.joining(", "));
+             throw new IllegalArgumentException(errors);
          }
 
          checkException(postDto, multipartFiles);
@@ -146,11 +160,19 @@ public class CommunityController {
     public PostClickResponseDto update(
             @PathVariable Long postId,
             @RequestPart(value="image", required = false) List<MultipartFile> multipartFiles,
-            @RequestPart PostDto postDto, Authentication authentication, HttpServletRequest request) throws IOException {
+            @Valid @RequestPart PostDto postDto,
+            BindingResult bindingResult, Authentication authentication, HttpServletRequest request) throws IOException {
 
         if (authentication == null) {
             ExceptionType exception = (ExceptionType) request.getAttribute("exception");
             throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
+        }
+
+        if (bindingResult.hasErrors()) {
+            String errors = bindingResult.getFieldErrors().stream()
+                    .map(FieldError::getDefaultMessage)
+                    .collect(Collectors.joining(", "));
+            throw new IllegalArgumentException(errors);
         }
 
         checkException(postDto, multipartFiles);
@@ -161,50 +183,26 @@ public class CommunityController {
     }
 
     public void checkException(PostDto postDto, List<MultipartFile> multipartFiles) throws FileCountLimitExceededException {
-        /*
-         * 1. postDto 중 필수 값 없으면 예외
-         * ( 멤버 제외 제목, 추천성별, 거래타입, 카테고리, 사이즈, 배송타입, 상세설명, 사진 )
-         * */
-        if(postDto.getTitle() == null){
-            throw new CommunityException(TITLE_EMPTY, TITLE_EMPTY.getCode(), TITLE_EMPTY.getErrorMessage());
-        }
-        if(postDto.getGender() == null){
-            throw new CommunityException(GENDER_EMPTY, GENDER_EMPTY.getCode(), GENDER_EMPTY.getErrorMessage());
-        }
-        if(postDto.getPostType() == null){
-            throw new CommunityException(POST_TYPE_EMPTY, POST_TYPE_EMPTY.getCode(), POST_TYPE_EMPTY.getErrorMessage());
-        }
+        //판매글인데 가격이 null이면 에러
         if(postDto.getPostType()==1 && postDto.getPrice() == null){
             throw new CommunityException(PRICE_EMPTY, PRICE_EMPTY.getCode(), PRICE_EMPTY.getErrorMessage());
         }
-        if(postDto.getCategory() == null){
-            throw new CommunityException(CATEGORY_EMPTY, CATEGORY_EMPTY.getCode(), CATEGORY_EMPTY.getErrorMessage());
-        }
-        if(postDto.getSize() == null){
-            throw new CommunityException(SIZE_EMPTY, SIZE_EMPTY.getCode(), SIZE_EMPTY.getErrorMessage());
-        }
-        if(postDto.getDeliveryType() == null){
-            throw new CommunityException(DELIVERY_TYPE_EMPTY, DELIVERY_TYPE_EMPTY.getCode(), DELIVERY_TYPE_EMPTY.getErrorMessage());
-        }
+        //거래 방식이 택배 배송인데 배송비가 null이면 에러
         if(postDto.getDeliveryType()==1 && postDto.getDeliveryFee()==null){
             throw new CommunityException(DELIVERY_FEE_EMPTY, DELIVERY_FEE_EMPTY.getCode(), DELIVERY_FEE_EMPTY.getErrorMessage());
         }
-        if(postDto.getDetail() == null){
-            throw new CommunityException(DETAIL_EMPTY, DETAIL_EMPTY.getCode(), DETAIL_EMPTY.getErrorMessage());
+        //거래 방식이 직거래인데 거래 희망 지역이 없으면 에러
+        if (postDto.getDeliveryType() == 0 && postDto.getRegion() == null){
+            throw new CommunityException(REGION_EMPTY, REGION_EMPTY.getCode(), REGION_EMPTY.getErrorMessage());
         }
+        //사진이 하나도 없으면 예외
         if(CollectionUtils.isEmpty(multipartFiles)){
             throw new CommunityException(IMAGE_EMPTY, IMAGE_EMPTY.getCode(), IMAGE_EMPTY.getErrorMessage());
         }
-
-        /*
-         * 2. multipartFile.size() <=5 아니면 예외
-         * */
-
         //이미지 개수 5개 이하로 제한
         if(multipartFiles.size()>5){
             throw new FileCountLimitExceededException("error: file count limit exceeded", 5);
         }
-
     }
 
 }
