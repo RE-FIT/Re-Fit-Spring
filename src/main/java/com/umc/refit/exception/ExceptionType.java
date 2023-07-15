@@ -53,11 +53,13 @@ public enum ExceptionType {
     TITLE_EMPTY(BAD_REQUEST, 30002, "필수 정보입니다."),
     GENDER_EMPTY(BAD_REQUEST, 30003, "필수 정보입니다."),
     POST_TYPE_EMPTY(BAD_REQUEST, 30004, "필수 정보입니다."),
-    CATEGORY_EMPTY(BAD_REQUEST, 30005, "필수 정보입니다."),
-    SIZE_EMPTY(BAD_REQUEST, 30006, "필수 정보입니다."),
-    DELIVERY_TYPE_EMPTY(BAD_REQUEST, 30007, "필수 정보입니다."),
-    DETAIL_EMPTY(BAD_REQUEST, 30008, "필수 정보입니다."),
-    IMAGE_EMPTY(BAD_REQUEST, 30009, "필수 정보입니다.");
+    PRICE_EMPTY(BAD_REQUEST, 30005, "필수 정보입니다."),
+    CATEGORY_EMPTY(BAD_REQUEST, 30006, "필수 정보입니다."),
+    SIZE_EMPTY(BAD_REQUEST, 30007, "필수 정보입니다."),
+    DELIVERY_TYPE_EMPTY(BAD_REQUEST, 30008, "필수 정보입니다."),
+    DELIVERY_FEE_EMPTY(BAD_REQUEST, 30009, "필수 정보입니다."),
+    DETAIL_EMPTY(BAD_REQUEST, 30010, "필수 정보입니다."),
+    IMAGE_EMPTY(BAD_REQUEST, 30011, "필수 정보입니다.");
 
 
     /* 옷장 관련 예외 */
