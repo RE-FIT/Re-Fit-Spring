@@ -173,6 +173,40 @@ public class CommunityService {
         return postDto;
     }
 
+
+    private PostDto setChangePostDto(PostDto postDto, Posts findPost) {
+        //나눔 완료된 글 수정할 때 거래방식이 '나눔'일 경우 나눔 완료로 유지
+        if(findPost.getPostState()==2 && postDto.getPostType() == 0){
+            postDto.setPostState(2);
+            postDto.setPrice(0);
+        }
+        //나눔 완료된 글  수정할 때 거래방식이 ‘판매’일 경우 판매 중으로 상태 변경
+        if(findPost.getPostState()==2 && postDto.getPostType() == 1){
+            postDto.setPostState(1);
+            findPost.removeBuyer();
+        }
+        //판매 완료된 글 수정할 때 거래방식이 '판매'일 경우 판매 완료로 유지
+        if(findPost.getPostState()==3 && postDto.getPostType() == 1){
+            postDto.setPostState(3);
+        }
+        //판매 완료된 글 수정할 때 거래방식이 ‘나눔’일 경우 나눔 중으로 상태 변경
+        if(findPost.getPostState()==2 && postDto.getPostType() == 1){
+            postDto.setPostState(1);
+            postDto.setPrice(0);
+            findPost.removeBuyer();
+        }
+        //직거래면 배송비 0원으로 설정
+        if (postDto.getDeliveryType() == 0){
+            postDto.setDeliveryFee(0);
+        } else if (postDto.getDeliveryType() == 1) {
+            //택배면 거래 지역을 전국으로 설정
+            postDto.setRegion("전국");
+        }
+        return postDto;
+    }
+
+
+
     /*post id로 게시글 찾기*/
     public Optional<Posts> findPostById(Long postId) {
         return communityRepository.findById(postId);
@@ -304,7 +338,7 @@ public class CommunityService {
             }
         }
 
-        PostDto newPostDto = setPostDto(authentication, postDto);
+        PostDto newPostDto = setChangePostDto(postDto, findPost);
         findPost.update(newPostDto);
 
         List<String> imgUrls = findPost.getImage().stream()
