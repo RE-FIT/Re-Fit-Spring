@@ -207,6 +207,12 @@ public class CommunityService {
                 .orElseThrow(() -> new NoSuchElementException("No post found with this post id"));
 
         if(member.getId().equals(findPost.getMember().getId())){
+            //이미지 s3에서 삭제
+            List<PostImage> images = findPost.getImage();
+            for (PostImage image : images) {
+                cmImgService.deletePostImg(bucketName, image.getS3key());
+            }
+
             communityRepository.delete(findPost);
         }else{
             throw new IllegalStateException("삭제 권한이 없습니다.");

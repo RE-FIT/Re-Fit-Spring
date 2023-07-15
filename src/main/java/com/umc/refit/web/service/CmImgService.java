@@ -59,5 +59,10 @@ public class CmImgService {
         return cmImgRepository.save(image);
     }
 
+    public void deletePostImg(String bucketName, String keyName){
+        s3UploadService.deleteFile(bucketName, keyName);
+    }
+
+
 
 }

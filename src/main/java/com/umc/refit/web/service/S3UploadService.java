@@ -1,5 +1,6 @@
 package com.umc.refit.web.service;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
@@ -58,4 +59,13 @@ public class S3UploadService {
         int pos = originalFilename.lastIndexOf(".");
         return originalFilename.substring(pos + 1);
     }
+
+    public void deleteFile(String bucketName, String keyName) {
+        try {
+            s3.deleteObject(bucketName, keyName);
+        } catch (AmazonServiceException e) {
+            throw new IllegalArgumentException("Failed to delete file", e);
+        }
+    }
+
 }
