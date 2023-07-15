@@ -324,4 +324,19 @@ public class CommunityService {
                 findPost.getDetail());
         return clickedPost;
     }
+
+
+    /*마이페이지 내 피드*/
+    public List<PostMainResponseDto> myFeedPosts(Integer postType, Authentication authentication){
+        //로그인 유저
+        String userId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(userId)
+                .orElseThrow(() -> new NoSuchElementException("No member found with this user id"));
+
+        List<Posts> posts = communityRepository.findByMemberAndPostType(member, postType);
+
+        List<PostMainResponseDto> postList = convertToDtoList(posts);
+        return postList;
+    }
+
 }

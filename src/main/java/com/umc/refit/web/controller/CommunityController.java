@@ -8,7 +8,6 @@ import com.umc.refit.web.service.CommunityService;
 import com.umc.refit.web.service.ScrapService;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.impl.FileCountLimitExceededException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;

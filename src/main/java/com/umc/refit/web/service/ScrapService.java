@@ -1,5 +1,6 @@
 package com.umc.refit.web.service;
 
+import com.umc.refit.domain.dto.community.PostMainResponseDto;
 import com.umc.refit.domain.dto.community.ScrapDto;
 import com.umc.refit.domain.entity.Member;
 import com.umc.refit.domain.entity.Posts;
@@ -10,8 +11,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -59,10 +62,38 @@ public class ScrapService {
         return scrapRepository.findByMemberAndPostId(member, postId);
     }
 
+    /*내가 스크랩한 글 목록*/
+    public List<PostMainResponseDto> findMyScraps(Integer postType, Authentication authentication){
+        String userId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(userId)
+                .orElseThrow(() -> new NoSuchElementException("No member found with this user id"));
+
+        List<Scrap> scraps = scrapRepository.findByMember(member);
+        return convertToDtoList(scraps.stream()
+                .map(Scrap::getPost)
+                .filter(post -> post.getPostType() == postType)
+                .collect(Collectors.toList()));
+    }
+
+
     public void save(Scrap scrap) {
         scrapRepository.save(scrap);
     }
     public void remove(Scrap scrap) {
         scrapRepository.delete(scrap);
+    }
+
+    public List<PostMainResponseDto> convertToDtoList(List<Posts> postsList) {
+        return postsList.stream()
+                .map(posts -> new PostMainResponseDto(
+                        posts.getId(),
+                        posts.getTitle(),
+                        posts.getImage().get(0).getImageUrl(),
+                        posts.getGender(),
+                        posts.getDeliveryType(),
+                        posts.getRegion(),
+                        posts.getPrice()
+                ))
+                .collect(Collectors.toList());
     }
 }
