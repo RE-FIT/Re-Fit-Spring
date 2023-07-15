@@ -78,7 +78,7 @@ public class CommunityController {
 
     /*게시글 등록 API*/
      @PostMapping
-     public void post(
+     public PostClickResponseDto post(
              @RequestPart(value="image", required = false) List<MultipartFile> multipartFiles,
              @Valid @RequestPart PostDto postDto,
              BindingResult bindingResult,
@@ -98,7 +98,9 @@ public class CommunityController {
 
          checkException(postDto, multipartFiles);
 
-        communityService.create(postDto, multipartFiles, authentication);
+         PostClickResponseDto post = communityService.create(postDto, multipartFiles, authentication);
+
+         return post;
      }
 
      /*게시글 삭제 API*/
