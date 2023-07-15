@@ -233,23 +233,17 @@ public class CommunityService {
             throw new IllegalStateException("이 게시글 상태 변경 권한이 없습니다.");
         }
 
-        //나눔중 -> 나눔완료
-        if(findPost.getPostState().equals(0)){
-            findPost.changeState(2);
-            return;
-        }
+        //나눔 완료 -> 나눔 중
         if(findPost.getPostState().equals(2)){
             findPost.changeState(0);
+            findPost.removeBuyer();
             return;
         }
 
-        //판매중 -> 판매완료
-        if(findPost.getPostState().equals(1)){
-            findPost.changeState(3);
-            return;
-        }
+        //판매 완료 -> 판매 중
         if(findPost.getPostState().equals(3)){
             findPost.changeState(1);
+            findPost.removeBuyer();
             return;
         }
     }
