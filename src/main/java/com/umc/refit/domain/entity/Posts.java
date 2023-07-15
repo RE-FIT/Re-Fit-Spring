@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Posts {
+public class Posts extends BaseTimeEntity {
     @Id
     @GeneratedValue
     @Column(name = "post_id")
@@ -33,6 +33,10 @@ public class Posts {
     private String region;
     private String detail;
     private Integer postState;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "buyer_id")
+    private Member buyer;
 
     @OneToMany(
             mappedBy = "post",
@@ -72,5 +76,8 @@ public class Posts {
 
     public void changeState(Integer newState){
         this.postState = newState;
+    }
+    public void removeBuyer(){
+        this.buyer = null;
     }
 }
