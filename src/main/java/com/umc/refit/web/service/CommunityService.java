@@ -35,7 +35,7 @@ public class CommunityService {
 
 
     /*이미지 포함한 게시글 저장*/
-    public void create(PostDto postDto, List<MultipartFile> multipartFiles,Authentication authentication) throws IOException {
+    public PostClickResponseDto create(PostDto postDto, List<MultipartFile> multipartFiles,Authentication authentication) throws IOException {
 
         PostDto newPostDto = setPostDto(authentication, postDto);
         //게시글 저장
@@ -50,6 +50,23 @@ public class CommunityService {
                 cmImgService.savePostImg(image, post);
             }
         }
+
+        List<String> imgUrls = post.getImage().stream()
+                .map(PostImage::getImageUrl)
+                .collect(Collectors.toList());
+
+        PostClickResponseDto clickedPost = new PostClickResponseDto(
+                post.getId(),
+                post.getTitle(),
+                post.getMember().getName(),
+                imgUrls,
+                post.getSize(),
+                post.getDeliveryType(),
+                post.getDeliveryFee(),
+                post.getRegion(),
+                post.getPrice(),
+                post.getDetail());
+        return clickedPost;
     }
 
 
