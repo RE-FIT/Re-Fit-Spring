@@ -65,7 +65,8 @@ public class CommunityService {
                 post.getDeliveryFee(),
                 post.getRegion(),
                 post.getPrice(),
-                post.getDetail());
+                post.getDetail(),
+                post.getPostType());
         return clickedPost;
     }
 
@@ -146,7 +147,7 @@ public class CommunityService {
     }
 
 
-    /*들어온 값에 따라 postDto 값 설정*/
+    /*(새로운 글 작성 시) 들어온 값에 따라 postDto 값 설정*/
     private PostDto setPostDto(Authentication authentication, PostDto postDto) {
         String userId = authentication.getName();
         Member member = memberService.findMemberByLoginId(userId)
@@ -174,6 +175,7 @@ public class CommunityService {
     }
 
 
+    /*(글 수정 시) 들어온 값에 따라 postDto 값 설정*/
     private PostDto setChangePostDto(PostDto postDto, Posts findPost) {
         //나눔 완료된 글 수정할 때 거래방식이 '나눔'일 경우 나눔 완료로 유지
         if(findPost.getPostState()==2 && postDto.getPostType() == 0){
@@ -206,12 +208,11 @@ public class CommunityService {
     }
 
 
-
-    /*post id로 게시글 찾기*/
     public Optional<Posts> findPostById(Long postId) {
         return communityRepository.findById(postId);
     }
 
+    /*게시글 상세 조회*/
     public PostClickResponseDto clickPost(Long postId, Authentication authentication) {
 
         //로그인 유저
@@ -243,7 +244,8 @@ public class CommunityService {
                 findPost.getDeliveryFee(),
                 findPost.getRegion(),
                 findPost.getPrice(),
-                findPost.getDetail());
+                findPost.getDetail(),
+                findPost.getPostType());
         return clickedPost;
     }
 
@@ -355,7 +357,8 @@ public class CommunityService {
                 findPost.getDeliveryFee(),
                 findPost.getRegion(),
                 findPost.getPrice(),
-                findPost.getDetail());
+                findPost.getDetail(),
+                findPost.getPostType());
         return clickedPost;
     }
 

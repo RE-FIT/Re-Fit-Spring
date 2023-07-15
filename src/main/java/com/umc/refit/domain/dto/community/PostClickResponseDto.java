@@ -19,8 +19,9 @@ public class PostClickResponseDto {
     private Integer price;
 
     private String detail;
+    private Integer postType;
 
-    public PostClickResponseDto(Long postId, String title, String author, List<String> imgUrls, Integer size, Integer deliveryType, Integer deliveryFee, String region, Integer price, String detail) {
+    public PostClickResponseDto(Long postId, String title, String author, List<String> imgUrls, Integer size, Integer deliveryType, Integer deliveryFee, String region, Integer price, String detail, Integer postType) {
         this.postId = postId;
         this.title = title;
         this.author = author;
@@ -31,5 +32,6 @@ public class PostClickResponseDto {
         this.region = region;
         this.price = price;
         this.detail = detail;
+        this.postType = postType;
     }
 }
