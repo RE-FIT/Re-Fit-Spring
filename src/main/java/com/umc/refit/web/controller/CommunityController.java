@@ -141,6 +141,25 @@ public class CommunityController {
         return communityService.searchPosts(keyword);
     }
 
+    /*게시글 수정*/
+    @PutMapping("/{postId}/update")
+    public PostClickResponseDto update(
+            @PathVariable Long postId,
+            @RequestPart(value="image", required = false) List<MultipartFile> multipartFiles,
+            @RequestPart PostDto postDto, Authentication authentication, HttpServletRequest request) throws IOException {
+
+        if (authentication == null) {
+            ExceptionType exception = (ExceptionType) request.getAttribute("exception");
+            throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
+        }
+
+        checkException(postDto, multipartFiles);
+
+        PostClickResponseDto post = communityService.update(postId, postDto, multipartFiles, authentication);
+
+        return post;
+    }
+
     public void checkException(PostDto postDto, List<MultipartFile> multipartFiles) throws FileCountLimitExceededException {
         /*
          * 1. postDto 중 필수 값 없으면 예외

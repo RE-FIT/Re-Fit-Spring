@@ -258,4 +258,59 @@ public class CommunityService {
     public List<PostMainResponseDto> searchPosts(String keyword) {
         return convertToDtoList(communityRepository.findByTitleContainingIgnoreCaseCustom(keyword));
     }
+
+
+    /*게시글 수정*/
+    public PostClickResponseDto update(Long postId, PostDto postDto, List<MultipartFile> multipartFiles, Authentication authentication) throws IOException {
+        //로그인 유저
+        String userId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(userId)
+                .orElseThrow(() -> new NoSuchElementException("No member found with this user id"));
+
+        Posts findPost = findPostById(postId)
+                .orElseThrow(() -> new NoSuchElementException("No post found with this post id"));
+
+        if(!member.getId().equals(findPost.getMember().getId())){
+            throw new IllegalStateException("이 게시글 수정 권한이 없습니다.");
+        }
+
+        //기존 이미지 s3에서 삭제
+        List<PostImage> images = findPost.getImage();
+        for (PostImage image : images) {
+            cmImgService.deletePostImg(bucketName, image.getS3key());
+        }
+
+        //기존 이미지 DB에서 삭제
+        findPost.getImage().clear();
+
+        //새로운 이미지 파일을 S3에 저장
+        List<PostImage> imageList = cmImgService.uploadPostImg(multipartFiles, bucketName, bucketDirName);
+
+        //이미지 파일을 DB에 저장
+        if(!imageList.isEmpty()) {
+            for(PostImage image : imageList) {
+                cmImgService.savePostImg(image, findPost);
+            }
+        }
+
+        PostDto newPostDto = setPostDto(authentication, postDto);
+        findPost.update(newPostDto);
+
+        List<String> imgUrls = findPost.getImage().stream()
+                .map(PostImage::getImageUrl)
+                .collect(Collectors.toList());
+
+        PostClickResponseDto clickedPost = new PostClickResponseDto(
+                findPost.getId(),
+                findPost.getTitle(),
+                findPost.getMember().getName(),
+                imgUrls,
+                findPost.getSize(),
+                findPost.getDeliveryType(),
+                findPost.getDeliveryFee(),
+                findPost.getRegion(),
+                findPost.getPrice(),
+                findPost.getDetail());
+        return clickedPost;
+    }
 }

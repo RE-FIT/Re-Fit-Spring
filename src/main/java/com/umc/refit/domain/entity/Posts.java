@@ -56,6 +56,20 @@ public class Posts {
         this.postState = postDto.getPostState();
     }
 
+    public void update(PostDto postDto){
+        this.title = postDto.getTitle();
+        this.gender = postDto.getGender();
+        this.postType = postDto.getPostType();
+        this.category = postDto.getCategory();
+        this.size = postDto.getSize();
+        this.price = postDto.getPrice();
+        this.region = postDto.getRegion();
+        this.deliveryType = postDto.getDeliveryType();
+        this.deliveryFee = postDto.getDeliveryFee();
+        this.detail = postDto.getDetail();
+        this.postState = postDto.getPostState();
+    }
+
     public void changeState(Integer newState){
         this.postState = newState;
     }
