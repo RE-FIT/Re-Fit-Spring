@@ -90,14 +90,14 @@ public class CommunityService {
 
     /*선택한 카테고리에 맞는 나눔 글 리스트*/
     public List<Posts> findSharePost(Integer postType, Integer gender, Integer category, List<Long> blockMemIds){
-        List<Posts> posts = communityRepository.findByPostTypeAndGenderAndCategory(postType, gender, category);
+        List<Posts> posts = communityRepository.findByPostTypeAndGenderAndCategoryAndPostState(postType, gender, category, 0);
         posts = filterBlockedPosts(posts, blockMemIds);
         return posts;
     }
 
     /*선택한 카테고리에 맞는 판매 글 리스트*/
     public List<Posts> findSellPost(Integer postType, Integer gender, Integer category, String region, List<Long> blockMemIds){
-        List<Posts> posts = communityRepository.findByPostTypeAndGenderAndCategoryAndRegion(postType, gender, category, region);
+        List<Posts> posts = communityRepository.findByPostTypeAndGenderAndCategoryAndRegionAndPostState(postType, gender, category, region,1);
         posts = filterBlockedPosts(posts, blockMemIds);
         return posts;
     }
@@ -250,7 +250,7 @@ public class CommunityService {
 
     /*게시글 검색*/
     public List<PostMainResponseDto> searchPosts(String keyword) {
-        return convertToDtoList(communityRepository.findByTitleContainingIgnoreCaseCustom(keyword));
+        return convertToDtoList(communityRepository.findByTitleContainingIgnoreCaseAndPostStateCustom(keyword));
     }
 
 
