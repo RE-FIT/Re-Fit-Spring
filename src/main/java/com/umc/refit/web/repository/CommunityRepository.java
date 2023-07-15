@@ -1,5 +1,6 @@
 package com.umc.refit.web.repository;
 
+import com.umc.refit.domain.entity.Member;
 import com.umc.refit.domain.entity.Posts;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,5 +14,7 @@ public interface CommunityRepository extends JpaRepository<Posts, Long> {
 
     @Query("SELECT p FROM Posts p WHERE (p.postState = 0 OR p.postState = 1) AND LOWER(p.title) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Posts> findByTitleContainingIgnoreCaseAndPostStateCustom(@Param("keyword") String keyword);
+
+    List<Posts> findByMemberAndPostType(Member member, Integer postType);
 
 }
