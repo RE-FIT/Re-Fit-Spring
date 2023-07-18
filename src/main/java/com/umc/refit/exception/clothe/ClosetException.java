@@ -4,7 +4,7 @@ import com.umc.refit.exception.ExceptionType;
 import lombok.Getter;
 
 @Getter
-public class ClotheException extends RuntimeException {
+public class ClosetException extends RuntimeException {
 
     private ExceptionType exceptionType;
     private int code;

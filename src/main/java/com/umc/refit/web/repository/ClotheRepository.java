@@ -1,7 +1,7 @@
 package com.umc.refit.web.repository;
 
-import com.umc.refit.domain.entity.Clothe;
+import com.umc.refit.domain.entity.Closet;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ClotheRepository extends JpaRepository<Clothe,Long> {
+public interface ClotheRepository extends JpaRepository<Closet, Long> {
 }

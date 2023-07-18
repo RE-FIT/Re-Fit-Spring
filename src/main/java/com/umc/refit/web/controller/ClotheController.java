@@ -1,16 +1,18 @@
 package com.umc.refit.web.controller;
 
 import com.umc.refit.domain.dto.clothe.RegisterClotheRequestDto;
-import com.umc.refit.web.service.ClotheService;
+import com.umc.refit.exception.ExceptionType;
+import com.umc.refit.exception.member.TokenException;
+import com.umc.refit.web.service.ClosetService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Slf4j
@@ -19,12 +21,19 @@ import javax.validation.Valid;
 @RestController
 public class ClotheController {
 
-    private final ClotheService clotheService;
+    private final ClosetService closetService;
 
     @PostMapping
     public ResponseEntity<Long> registerClothe(
-            @Valid @RequestBody RegisterClotheRequestDto request
+            @RequestPart(value = "image", required = false) MultipartFile multipartFile,
+            Authentication authentication,
+            HttpServletRequest request,
+            @Valid @RequestBody RegisterClotheRequestDto requestDto
     ) {
-        return new ResponseEntity<>(this.clotheService.registerClothe(request), HttpStatus.CREATED);
+        if (authentication == null) {
+            ExceptionType exception = (ExceptionType) request.getAttribute("exception");
+            throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
+        }
+        return new ResponseEntity<>(this.closetService.registerClothe(requestDto, multipartFile, authentication), HttpStatus.CREATED);
     }
 }
