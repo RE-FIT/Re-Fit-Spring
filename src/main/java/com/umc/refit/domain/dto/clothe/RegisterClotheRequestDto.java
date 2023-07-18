@@ -1,6 +1,8 @@
 package com.umc.refit.domain.dto.clothe;
 
-import com.umc.refit.domain.entity.Clothe;
+import com.umc.refit.domain.dto.s3.ImageDto;
+import com.umc.refit.domain.entity.Closet;
+import com.umc.refit.domain.entity.Member;
 import lombok.*;
 
 import javax.validation.constraints.Max;
@@ -34,8 +36,8 @@ public class RegisterClotheRequestDto {
 
     private Integer cntPerWeek;
 
-    public Clothe toEntity() {
-        return Clothe.builder()
+    public Closet toEntity(Member member, ImageDto imageDto) {
+        return Closet.builder()
                 .category(category)
                 .season(season)
                 .targetCnt(targetCnt)
@@ -45,6 +47,8 @@ public class RegisterClotheRequestDto {
                 .editCnt(0)
                 .cntPerMonth(cntPerMonth)
                 .cntPerMonth(cntPerMonth)
+                .member(member)
+                .imageUrl(imageDto.getImageUrl())
                 .lastDate(null)
                 .build();
     }

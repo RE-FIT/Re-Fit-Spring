@@ -15,11 +15,11 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Clothe extends BaseTimeEntity {
+public class Closet extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "clothe_id")
+    @Column(name = "closet_id")
     private Long id;
 
     @Column(name = "category", nullable = false)
@@ -40,7 +40,6 @@ public class Clothe extends BaseTimeEntity {
     @Column(name = "cnt")
     private int count;
 
-
     @Column(name = "edit_cnt")
     private int editCnt;
 
@@ -53,7 +52,11 @@ public class Clothe extends BaseTimeEntity {
     @Column(name = "last_dt")
     private Date lastDate;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
     private Member member;
 }
 
