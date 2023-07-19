@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterClotheRequestDto {
+public class RegisterClosetRequestDto {
 
     @NotNull(message = "범위에 해당되지 않는 요청값입니다.")
     @Min(0)
@@ -30,7 +30,7 @@ public class RegisterClotheRequestDto {
 
     private Integer targetPeriod;
 
-    private Boolean isPlan;
+    private Boolean isPlan; // 현재 월이 season 에 포함되는 경우
 
     private Integer cntPerMonth;
 

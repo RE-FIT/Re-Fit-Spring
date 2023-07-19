@@ -1,5 +1,6 @@
 package com.umc.refit.domain.entity;
 
+import com.umc.refit.domain.dto.clothe.GetClosetListResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -58,5 +59,17 @@ public class Closet extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public GetClosetListResponseDto from(Integer remainedDay) {
+        return GetClosetListResponseDto.builder()
+                .id(id)
+                .imageUrl(imageUrl)
+                .targetCnt(targetCnt)
+                .count(count)
+                .cntPerMonth(cntPerMonth)
+                .cntPerWeek(cntPerWeek)
+                .remainedDay(remainedDay)
+                .build();
+    }
 }
 
