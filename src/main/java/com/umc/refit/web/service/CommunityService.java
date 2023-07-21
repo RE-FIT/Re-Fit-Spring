@@ -1,5 +1,6 @@
 package com.umc.refit.web.service;
 
+import com.umc.refit.domain.dto.chat.TradeRequestDto;
 import com.umc.refit.domain.dto.community.*;
 import com.umc.refit.domain.entity.Member;
 import com.umc.refit.domain.entity.PostImage;
@@ -374,6 +375,39 @@ public class CommunityService {
 
         List<PostMainResponseDto> postList = convertToDtoList(posts);
         return postList;
+    }
+
+    /*거래 완료*/
+    public void trade(TradeRequestDto tradeRequestDto, Authentication authentication) {
+        //로그인 유저
+        String userId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(userId)
+                .orElseThrow(() -> new NoSuchElementException("No member found with this user id"));
+
+        Posts findPost = findPostById(tradeRequestDto.getPostId())
+                .orElseThrow(() -> new NoSuchElementException("No post found with this post id"));
+
+        if(!member.getId().equals(findPost.getMember().getId())){
+            throw new IllegalStateException("해당 상품 거래 완료 권한이 없습니다.");
+        }
+
+        //구매자
+        String buyerName = tradeRequestDto.getUsername();
+        Member buyer = memberService.findMemberByName(buyerName)
+                .orElseThrow(() -> new NoSuchElementException("No member found with this username"));
+
+        if(findPost.getBuyer() == null) {
+            if(findPost.getPostState().equals(0)){
+                findPost.changeState(2);
+                findPost.initializeBuyer(buyer);
+            }
+            if(findPost.getPostState().equals(1)){
+                findPost.changeState(3);
+                findPost.initializeBuyer(buyer);
+            }
+        }else{
+            throw new IllegalStateException("이미 거래 완료된 상품입니다.");
+        }
     }
 
 }
