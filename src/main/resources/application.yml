@@ -8,9 +8,9 @@ spring:
       enabled: ALWAYS
 
   datasource:
-    url: jdbc:mysql://localhost:${DATABASE_PORT}/${DATABASE_NAME}
-    username: ${DATABASE_USER}
-    password: ${DATABASE_PASSWORD}
+    url: jdbc:mysql://localhost:3306/refit
+    username: root
+    password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 
@@ -57,8 +57,8 @@ cloud:
     s3:
       bucket: refit-bucket
     credentials:
-      access-key: ${S3_KEY}
-      secret-key: Rx4PxP50wf4P9JHj1MNDAqZw8SZ8+8Z8zQhdZHm4
+      access-key:
+      secret-key: 
 
 
 logging:
