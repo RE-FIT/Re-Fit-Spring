@@ -80,4 +80,7 @@ public class Posts extends BaseTimeEntity {
     public void removeBuyer(){
         this.buyer = null;
     }
+    public void initializeBuyer(Member member){
+        this.buyer = member;
+    }
 }
