@@ -17,4 +17,6 @@ public interface CommunityRepository extends JpaRepository<Posts, Long> {
 
     List<Posts> findByMemberAndPostType(Member member, Integer postType);
 
+    List<Posts> findByBuyer(Member buyer);
+
 }

@@ -56,6 +56,19 @@ public class MypageController {
     }
 
     /*내 피드 - 구매 API*/
+    @GetMapping("/myfeed/buy")
+    public List<PostMainResponseDto> myFeedBuy(
+            Authentication authentication, HttpServletRequest request){
+
+        if (authentication == null) {
+            ExceptionType exception = (ExceptionType) request.getAttribute("exception");
+            throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
+        }
+
+        List<PostMainResponseDto> postList = communityService.myFeedBuy(authentication);
+
+        return postList;
+    }
 
 
     /*스크랩 - 나눔 API*/

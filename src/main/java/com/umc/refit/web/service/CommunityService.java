@@ -364,7 +364,7 @@ public class CommunityService {
     }
 
 
-    /*마이페이지 내 피드*/
+    /*마이페이지 내 피드 - 내 판매,나눔 글*/
     public List<PostMainResponseDto> myFeedPosts(Integer postType, Authentication authentication){
         //로그인 유저
         String userId = authentication.getName();
@@ -372,6 +372,19 @@ public class CommunityService {
                 .orElseThrow(() -> new NoSuchElementException("No member found with this user id"));
 
         List<Posts> posts = communityRepository.findByMemberAndPostType(member, postType);
+
+        List<PostMainResponseDto> postList = convertToDtoList(posts);
+        return postList;
+    }
+
+    /*마이페이지 내 피드 - 구매*/
+    public List<PostMainResponseDto> myFeedBuy(Authentication authentication){
+        //로그인 유저
+        String userId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(userId)
+                .orElseThrow(() -> new NoSuchElementException("No member found with this user id"));
+
+        List<Posts> posts = communityRepository.findByBuyer(member);
 
         List<PostMainResponseDto> postList = convertToDtoList(posts);
         return postList;
