@@ -36,6 +36,9 @@ spring:
           starttls:
             enable: true
           auth: true
+        ssl:
+          protocols: "TLSv1.2"
+          ciphersuites: "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
 
   security:
     oauth2:
@@ -57,8 +60,8 @@ cloud:
     s3:
       bucket: refit-bucket
     credentials:
-      access-key:
-      secret-key: 
+      access-key: AKIA2PPOBWLHKTNUTRHQ
+      secret-key: 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
 
 
 logging:
