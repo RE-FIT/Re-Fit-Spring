@@ -1,7 +1,7 @@
 package com.umc.refit.domain.dto.clothe;
 
 import com.umc.refit.domain.dto.s3.ImageDto;
-import com.umc.refit.domain.entity.Clothe;
+import com.umc.refit.domain.entity.Closet;
 import com.umc.refit.domain.entity.Member;
 import lombok.*;
 
@@ -30,14 +30,14 @@ public class RegisterClosetRequestDto {
 
     private Integer targetPeriod;
 
-    private Boolean isPlan;
+    private Boolean isPlan; // 현재 월이 season 에 포함되는 경우
 
     private Integer cntPerMonth;
 
     private Integer cntPerWeek;
 
-    public Clothe toEntity(Member member, ImageDto imageDto) {
-        return Clothe.builder()
+    public Closet toEntity(Member member, ImageDto imageDto) {
+        return Closet.builder()
                 .category(category)
                 .season(season)
                 .targetCnt(targetCnt)
@@ -46,7 +46,7 @@ public class RegisterClosetRequestDto {
                 .count(0)
                 .editCnt(0)
                 .cntPerMonth(cntPerMonth)
-                .cntPerWeek(cntPerWeek)
+                .cntPerMonth(cntPerMonth)
                 .member(member)
                 .imageUrl(imageDto.getImageUrl())
                 .lastDate(null)

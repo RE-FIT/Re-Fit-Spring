@@ -44,6 +44,7 @@ public enum ExceptionType {
     BASIC_MEMBER_EXIST(BAD_REQUEST, 10106, "일반 로그인 계정이 존재합니다."),
 
 
+
     //회원
     GENDER_EMPTY(BAD_REQUEST, 30003, "필수 정보입니다."),
 
@@ -55,11 +56,10 @@ public enum ExceptionType {
     PRICE_EMPTY(BAD_REQUEST, 30002, "판매 글일 경우 가격은 필수 입력값입니다."),
     DELIVERY_FEE_EMPTY(BAD_REQUEST, 30003, "택배 배송의 경우 배송비는 필수 입력값입니다."),
     REGION_EMPTY(BAD_REQUEST, 30004, "직거래의 경우 거래 지역은 필수 입력값입니다."),
-    IMAGE_EMPTY(BAD_REQUEST, 30005, "이미지는 1개 이상 필수입니다."),
+    IMAGE_EMPTY(BAD_REQUEST, 30005, "이미지는 1개 이상 필수입니다.");
 
 
     /* 옷장 관련 예외 */
-    CLOSET_EMPTY(BAD_REQUEST, 30006, "일치하는 옷장 정보가 존재하지 않습니다.");
 
     private final HttpStatus httpStatus;
     private final int code;
