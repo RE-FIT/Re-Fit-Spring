@@ -60,8 +60,8 @@ cloud:
     s3:
       bucket: refit-bucket
     credentials:
-      access-key: AKIA2PPOBWLHKTNUTRHQ
-      secret-key: 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
+      access-key:
+      secret-key:
 
 
 logging:
