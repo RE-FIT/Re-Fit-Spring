@@ -16,7 +16,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Closet extends BaseTimeEntity {
+public class Clothe extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,7 +60,7 @@ public class Closet extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public GetClosetListResponseDto from(Integer remainedDay) {
+    public GetClosetListResponseDto from(int remainedDay) {
         return GetClosetListResponseDto.builder()
                 .id(id)
                 .imageUrl(imageUrl)
