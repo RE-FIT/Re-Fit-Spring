@@ -3,6 +3,7 @@ package com.umc.refit.web.controller;
 import com.umc.refit.domain.dto.clothe.GetClotheListResponseDto;
 import com.umc.refit.domain.dto.clothe.GetClotheResponseDto;
 import com.umc.refit.domain.dto.clothe.RegisterClotheRequestDto;
+import com.umc.refit.domain.dto.clothe.UpdateClotheRequestDto;
 import com.umc.refit.exception.ExceptionType;
 import com.umc.refit.exception.member.TokenException;
 import com.umc.refit.web.service.ClotheService;
@@ -67,6 +68,16 @@ public class ClotheController {
             @PathVariable Long id
     ) {
         this.clotheService.deleteClothe(id);
+        return ResponseEntity.ok().build();
+    }
+
+    // 옷장 수정
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateClothe(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateClotheRequestDto request
+    ) {
+        this.clotheService.updateClothe(id, request);
         return ResponseEntity.ok().build();
     }
 }

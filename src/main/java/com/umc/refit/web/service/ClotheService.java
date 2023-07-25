@@ -3,6 +3,7 @@ package com.umc.refit.web.service;
 import com.umc.refit.domain.dto.clothe.GetClotheListResponseDto;
 import com.umc.refit.domain.dto.clothe.GetClotheResponseDto;
 import com.umc.refit.domain.dto.clothe.RegisterClotheRequestDto;
+import com.umc.refit.domain.dto.clothe.UpdateClotheRequestDto;
 import com.umc.refit.domain.dto.s3.ImageDto;
 import com.umc.refit.domain.entity.Clothe;
 import com.umc.refit.domain.entity.Member;
@@ -93,6 +94,12 @@ public class ClotheService {
         this.closetRepository.delete(clothe);
     }
 
+    @Transactional
+    public void updateClothe(Long id, UpdateClotheRequestDto request) {
+        this.closetRepository.findById(id)
+                .orElseThrow(() -> new ClotheException(
+                        CLOTHE_EMPTY, CLOTHE_EMPTY.getCode(), CLOTHE_EMPTY.getErrorMessage())).update(request);
+    }
 
     // 목표 미설정(is plan == false) -> -7777
     // 목표 달성(closet.getCount() >= closet.getTargetCnt()) -> +7777
