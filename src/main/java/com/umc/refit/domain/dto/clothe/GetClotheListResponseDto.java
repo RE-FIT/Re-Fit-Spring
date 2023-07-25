@@ -7,7 +7,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetClosetListResponseDto {
+public class GetClotheListResponseDto {
 
     private Long id;
     private String imageUrl;

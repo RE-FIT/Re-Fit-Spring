@@ -1,10 +1,13 @@
 package com.umc.refit.web.service;
 
-import com.umc.refit.domain.dto.clothe.GetClosetListResponseDto;
-import com.umc.refit.domain.dto.clothe.RegisterClosetRequestDto;
+import com.umc.refit.domain.dto.clothe.GetClotheListResponseDto;
+import com.umc.refit.domain.dto.clothe.GetClotheResponseDto;
+import com.umc.refit.domain.dto.clothe.RegisterClotheRequestDto;
+import com.umc.refit.domain.dto.clothe.UpdateClotheRequestDto;
 import com.umc.refit.domain.dto.s3.ImageDto;
-import com.umc.refit.domain.entity.Closet;
+import com.umc.refit.domain.entity.Clothe;
 import com.umc.refit.domain.entity.Member;
+import com.umc.refit.exception.clothe.ClotheException;
 import com.umc.refit.web.repository.ClosetRepository;
 import com.umc.refit.web.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,11 +25,13 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.umc.refit.exception.ExceptionType.CLOTHE_EMPTY;
+
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class ClosetService {
+public class ClotheService {
 
     private final ClosetRepository closetRepository;
 
@@ -38,7 +43,7 @@ public class ClosetService {
     private String bucketName;
 
     @Transactional
-    public Long registerClothe(RegisterClosetRequestDto request,
+    public Long registerClothe(RegisterClotheRequestDto request,
                                MultipartFile multipartFile,
                                Authentication authentication) {
 
@@ -57,33 +62,56 @@ public class ClosetService {
     }
 
     @Transactional(readOnly = true)
-    public List<GetClosetListResponseDto> showClotheMain(Integer category, Integer season, String sort) {
+    public List<GetClotheListResponseDto> showClotheMain(Integer category, Integer season, String sort) {
         if (sort.equals("d-day")) {
             return null;
         } else if (sort.equals("most_worn")) {
             return this.closetRepository.findAllByOrderByCountDesc()
                     .stream()
-                    .map(closet -> closet.from(this.calculateRemainedDay(closet)))
+                    .map(clothe -> clothe.from(this.calculateRemainedDay(clothe)))
                     .collect(Collectors.toList());
         } else {
             return this.closetRepository.findAllByOrderByCountAsc()
                     .stream()
-                    .map(closet -> closet.from(this.calculateRemainedDay(closet)))
+                    .map(clothe -> clothe.from(this.calculateRemainedDay(clothe)))
                     .collect(Collectors.toList());
         }
+    }
+
+    @Transactional(readOnly = true)
+    public GetClotheResponseDto getClotheDetail(Long id) {
+
+        return this.closetRepository.findById(id)
+                .orElseThrow(()
+                        -> new ClotheException(CLOTHE_EMPTY, CLOTHE_EMPTY.getCode(), CLOTHE_EMPTY.getErrorMessage())).toResponseDto();
+
+    }
+
+    @Transactional
+    public void deleteClothe(Long id) {
+        Clothe clothe = this.closetRepository.findById(id)
+                .orElseThrow(() -> new ClotheException(CLOTHE_EMPTY, CLOTHE_EMPTY.getCode(), CLOTHE_EMPTY.getErrorMessage()));
+        this.closetRepository.delete(clothe);
+    }
+
+    @Transactional
+    public void updateClothe(Long id, UpdateClotheRequestDto request) {
+        this.closetRepository.findById(id)
+                .orElseThrow(() -> new ClotheException(
+                        CLOTHE_EMPTY, CLOTHE_EMPTY.getCode(), CLOTHE_EMPTY.getErrorMessage())).update(request);
     }
 
     // 목표 미설정(is plan == false) -> -7777
     // 목표 달성(closet.getCount() >= closet.getTargetCnt()) -> +7777
     // else(목표 미달성) -> 남은 or 지난 기간
-    private int calculateRemainedDay(Closet closet) {
-        if (!closet.isPlan()) {
+    private int calculateRemainedDay(Clothe clothe) {
+        if (!clothe.isPlan()) {
             return -7777;
         }
-        if (closet.getCount() >= closet.getTargetCnt()) {
+        if (clothe.getCount() >= clothe.getTargetCnt()) {
             return 7777;
         }
-        LocalDateTime targetAt = closet.getCreatedAt().plusDays(closet.getTargetPeriod() * 30);
+        LocalDateTime targetAt = clothe.getCreatedAt().plusDays(clothe.getTargetPeriod() * 30);
         return (int) targetAt.until(LocalDateTime.now(), ChronoUnit.DAYS);
         // 기간이 남아있다면 -
         // 기간이 지났다면 +
