@@ -1,7 +1,7 @@
 package com.umc.refit.domain.dto.clothe;
 
 import com.umc.refit.domain.dto.s3.ImageDto;
-import com.umc.refit.domain.entity.Closet;
+import com.umc.refit.domain.entity.Clothe;
 import com.umc.refit.domain.entity.Member;
 import lombok.*;
 
@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterClosetRequestDto {
+public class RegisterClotheRequestDto {
 
     @NotNull(message = "범위에 해당되지 않는 요청값입니다.")
     @Min(0)
@@ -36,8 +36,8 @@ public class RegisterClosetRequestDto {
 
     private Integer cntPerWeek;
 
-    public Closet toEntity(Member member, ImageDto imageDto) {
-        return Closet.builder()
+    public Clothe toEntity(Member member, ImageDto imageDto) {
+        return Clothe.builder()
                 .category(category)
                 .season(season)
                 .targetCnt(targetCnt)
@@ -46,7 +46,7 @@ public class RegisterClosetRequestDto {
                 .count(0)
                 .editCnt(0)
                 .cntPerMonth(cntPerMonth)
-                .cntPerMonth(cntPerMonth)
+                .cntPerWeek(cntPerWeek)
                 .member(member)
                 .imageUrl(imageDto.getImageUrl())
                 .lastDate(null)

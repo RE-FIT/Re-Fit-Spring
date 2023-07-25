@@ -1,10 +1,12 @@
 package com.umc.refit.exception.clothe;
 
 import com.umc.refit.exception.ExceptionType;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@AllArgsConstructor
 @Getter
-public class ClosetException extends RuntimeException {
+public class ClotheException extends RuntimeException {
 
     private ExceptionType exceptionType;
     private int code;

@@ -1,6 +1,7 @@
 package com.umc.refit.domain.entity;
 
-import com.umc.refit.domain.dto.clothe.GetClosetListResponseDto;
+import com.umc.refit.domain.dto.clothe.GetClotheListResponseDto;
+import com.umc.refit.domain.dto.clothe.GetClotheResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +17,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Closet extends BaseTimeEntity {
+public class Clothe extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,8 +61,8 @@ public class Closet extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public GetClosetListResponseDto from(Integer remainedDay) {
-        return GetClosetListResponseDto.builder()
+    public GetClotheListResponseDto from(Integer remainedDay) {
+        return GetClotheListResponseDto.builder()
                 .id(id)
                 .imageUrl(imageUrl)
                 .targetCnt(targetCnt)
@@ -69,6 +70,20 @@ public class Closet extends BaseTimeEntity {
                 .cntPerMonth(cntPerMonth)
                 .cntPerWeek(cntPerWeek)
                 .remainedDay(remainedDay)
+                .build();
+    }
+
+    public GetClotheResponseDto toResponseDto() {
+        return GetClotheResponseDto.builder()
+                .id(id)
+                .category(category)
+                .season(season)
+                .targetCnt(targetCnt)
+                .targetPeriod(targetPeriod)
+                .isPlan(isPlan)
+                .cntPerMonth(cntPerMonth)
+                .cntPerWeek(cntPerWeek)
+                .imageUrl(imageUrl)
                 .build();
     }
 }
