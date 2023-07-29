@@ -67,7 +67,8 @@ public class CommunityService {
                 post.getRegion(),
                 post.getPrice(),
                 post.getDetail(),
-                post.getPostType());
+                post.getPostType(),
+                post.getPostState());
         return clickedPost;
     }
 
@@ -246,7 +247,8 @@ public class CommunityService {
                 findPost.getRegion(),
                 findPost.getPrice(),
                 findPost.getDetail(),
-                findPost.getPostType());
+                findPost.getPostType(),
+                findPost.getPostState());
         return clickedPost;
     }
 
@@ -359,7 +361,8 @@ public class CommunityService {
                 findPost.getRegion(),
                 findPost.getPrice(),
                 findPost.getDetail(),
-                findPost.getPostType());
+                findPost.getPostType(),
+                findPost.getPostState());
         return clickedPost;
     }
 
