@@ -11,16 +11,22 @@ public class PostMainResponseDto {
     private String imgUrl;
     private Integer gender;
     private Integer deliveryType;
-    private String region;
+    private String sido;
+    private String sigungu;
+    private String bname;
+    private String bname2;
     private Integer price;
 
-    public PostMainResponseDto(Long postId, String title, String imgUrl, Integer gender, Integer deliveryType, String region, Integer price) {
+    public PostMainResponseDto(Long postId, String title, String imgUrl, Integer gender, Integer deliveryType, String sido, String sigungu, String bname, String bname2, Integer price) {
         this.postId = postId;
         this.title = title;
         this.imgUrl = imgUrl;
         this.gender = gender;
         this.deliveryType = deliveryType;
-        this.region = region;
+        this.sido = sido;
+        this.sigungu = sigungu;
+        this.bname = bname;
+        this.bname2 = bname2;
         this.price = price;
     }
 }

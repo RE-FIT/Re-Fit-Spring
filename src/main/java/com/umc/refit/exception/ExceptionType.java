@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @Getter
 @RequiredArgsConstructor
@@ -44,23 +45,38 @@ public enum ExceptionType {
     BASIC_MEMBER_EXIST(BAD_REQUEST, 10106, "일반 로그인 계정이 존재합니다."),
 
 
-    //회원
-    GENDER_EMPTY(BAD_REQUEST, 30003, "필수 정보입니다."),
+    /* 옷장 관련 예외 */
+    CLOTHE_EMPTY(BAD_REQUEST, 20001, "해당하는 옷장 정보를 찾을 수 없습니다."),
+    ONE_CATEGORY_OVER_TWO_COUNT(BAD_REQUEST, 20002, "해당하는 옷장에 카테고리는 이미 2회를 입으셨습니다."),
+
 
 
     /*커뮤니티 관련 예외*/
 
     //커뮤니티 게시글 작성 예외
-    Author_EMPTY(BAD_REQUEST, 30001, "작성자 정보를 찾을 수 없습니다."),
-    PRICE_EMPTY(BAD_REQUEST, 30002, "판매 글일 경우 가격은 필수 입력값입니다."),
-    DELIVERY_FEE_EMPTY(BAD_REQUEST, 30003, "택배 배송의 경우 배송비는 필수 입력값입니다."),
-    REGION_EMPTY(BAD_REQUEST, 30004, "직거래의 경우 거래 지역은 필수 입력값입니다."),
-    IMAGE_EMPTY(BAD_REQUEST, 30005, "이미지는 1개 이상 필수입니다."),
+    TITLE_EMPTY(BAD_REQUEST, 30001, "제목은 필수 입력값입니다."),
+    GENDER_EMPTY(BAD_REQUEST, 30002, "추천 성별은 필수 입력값입니다."),
+    GENDER_RANGE_ERR(BAD_REQUEST, 30003, "추천 성별 범위에 해당되지 않는 요청값입니다."),
+    POST_TYPE_EMPTY(BAD_REQUEST, 30004, "게시글 타입은 필수 입력값입니다."),
+    POST_TYPE_RANGE_ERR(BAD_REQUEST, 30005, "게시글 타입 범위에 해당되지 않는 요청값입니다."),
+    CATEGORY_EMPTY(BAD_REQUEST, 30006, "카테고리는 필수 입력값입니다."),
+    CATEGORY_RANGE_ERR(BAD_REQUEST, 30007, "카테고리 범위에 해당되지 않는 요청값입니다."),
+    SIZE_EMPTY(BAD_REQUEST, 30008, "사이즈는 필수 입력값입니다."),
+    SIZE_RANGE_ERR(BAD_REQUEST, 30009, "사이즈 범위에 해당되지 않는 요청값입니다."),
+    DELIVERY_TYPE_EMPTY(BAD_REQUEST, 30010, "배송 방법은 필수 입력값입니다."),
+    DELIVERY_TYPE_RANGE_ERR(BAD_REQUEST, 30011, "배송 방법 범위에 해당되지 않는 요청값입니다."),
+    DETAIL_EMPTY(BAD_REQUEST, 30012, "상세설명은 필수 입력값입니다."),
+    PRICE_EMPTY(BAD_REQUEST, 30013, "판매 글일 경우 가격은 필수 입력값입니다."),
+    DELIVERY_FEE_EMPTY(BAD_REQUEST, 30014, "택배 배송일 경우 배송비는 필수 입력값입니다."),
+    REGION_EMPTY(BAD_REQUEST, 30015, "직거래일 경우 거래 희망 지역은 필수 입력값입니다."),
+    IMAGE_EMPTY(BAD_REQUEST, 30016, "이미지는 1개 이상 첨부해야 합니다."),
+    IMAGE_LIMIT_EXCEEDED(BAD_REQUEST, 30017, "첨부 가능 이미지 개수를 초과했습니다."),
 
 
-    /* 옷장 관련 예외 */
-    CLOTHE_EMPTY(BAD_REQUEST, 30006, "해당하는 옷장 정보를 찾을 수 없습니다."),
-    ONE_CATEGORY_OVER_TWO_COUNT(BAD_REQUEST, 30007, "해당하는 옷장에 카테고리는 이미 2회를 입으셨습니다.");
+    /*파일 업로드 관련 예외*/
+    FILE_UPLOAD_FAILED(INTERNAL_SERVER_ERROR, 50001, "파일 업로드 중 오류가 발생하였습니다.");
+
+
 
     private final HttpStatus httpStatus;
     private final int code;
