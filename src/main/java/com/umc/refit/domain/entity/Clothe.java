@@ -2,6 +2,7 @@ package com.umc.refit.domain.entity;
 
 import com.umc.refit.domain.dto.clothe.GetClotheListResponseDto;
 import com.umc.refit.domain.dto.clothe.GetClotheResponseDto;
+import com.umc.refit.domain.dto.clothe.UpdateClotheGoalRequestDto;
 import com.umc.refit.domain.dto.clothe.UpdateClotheRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -94,6 +95,17 @@ public class Clothe extends BaseTimeEntity {
         this.targetCnt = request.getTargetCnt();
         this.targetPeriod = request.getTargetPeriod();
         this.isPlan = request.getIsPlan();
+        this.cntPerMonth = request.getCntPerMonth();
+        this.cntPerWeek = request.getCntPerWeek();
+        this.editCnt += 1;
+    }
+
+    public void updateGoal(UpdateClotheGoalRequestDto request) {
+        this.season = request.getSeason();
+        this.targetCnt = request.getTargetCnt();
+        this.targetPeriod = request.getTargetPeriod();
+        this.isPlan = request.getIsPlan();
+        log.info(isPlan ? "true" : "false");
         this.cntPerMonth = request.getCntPerMonth();
         this.cntPerWeek = request.getCntPerWeek();
         this.editCnt += 1;
