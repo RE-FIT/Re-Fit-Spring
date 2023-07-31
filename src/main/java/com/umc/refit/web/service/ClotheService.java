@@ -1,9 +1,6 @@
 package com.umc.refit.web.service;
 
-import com.umc.refit.domain.dto.clothe.GetClotheListResponseDto;
-import com.umc.refit.domain.dto.clothe.GetClotheResponseDto;
-import com.umc.refit.domain.dto.clothe.RegisterClotheRequestDto;
-import com.umc.refit.domain.dto.clothe.UpdateClotheRequestDto;
+import com.umc.refit.domain.dto.clothe.*;
 import com.umc.refit.domain.dto.s3.ImageDto;
 import com.umc.refit.domain.entity.Clothe;
 import com.umc.refit.domain.entity.Member;
@@ -80,25 +77,30 @@ public class ClotheService {
 
     @Transactional(readOnly = true)
     public GetClotheResponseDto getClotheDetail(Long id) {
-
-        return this.closetRepository.findById(id)
-                .orElseThrow(()
-                        -> new ClotheException(CLOTHE_EMPTY, CLOTHE_EMPTY.getCode(), CLOTHE_EMPTY.getErrorMessage())).toResponseDto();
-
+        return getClothe(id).toResponseDto();
     }
 
     @Transactional
     public void deleteClothe(Long id) {
-        Clothe clothe = this.closetRepository.findById(id)
-                .orElseThrow(() -> new ClotheException(CLOTHE_EMPTY, CLOTHE_EMPTY.getCode(), CLOTHE_EMPTY.getErrorMessage()));
+        Clothe clothe = getClothe(id);
         this.closetRepository.delete(clothe);
     }
 
     @Transactional
     public void updateClothe(Long id, UpdateClotheRequestDto request) {
-        this.closetRepository.findById(id)
-                .orElseThrow(() -> new ClotheException(
-                        CLOTHE_EMPTY, CLOTHE_EMPTY.getCode(), CLOTHE_EMPTY.getErrorMessage())).update(request);
+        getClothe(id).update(request);
+    }
+
+
+    @Transactional
+    public void updateClotheGoal(Long id, UpdateClotheGoalRequestDto request) {
+        Clothe clothe = getClothe(id);
+        clothe.updateGoal(request);
+    }
+
+    private Clothe getClothe(Long id) {
+        return this.closetRepository.findById(id)
+                .orElseThrow(() -> new ClotheException(CLOTHE_EMPTY, CLOTHE_EMPTY.getCode(), CLOTHE_EMPTY.getErrorMessage()));
     }
 
     // 목표 미설정(is plan == false) -> -7777
