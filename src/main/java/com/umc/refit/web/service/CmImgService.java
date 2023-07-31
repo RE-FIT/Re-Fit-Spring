@@ -3,6 +3,7 @@ package com.umc.refit.web.service;
 import com.umc.refit.domain.dto.s3.ImageDto;
 import com.umc.refit.domain.entity.PostImage;
 import com.umc.refit.domain.entity.Posts;
+import com.umc.refit.exception.community.FileException;
 import com.umc.refit.web.repository.CmImgRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,8 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.umc.refit.exception.ExceptionType.FILE_UPLOAD_FAILED;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +39,7 @@ public class CmImgService {
             try {
                 imageDto = s3UploadService.uploadFile(multipartFile, bucketName, bucketDirName);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new FileException(FILE_UPLOAD_FAILED, FILE_UPLOAD_FAILED.getCode(), FILE_UPLOAD_FAILED.getErrorMessage());
             }
 
             PostImage image = new PostImage(imageDto);

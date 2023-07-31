@@ -15,14 +15,16 @@ public class PostClickResponseDto {
     private Integer size;
     private Integer deliveryType;
     private Integer deliveryFee;
-    private String region;
+    private String sido;
+    private String sigungu;
+    private String bname;
+    private String bname2;
     private Integer price;
-
     private String detail;
     private Integer postType;
     private Integer postState;
 
-    public PostClickResponseDto(Long postId, String title, String author, List<String> imgUrls, Integer size, Integer deliveryType, Integer deliveryFee, String region, Integer price, String detail, Integer postType, Integer postState) {
+    public PostClickResponseDto(Long postId, String title, String author, List<String> imgUrls, Integer size, Integer deliveryType, Integer deliveryFee, String sido, String sigungu, String bname, String bname2, Integer price, String detail, Integer postType, Integer postState) {
         this.postId = postId;
         this.title = title;
         this.author = author;
@@ -30,7 +32,10 @@ public class PostClickResponseDto {
         this.size = size;
         this.deliveryType = deliveryType;
         this.deliveryFee = deliveryFee;
-        this.region = region;
+        this.sido = sido;
+        this.sigungu = sigungu;
+        this.bname = bname;
+        this.bname2 = bname2;
         this.price = price;
         this.detail = detail;
         this.postType = postType;

@@ -30,9 +30,13 @@ public class Posts extends BaseTimeEntity {
     private Integer deliveryType;
     private Integer deliveryFee;
     private Integer price;
-    private String region;
     private String detail;
     private Integer postState;
+    private String sido;
+    private String sigungu;
+    private String bname;
+    private String bname2;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "buyer_id")
@@ -53,7 +57,10 @@ public class Posts extends BaseTimeEntity {
         this.category = postDto.getCategory();
         this.size = postDto.getSize();
         this.price = postDto.getPrice();
-        this.region = postDto.getRegion();
+        this.sido = postDto.getSido();
+        this.sigungu = postDto.getSigungu();
+        this.bname = postDto.getBname();
+        this.bname2 = postDto.getBname2();
         this.deliveryType = postDto.getDeliveryType();
         this.deliveryFee = postDto.getDeliveryFee();
         this.detail = postDto.getDetail();
@@ -67,7 +74,10 @@ public class Posts extends BaseTimeEntity {
         this.category = postDto.getCategory();
         this.size = postDto.getSize();
         this.price = postDto.getPrice();
-        this.region = postDto.getRegion();
+        this.sido = postDto.getSido();
+        this.sigungu = postDto.getSigungu();
+        this.bname = postDto.getBname();
+        this.bname2 = postDto.getBname2();
         this.deliveryType = postDto.getDeliveryType();
         this.deliveryFee = postDto.getDeliveryFee();
         this.detail = postDto.getDetail();

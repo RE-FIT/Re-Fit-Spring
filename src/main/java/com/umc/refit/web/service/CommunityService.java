@@ -64,7 +64,10 @@ public class CommunityService {
                 post.getSize(),
                 post.getDeliveryType(),
                 post.getDeliveryFee(),
-                post.getRegion(),
+                post.getSido(),
+                post.getSigungu(),
+                post.getBname(),
+                post.getBname2(),
                 post.getPrice(),
                 post.getDetail(),
                 post.getPostType(),
@@ -74,8 +77,8 @@ public class CommunityService {
 
 
 
-    /*커뮤니티 메인 화면 - 나눔*/
-    public List<PostMainResponseDto> communityShareMain(Integer postType, Integer gender, Integer category, Authentication authentication){
+    /*커뮤니티 메인 화면*/
+    public List<PostMainResponseDto> communityMainPosts(Integer postType, Integer gender, Integer category, Authentication authentication){
         //로그인 유저
         String userId = authentication.getName();
         Member member = memberService.findMemberByLoginId(userId)
@@ -84,40 +87,16 @@ public class CommunityService {
         //유저가 차단한 멤버
         List<Long> blockMemIds = blockService.getBlockMemIds(member);
 
-        List<Posts> posts = findSharePost(postType, gender, category, blockMemIds);
+        List<Posts> posts = findPostList(postType, gender, category, blockMemIds);
         List<PostMainResponseDto> sharePosts = convertToDtoList(posts);
 
         return sharePosts;
     }
 
-    /*커뮤니티 메인 화면 - 판매*/
-    public List<PostMainResponseDto> communitySellMain(Integer postType, Integer gender, Integer category, String region, Authentication authentication){
 
-        //로그인 유저
-        String userId = authentication.getName();
-        Member member = memberService.findMemberByLoginId(userId)
-                .orElseThrow(() -> new NoSuchElementException("No member found with this user id"));
-
-        //유저가 차단한 멤버 아이디 목록
-        List<Long> blockMemIds = blockService.getBlockMemIds(member);
-
-        List<Posts> posts = findSellPost(postType, gender, category, region, blockMemIds);
-        List<PostMainResponseDto> sellPosts = convertToDtoList(posts);
-
-        return sellPosts;
-    }
-
-
-    /*선택한 카테고리에 맞는 나눔 글 리스트*/
-    public List<Posts> findSharePost(Integer postType, Integer gender, Integer category, List<Long> blockMemIds){
+    /*선택한 카테고리에 맞는 글 리스트*/
+    public List<Posts> findPostList(Integer postType, Integer gender, Integer category, List<Long> blockMemIds){
         List<Posts> posts = communityRepository.findByPostTypeAndGenderAndCategoryAndPostState(postType, gender, category, 0);
-        posts = filterBlockedPosts(posts, blockMemIds);
-        return posts;
-    }
-
-    /*선택한 카테고리에 맞는 판매 글 리스트*/
-    public List<Posts> findSellPost(Integer postType, Integer gender, Integer category, String region, List<Long> blockMemIds){
-        List<Posts> posts = communityRepository.findByPostTypeAndGenderAndCategoryAndRegionAndPostState(postType, gender, category, region,1);
         posts = filterBlockedPosts(posts, blockMemIds);
         return posts;
     }
@@ -138,7 +117,10 @@ public class CommunityService {
                         posts.getImage().get(0).getImageUrl(),
                         posts.getGender(),
                         posts.getDeliveryType(),
-                        posts.getRegion(),
+                        posts.getSido(),
+                        posts.getSigungu(),
+                        posts.getBname(),
+                        posts.getBname2(),
                         posts.getPrice()
                 ))
                 .collect(Collectors.toList());
@@ -169,9 +151,6 @@ public class CommunityService {
         //직거래면 배송비 0원으로 설정
         if (postDto.getDeliveryType() == 0){
             postDto.setDeliveryFee(0);
-        } else if (postDto.getDeliveryType() == 1) {
-            //택배면 거래 지역을 전국으로 설정
-            postDto.setRegion("전국");
         }
         return postDto;
     }
@@ -202,9 +181,6 @@ public class CommunityService {
         //직거래면 배송비 0원으로 설정
         if (postDto.getDeliveryType() == 0){
             postDto.setDeliveryFee(0);
-        } else if (postDto.getDeliveryType() == 1) {
-            //택배면 거래 지역을 전국으로 설정
-            postDto.setRegion("전국");
         }
         return postDto;
     }
@@ -244,7 +220,10 @@ public class CommunityService {
                 findPost.getSize(),
                 findPost.getDeliveryType(),
                 findPost.getDeliveryFee(),
-                findPost.getRegion(),
+                findPost.getSido(),
+                findPost.getSigungu(),
+                findPost.getBname(),
+                findPost.getBname2(),
                 findPost.getPrice(),
                 findPost.getDetail(),
                 findPost.getPostType(),
@@ -358,7 +337,10 @@ public class CommunityService {
                 findPost.getSize(),
                 findPost.getDeliveryType(),
                 findPost.getDeliveryFee(),
-                findPost.getRegion(),
+                findPost.getSido(),
+                findPost.getSigungu(),
+                findPost.getBname(),
+                findPost.getBname2(),
                 findPost.getPrice(),
                 findPost.getDetail(),
                 findPost.getPostType(),

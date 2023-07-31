@@ -6,10 +6,8 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class CommunityException extends RuntimeException {
-
+public class FileException extends RuntimeException {
     private ExceptionType exceptionType;
     private int code;
     private String errorMessage;
-
 }
