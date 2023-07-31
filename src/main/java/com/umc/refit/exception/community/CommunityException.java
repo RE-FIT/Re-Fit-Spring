@@ -4,6 +4,7 @@ import com.umc.refit.exception.ExceptionType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+
 @Getter
 @AllArgsConstructor
 public class CommunityException extends RuntimeException {
