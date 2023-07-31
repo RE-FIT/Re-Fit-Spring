@@ -87,4 +87,13 @@ public class ClotheController {
         this.clotheService.updateClotheGoal(id, request);
         return ResponseEntity.ok().build();
     }
+
+    // 옷장 옷 입기
+    @PatchMapping("/{id}/wear")
+    public ResponseEntity<Void> wearClothe(
+            @PathVariable Long id
+    ) {
+        this.clotheService.wearClothe(id);
+        return ResponseEntity.ok().build();
+    }
 }
