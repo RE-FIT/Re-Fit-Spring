@@ -5,6 +5,7 @@ import com.umc.refit.domain.dto.community.*;
 import com.umc.refit.domain.entity.Member;
 import com.umc.refit.domain.entity.PostImage;
 import com.umc.refit.domain.entity.Posts;
+import com.umc.refit.exception.community.CommunityException;
 import com.umc.refit.web.repository.CommunityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -18,6 +19,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.umc.refit.exception.ExceptionType.*;
 
 @Service
 @RequiredArgsConstructor
@@ -82,7 +85,7 @@ public class CommunityService {
         //로그인 유저
         String userId = authentication.getName();
         Member member = memberService.findMemberByLoginId(userId)
-                .orElseThrow(() -> new NoSuchElementException("No member found with this user id"));
+                .orElseThrow(() ->  new CommunityException(NO_SUCH_MEMBER, NO_SUCH_MEMBER.getCode(), NO_SUCH_MEMBER.getErrorMessage()));
 
         //유저가 차단한 멤버
         List<Long> blockMemIds = blockService.getBlockMemIds(member);
@@ -135,7 +138,7 @@ public class CommunityService {
     private PostDto setPostDto(Authentication authentication, PostDto postDto) {
         String userId = authentication.getName();
         Member member = memberService.findMemberByLoginId(userId)
-                .orElseThrow(() -> new NoSuchElementException("No member found with this user id"));
+                .orElseThrow(() ->  new CommunityException(NO_SUCH_MEMBER, NO_SUCH_MEMBER.getCode(), NO_SUCH_MEMBER.getErrorMessage()));
 
         postDto.setMember(member);
 
@@ -196,16 +199,16 @@ public class CommunityService {
         //로그인 유저
         String userId = authentication.getName();
         Member member = memberService.findMemberByLoginId(userId)
-                .orElseThrow(() -> new NoSuchElementException("No member found with this user id"));
+                .orElseThrow(() ->  new CommunityException(NO_SUCH_MEMBER, NO_SUCH_MEMBER.getCode(), NO_SUCH_MEMBER.getErrorMessage()));
 
         //유저가 차단한 멤버 아이디 목록
         List<Long> blockMemIds = blockService.getBlockMemIds(member);
 
         Posts findPost = findPostById(postId)
-                .orElseThrow(() -> new NoSuchElementException("No post found with this post id"));
+                .orElseThrow(() ->  new CommunityException(NO_SUCH_POST, NO_SUCH_POST.getCode(), NO_SUCH_POST.getErrorMessage()));
 
         if(blockMemIds.contains(findPost.getMember().getId())){
-            throw new IllegalStateException("차단한 유저의 글입니다.");
+            throw new CommunityException(BLOCKED_USER_POST, BLOCKED_USER_POST.getCode(), BLOCKED_USER_POST.getErrorMessage());
         }
 
         List<String> imgUrls = findPost.getImage().stream()
@@ -236,10 +239,10 @@ public class CommunityService {
         //로그인 유저
         String userId = authentication.getName();
         Member member = memberService.findMemberByLoginId(userId)
-                .orElseThrow(() -> new NoSuchElementException("No member found with this user id"));
+                .orElseThrow(() -> new CommunityException(NO_SUCH_MEMBER, NO_SUCH_MEMBER.getCode(), NO_SUCH_MEMBER.getErrorMessage()));
 
         Posts findPost = findPostById(postId)
-                .orElseThrow(() -> new NoSuchElementException("No post found with this post id"));
+                .orElseThrow(() -> new CommunityException(NO_SUCH_POST, NO_SUCH_POST.getCode(), NO_SUCH_POST.getErrorMessage()));
 
         if(member.getId().equals(findPost.getMember().getId())){
             //이미지 s3에서 삭제
@@ -250,37 +253,57 @@ public class CommunityService {
 
             communityRepository.delete(findPost);
         }else{
-            throw new IllegalStateException("삭제 권한이 없습니다.");
+            throw new CommunityException(PERMISSION_DENIED, PERMISSION_DENIED.getCode(), PERMISSION_DENIED.getErrorMessage());
         }
     }
 
     /*게시글 상태 변경*/
-    public void changeState(Long postId, Authentication authentication) {
+    public PostClickResponseDto changeState(Long postId, Authentication authentication) {
         //로그인 유저
         String userId = authentication.getName();
         Member member = memberService.findMemberByLoginId(userId)
-                .orElseThrow(() -> new NoSuchElementException("No member found with this user id"));
+                .orElseThrow(() -> new CommunityException(NO_SUCH_MEMBER, NO_SUCH_MEMBER.getCode(), NO_SUCH_MEMBER.getErrorMessage()));
 
         Posts findPost = findPostById(postId)
-                .orElseThrow(() -> new NoSuchElementException("No post found with this post id"));
+                .orElseThrow(() -> new CommunityException(NO_SUCH_POST, NO_SUCH_POST.getCode(), NO_SUCH_POST.getErrorMessage()));
 
         if(!member.getId().equals(findPost.getMember().getId())){
-            throw new IllegalStateException("이 게시글 상태 변경 권한이 없습니다.");
+            throw new CommunityException(PERMISSION_DENIED, PERMISSION_DENIED.getCode(), PERMISSION_DENIED.getErrorMessage());
         }
 
         //나눔 완료 -> 나눔 중
         if(findPost.getPostState().equals(2)){
             findPost.changeState(0);
             findPost.removeBuyer();
-            return;
         }
 
         //판매 완료 -> 판매 중
         if(findPost.getPostState().equals(3)){
             findPost.changeState(1);
             findPost.removeBuyer();
-            return;
         }
+
+        List<String> imgUrls = findPost.getImage().stream()
+                .map(PostImage::getImageUrl)
+                .collect(Collectors.toList());
+
+        PostClickResponseDto changedPost = new PostClickResponseDto(
+                findPost.getId(),
+                findPost.getTitle(),
+                findPost.getMember().getName(),
+                imgUrls,
+                findPost.getSize(),
+                findPost.getDeliveryType(),
+                findPost.getDeliveryFee(),
+                findPost.getSido(),
+                findPost.getSigungu(),
+                findPost.getBname(),
+                findPost.getBname2(),
+                findPost.getPrice(),
+                findPost.getDetail(),
+                findPost.getPostType(),
+                findPost.getPostState());
+        return changedPost;
     }
 
     /*게시글 검색*/
@@ -294,13 +317,13 @@ public class CommunityService {
         //로그인 유저
         String userId = authentication.getName();
         Member member = memberService.findMemberByLoginId(userId)
-                .orElseThrow(() -> new NoSuchElementException("No member found with this user id"));
+                .orElseThrow(() -> new CommunityException(NO_SUCH_MEMBER, NO_SUCH_MEMBER.getCode(), NO_SUCH_MEMBER.getErrorMessage()));
 
         Posts findPost = findPostById(postId)
-                .orElseThrow(() -> new NoSuchElementException("No post found with this post id"));
+                .orElseThrow(() -> new CommunityException(NO_SUCH_POST, NO_SUCH_POST.getCode(), NO_SUCH_POST.getErrorMessage()));
 
         if(!member.getId().equals(findPost.getMember().getId())){
-            throw new IllegalStateException("이 게시글 수정 권한이 없습니다.");
+            throw new CommunityException(PERMISSION_DENIED, PERMISSION_DENIED.getCode(), PERMISSION_DENIED.getErrorMessage());
         }
 
         //기존 이미지 s3에서 삭제
@@ -354,7 +377,7 @@ public class CommunityService {
         //로그인 유저
         String userId = authentication.getName();
         Member member = memberService.findMemberByLoginId(userId)
-                .orElseThrow(() -> new NoSuchElementException("No member found with this user id"));
+                .orElseThrow(() -> new CommunityException(NO_SUCH_MEMBER, NO_SUCH_MEMBER.getCode(), NO_SUCH_MEMBER.getErrorMessage()));
 
         List<Posts> posts = communityRepository.findByMemberAndPostType(member, postType);
 
@@ -367,7 +390,7 @@ public class CommunityService {
         //로그인 유저
         String userId = authentication.getName();
         Member member = memberService.findMemberByLoginId(userId)
-                .orElseThrow(() -> new NoSuchElementException("No member found with this user id"));
+                .orElseThrow(() -> new CommunityException(NO_SUCH_MEMBER, NO_SUCH_MEMBER.getCode(), NO_SUCH_MEMBER.getErrorMessage()));
 
         List<Posts> posts = communityRepository.findByBuyer(member);
 
@@ -380,19 +403,19 @@ public class CommunityService {
         //로그인 유저
         String userId = authentication.getName();
         Member member = memberService.findMemberByLoginId(userId)
-                .orElseThrow(() -> new NoSuchElementException("No member found with this user id"));
+                .orElseThrow(() -> new CommunityException(NO_SUCH_MEMBER, NO_SUCH_MEMBER.getCode(), NO_SUCH_MEMBER.getErrorMessage()));
 
         Posts findPost = findPostById(tradeRequestDto.getPostId())
-                .orElseThrow(() -> new NoSuchElementException("No post found with this post id"));
+                .orElseThrow(() -> new CommunityException(NO_SUCH_POST, NO_SUCH_POST.getCode(), NO_SUCH_POST.getErrorMessage()));
 
         if(!member.getId().equals(findPost.getMember().getId())){
-            throw new IllegalStateException("해당 상품 거래 완료 권한이 없습니다.");
+            throw new CommunityException(PERMISSION_DENIED, PERMISSION_DENIED.getCode(), PERMISSION_DENIED.getErrorMessage());
         }
 
         //구매자
         String buyerName = tradeRequestDto.getUsername();
         Member buyer = memberService.findMemberByName(buyerName)
-                .orElseThrow(() -> new NoSuchElementException("No member found with this username"));
+                .orElseThrow(() -> new CommunityException(NO_SUCH_MEMBER, NO_SUCH_MEMBER.getCode(), NO_SUCH_MEMBER.getErrorMessage()));
 
         if(findPost.getBuyer() == null) {
             if(findPost.getPostState().equals(0)){

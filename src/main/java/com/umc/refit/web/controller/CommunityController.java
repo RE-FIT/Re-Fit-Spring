@@ -7,7 +7,6 @@ import com.umc.refit.exception.member.TokenException;
 import com.umc.refit.web.service.CommunityService;
 import com.umc.refit.web.service.ScrapService;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.http.fileupload.impl.FileCountLimitExceededException;
 import org.springframework.security.core.Authentication;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -113,7 +112,7 @@ public class CommunityController {
 
     /*게시글 상태 변경 API*/
     @PatchMapping("/{postId}")
-    public void changeState(
+    public PostClickResponseDto changeState(
             @PathVariable Long postId, Authentication authentication, HttpServletRequest request){
 
         if (authentication == null) {
@@ -121,7 +120,8 @@ public class CommunityController {
             throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
         }
 
-        communityService.changeState(postId, authentication);
+        PostClickResponseDto post = communityService.changeState(postId, authentication);
+        return post;
     }
 
 

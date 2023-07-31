@@ -4,8 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.*;
 
 @Getter
 @RequiredArgsConstructor
@@ -72,6 +71,16 @@ public enum ExceptionType {
     IMAGE_EMPTY(BAD_REQUEST, 30016, "이미지는 1개 이상 첨부해야 합니다."),
     IMAGE_LIMIT_EXCEEDED(BAD_REQUEST, 30017, "첨부 가능 이미지 개수를 초과했습니다."),
 
+    //해당 아이디 멤버 없음
+    NO_SUCH_MEMBER(NOT_FOUND, 30300, "해당 멤버가 존재하지 않습니다."),
+    //헤당 아이디 게시글 없음
+    NO_SUCH_POST(NOT_FOUND, 303001, "해당 게시글이 존재하지 않습니다."),
+
+    //차단 관련 예외
+    BLOCKED_USER_POST(FORBIDDEN, 30100, "차단한 유저의 글입니다."),
+
+    //게시글 권한 관련 예외
+    PERMISSION_DENIED(FORBIDDEN, 30200, "해당 게시글에 권한이 없습니다."),
 
     /*파일 업로드 관련 예외*/
     FILE_UPLOAD_FAILED(INTERNAL_SERVER_ERROR, 50001, "파일 업로드 중 오류가 발생하였습니다.");
