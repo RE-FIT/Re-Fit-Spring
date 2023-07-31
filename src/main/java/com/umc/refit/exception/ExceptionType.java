@@ -47,7 +47,7 @@ public enum ExceptionType {
 
     /* 옷장 관련 예외 */
     CLOTHE_EMPTY(BAD_REQUEST, 20001, "해당하는 옷장 정보를 찾을 수 없습니다."),
-    ONE_CATEGORY_OVER_TWO_COUNT(BAD_REQUEST, 20002, "해당하는 옷장에 카테고리는 이미 2회를 입으셨습니다.");
+    ONE_CATEGORY_OVER_TWO_COUNT(BAD_REQUEST, 20002, "해당하는 옷장에 카테고리는 이미 2회를 입으셨습니다."),
 
 
 
