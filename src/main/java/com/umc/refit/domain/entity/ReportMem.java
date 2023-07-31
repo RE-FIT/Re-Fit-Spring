@@ -26,14 +26,12 @@ public class ReportMem {
     @JoinColumn(name = "reported_member_id")
     private Member reportedMember;
 
-    private Integer reason;
+    private String reason;
 
-    private String reasonDetail;
 
     public ReportMem(ReportMemDto requestDto) {
         this.reporter = requestDto.getReporter();
         this.reportedMember = requestDto.getReportedMember();
         this.reason = requestDto.getReason();
-        this.reasonDetail = requestDto.getReasonDetail();
     }
 }
