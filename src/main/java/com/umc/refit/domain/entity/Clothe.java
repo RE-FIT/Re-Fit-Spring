@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Slf4j
 @Getter
@@ -54,7 +54,7 @@ public class Clothe extends BaseTimeEntity {
     private Integer cntPerWeek;
 
     @Column(name = "last_dt")
-    private Date lastDate;
+    private LocalDate lastDate;
 
     @Column(name = "image_url")
     private String imageUrl;
@@ -109,6 +109,11 @@ public class Clothe extends BaseTimeEntity {
         this.cntPerMonth = request.getCntPerMonth();
         this.cntPerWeek = request.getCntPerWeek();
         this.editCnt += 1;
+    }
+
+    public void wearClothe() {
+        this.count += 1;
+        this.lastDate = LocalDate.now();
     }
 }
 

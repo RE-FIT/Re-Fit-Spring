@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.umc.refit.exception.ExceptionType.CLOTHE_EMPTY;
+import static com.umc.refit.exception.ExceptionType.ONE_CATEGORY_OVER_TWO_COUNT;
 
 
 @Slf4j
@@ -96,6 +97,16 @@ public class ClotheService {
     public void updateClotheGoal(Long id, UpdateClotheGoalRequestDto request) {
         Clothe clothe = getClothe(id);
         clothe.updateGoal(request);
+    }
+
+    @Transactional
+    public void wearClothe(Long id) {
+        Clothe clothe = getClothe(id);
+        if (this.closetRepository.getCountOneCategoryPerOnDay(clothe.getCategory(), clothe.getLastDate()) >= 2) {
+            throw new ClotheException(
+                    ONE_CATEGORY_OVER_TWO_COUNT, ONE_CATEGORY_OVER_TWO_COUNT.getCode(), ONE_CATEGORY_OVER_TWO_COUNT.getErrorMessage());
+        }
+        clothe.wearClothe();
     }
 
     private Clothe getClothe(Long id) {
