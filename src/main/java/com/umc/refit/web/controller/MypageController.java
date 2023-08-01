@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -104,5 +105,13 @@ public class MypageController {
     ) {
         checkAuthentication(authentication, request);
         return new ResponseEntity<>(this.myPageService.getMyInfo(authentication), HttpStatus.OK);
+    }
+
+    /* 이름(닉네임) 중복 확인 API */
+    @GetMapping("/info/check")
+    public ResponseEntity<Boolean> checkInsertedName(
+            @RequestParam String name
+    ) {
+        return new ResponseEntity<>(this.myPageService.checkInsertedName(name), HttpStatus.OK);
     }
 }

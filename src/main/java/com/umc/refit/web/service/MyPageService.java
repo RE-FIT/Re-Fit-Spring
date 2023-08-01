@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -15,9 +16,15 @@ public class MyPageService {
 
     private final MemberRepository memberRepository;
 
+    @Transactional(readOnly = true)
     public GetMyInfoResponseDto getMyInfo(Authentication authentication) {
         return GetMyInfoResponseDto.from(this.memberRepository.findByLoginId(
                         authentication.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("No member found with this user id")));
+    }
+
+    @Transactional(readOnly = true)
+    public Boolean checkInsertedName(String name) {
+        return this.memberRepository.findByName(name).isPresent();
     }
 }
