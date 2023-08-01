@@ -109,6 +109,11 @@ public class ClotheService {
         clothe.wearClothe();
     }
 
+    @Transactional(readOnly = true)
+    public GetClotheForestResponseDto getClotheForest(Long id) {
+        return getClothe(id).toClotheForestResponseDto();
+    }
+
     private Clothe getClothe(Long id) {
         return this.closetRepository.findById(id)
                 .orElseThrow(() -> new ClotheException(CLOTHE_EMPTY, CLOTHE_EMPTY.getCode(), CLOTHE_EMPTY.getErrorMessage()));
