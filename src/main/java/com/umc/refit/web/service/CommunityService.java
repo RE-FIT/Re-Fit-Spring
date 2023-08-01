@@ -124,7 +124,8 @@ public class CommunityService {
                         posts.getSigungu(),
                         posts.getBname(),
                         posts.getBname2(),
-                        posts.getPrice()
+                        posts.getPrice(),
+                        posts.getSize()
                 ))
                 .collect(Collectors.toList());
     }

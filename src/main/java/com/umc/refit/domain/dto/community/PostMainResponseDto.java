@@ -16,8 +16,9 @@ public class PostMainResponseDto {
     private String bname;
     private String bname2;
     private Integer price;
+    private Integer size;
 
-    public PostMainResponseDto(Long postId, String title, String imgUrl, Integer gender, Integer deliveryType, String sido, String sigungu, String bname, String bname2, Integer price) {
+    public PostMainResponseDto(Long postId, String title, String imgUrl, Integer gender, Integer deliveryType, String sido, String sigungu, String bname, String bname2, Integer price, Integer size) {
         this.postId = postId;
         this.title = title;
         this.imgUrl = imgUrl;
@@ -28,5 +29,6 @@ public class PostMainResponseDto {
         this.bname = bname;
         this.bname2 = bname2;
         this.price = price;
+        this.size = size;
     }
 }

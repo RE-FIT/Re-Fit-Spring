@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
-@RequestMapping("/mypage")
+@RequestMapping("/refit/mypage")
 @RequiredArgsConstructor
 public class MypageController {
 
