@@ -3,7 +3,6 @@ package com.umc.refit.web.service;
 import com.umc.refit.domain.dto.clothe.*;
 import com.umc.refit.domain.dto.s3.ImageDto;
 import com.umc.refit.domain.entity.Clothe;
-import com.umc.refit.domain.entity.Member;
 import com.umc.refit.exception.clothe.ClotheException;
 import com.umc.refit.web.repository.ClosetRepository;
 import com.umc.refit.web.repository.MemberRepository;
@@ -37,6 +36,7 @@ public class ClotheService {
 
     private final S3UploadService s3UploadService;
     private final String bucketDirName = "closet";
+
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
@@ -45,17 +45,14 @@ public class ClotheService {
                                MultipartFile multipartFile,
                                Authentication authentication) {
 
-        Member member = this.memberRepository.findByLoginId(
-                        authentication.getName())
-                .orElseThrow(() -> new UsernameNotFoundException("No member found with this user id"));
-
         ImageDto imageDto;
         try {
             imageDto = this.s3UploadService.uploadFile(multipartFile, bucketName, bucketDirName);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return this.closetRepository.save(request.toEntity(member, imageDto))
+        return this.closetRepository.save(request.toEntity(this.memberRepository.findByLoginId(authentication.getName())
+                        .orElseThrow(() -> new UsernameNotFoundException("No member found with this user id")), imageDto))
                 .getId();
     }
 

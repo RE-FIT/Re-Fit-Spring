@@ -2,6 +2,7 @@ package com.umc.refit.web.controller;
 
 import com.umc.refit.domain.dto.community.PostMainResponseDto;
 import com.umc.refit.domain.dto.mypage.GetMyInfoResponseDto;
+import com.umc.refit.domain.dto.mypage.UpdateMyInfoRequestDto;
 import com.umc.refit.exception.ExceptionType;
 import com.umc.refit.exception.member.TokenException;
 import com.umc.refit.web.service.CommunityService;
@@ -11,12 +12,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -105,6 +105,23 @@ public class MypageController {
     ) {
         checkAuthentication(authentication, request);
         return new ResponseEntity<>(this.myPageService.getMyInfo(authentication), HttpStatus.OK);
+    }
+
+
+    /* 내 정보 수정 API */
+    @PatchMapping("/info")
+    public ResponseEntity<Void> updateMyInfo(
+            @RequestPart(value = "image", required = false) MultipartFile multipartFile,
+            @Valid @RequestPart UpdateMyInfoRequestDto request,
+            Authentication authentication,
+            HttpServletRequest httpServletRequest
+    ) {
+        if (authentication == null) {
+            ExceptionType exception = (ExceptionType) httpServletRequest.getAttribute("exception");
+            throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
+        }
+        this.myPageService.updateMyInfo(multipartFile, request, authentication);
+        return ResponseEntity.ok().build();
     }
 
     /* 이름(닉네임) 중복 확인 API */

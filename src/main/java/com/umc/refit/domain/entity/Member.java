@@ -1,6 +1,7 @@
 package com.umc.refit.domain.entity;
 
 import com.umc.refit.domain.dto.member.JoinDto;
+import com.umc.refit.domain.dto.mypage.UpdateMyInfoRequestDto;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
@@ -89,5 +90,12 @@ public class Member implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public void updateMemberByMyInfo(UpdateMyInfoRequestDto request, String requestedImageUrl) {
+        name = request.getName();
+        birth = request.getBirth();
+        gender = request.getGender();
+        imageUrl = requestedImageUrl;
     }
 }
