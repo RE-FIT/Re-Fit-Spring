@@ -1,9 +1,6 @@
 package com.umc.refit.domain.entity;
 
-import com.umc.refit.domain.dto.clothe.GetClotheListResponseDto;
-import com.umc.refit.domain.dto.clothe.GetClotheResponseDto;
-import com.umc.refit.domain.dto.clothe.UpdateClotheGoalRequestDto;
-import com.umc.refit.domain.dto.clothe.UpdateClotheRequestDto;
+import com.umc.refit.domain.dto.clothe.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -86,6 +83,16 @@ public class Clothe extends BaseTimeEntity {
                 .cntPerMonth(cntPerMonth)
                 .cntPerWeek(cntPerWeek)
                 .imageUrl(imageUrl)
+                .build();
+    }
+
+    public GetClotheForestResponseDto toGetClotheForestResponseDto() {
+        return GetClotheForestResponseDto.builder()
+                .id(id)
+                .imageUrl(imageUrl)
+                .targetCnt(targetCnt)
+                .count(count)
+                .remainedCnt(targetCnt - count)
                 .build();
     }
 
