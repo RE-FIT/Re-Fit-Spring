@@ -96,4 +96,12 @@ public class ClotheController {
         this.clotheService.wearClothe(id);
         return ResponseEntity.ok().build();
     }
+
+    // 옷장 옷 입기 후 숲 화면 조회
+    @GetMapping("/{id}/forest")
+    public ResponseEntity<GetClotheForestResponseDto> getClotheForest(
+            @PathVariable Long id
+    ) {
+        return new ResponseEntity<>(this.clotheService.getClotheForest(id), HttpStatus.OK);
+    }
 }
