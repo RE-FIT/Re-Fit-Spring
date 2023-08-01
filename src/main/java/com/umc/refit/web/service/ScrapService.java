@@ -5,6 +5,7 @@ import com.umc.refit.domain.dto.community.ScrapDto;
 import com.umc.refit.domain.entity.Member;
 import com.umc.refit.domain.entity.Posts;
 import com.umc.refit.domain.entity.Scrap;
+import com.umc.refit.exception.community.CommunityException;
 import com.umc.refit.web.repository.ScrapRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -15,6 +16,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.umc.refit.exception.ExceptionType.*;
 
 
 @Service
@@ -35,14 +38,13 @@ public class ScrapService {
 
         String userId = authentication.getName();
         Member findMember = memberService.findMemberByLoginId(userId)
-                .orElseThrow(() -> new NoSuchElementException("No member found with this user id"));
+                .orElseThrow(() -> new CommunityException(NO_SUCH_MEMBER, NO_SUCH_MEMBER.getCode(), NO_SUCH_MEMBER.getErrorMessage()));
 
         Posts findPost = communityService.findPostById(postId)
-                .orElseThrow(() -> new NoSuchElementException("No post found with this post id"));
+                .orElseThrow(() -> new CommunityException(NO_SUCH_POST, NO_SUCH_POST.getCode(), NO_SUCH_POST.getErrorMessage()));
 
         if(findPost.getMember().getId().equals(findMember.getId())){
-            throw new IllegalStateException("본인 글은 스크랩 불가합니다.");
-            //추후 다른 예외 처리 코드로 바꿀 예정 SelfScrapNotAllowedException
+            throw new CommunityException(SELF_SCRAP_NOT_ALLOWED, SELF_SCRAP_NOT_ALLOWED.getCode(), SELF_SCRAP_NOT_ALLOWED.getErrorMessage());
         }
 
         Optional<Scrap> findScrap =findScrapByMemAndPostId(findMember, postId);
@@ -66,7 +68,7 @@ public class ScrapService {
     public List<PostMainResponseDto> findMyScraps(Integer postType, Authentication authentication){
         String userId = authentication.getName();
         Member member = memberService.findMemberByLoginId(userId)
-                .orElseThrow(() -> new NoSuchElementException("No member found with this user id"));
+                .orElseThrow(() -> new CommunityException(NO_SUCH_MEMBER, NO_SUCH_MEMBER.getCode(), NO_SUCH_MEMBER.getErrorMessage()));
 
         List<Scrap> scraps = scrapRepository.findByMember(member);
         return convertToDtoList(scraps.stream()
@@ -91,7 +93,10 @@ public class ScrapService {
                         posts.getImage().get(0).getImageUrl(),
                         posts.getGender(),
                         posts.getDeliveryType(),
-                        posts.getRegion(),
+                        posts.getSido(),
+                        posts.getSigungu(),
+                        posts.getBname(),
+                        posts.getBname2(),
                         posts.getPrice()
                 ))
                 .collect(Collectors.toList());

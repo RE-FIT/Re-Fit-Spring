@@ -4,13 +4,10 @@ import com.umc.refit.exception.ExceptionType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-
 @Getter
 @AllArgsConstructor
-public class CommunityException extends RuntimeException {
-
+public class FileException extends RuntimeException {
     private ExceptionType exceptionType;
     private int code;
     private String errorMessage;
-
 }

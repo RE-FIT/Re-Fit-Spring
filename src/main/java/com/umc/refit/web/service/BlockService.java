@@ -3,6 +3,7 @@ package com.umc.refit.web.service;
 import com.umc.refit.domain.dto.community.BlockDto;
 import com.umc.refit.domain.entity.Block;
 import com.umc.refit.domain.entity.Member;
+import com.umc.refit.exception.community.CommunityException;
 import com.umc.refit.web.repository.BlockRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -12,6 +13,8 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+
+import static com.umc.refit.exception.ExceptionType.*;
 
 @Service
 @RequiredArgsConstructor
@@ -28,24 +31,22 @@ public class BlockService {
         //차단 요청한 유저
         String userId = authentication.getName();
         Member requestMem = memberService.findMemberByLoginId(userId)
-                .orElseThrow(() -> new NoSuchElementException("No member found with this user id"));
+                .orElseThrow(() -> new CommunityException(NO_SUCH_MEMBER, NO_SUCH_MEMBER.getCode(), NO_SUCH_MEMBER.getErrorMessage()));
         blockDto.setRequestMember(requestMem);
 
         //차단 당하는 유저
         Member blockedMem = memberService.findMemberByName(blockDto.getBlockedMember().getName())
-                .orElseThrow(() -> new NoSuchElementException("No member found with this name"));
+                .orElseThrow(() -> new CommunityException(NO_SUCH_MEMBER, NO_SUCH_MEMBER.getCode(), NO_SUCH_MEMBER.getErrorMessage()));
         blockDto.setBlockedMember(blockedMem);
 
         // 자기 자신을 차단한 경우
         if(requestMem.getId().equals(blockedMem.getId())){
-            throw new IllegalStateException("자기 자신은 차단 불가합니다.");
-            //추후 다른 예외 처리 코드로 바꿀 예정
+            throw new CommunityException(SELF_BLOCK_NOT_ALLOWED, SELF_BLOCK_NOT_ALLOWED.getCode(), SELF_BLOCK_NOT_ALLOWED.getErrorMessage());
         }
 
         // 이미 차단한 유저일 경우
         if(blockRepository.findByRequestMemberAndBlockedMember(requestMem, blockedMem).isPresent()){
-            throw new IllegalStateException("이미 차단한 유저입니다.");
-            //추후 다른 예외 처리 코드로 바꿀 예정
+            throw new CommunityException(ALREADY_BLOCKED_USER, ALREADY_BLOCKED_USER.getCode(), ALREADY_BLOCKED_USER.getErrorMessage());
         }
 
         save(new Block(blockDto));
