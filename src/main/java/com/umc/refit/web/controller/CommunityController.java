@@ -20,7 +20,7 @@ import java.util.List;
 import static com.umc.refit.exception.ExceptionType.*;
 
 @RestController
-@RequestMapping("/community")
+@RequestMapping("/refit/community")
 @RequiredArgsConstructor
 public class CommunityController {
 

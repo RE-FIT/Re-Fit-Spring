@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/block")
+@RequestMapping("/refit/block")
 @RequiredArgsConstructor
 public class BlockController {
 

@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/report")
+@RequestMapping("/refit/report")
 @RequiredArgsConstructor
 public class ReportMemController {
 
