@@ -14,10 +14,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 public class Member implements UserDetails {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     @Column(name = "member_id")
     private Long id;
     private String loginId;
@@ -27,6 +29,9 @@ public class Member implements UserDetails {
     private String birth;
     private String socialType;
     private Integer gender;
+    private String imageUrl;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> roles = new ArrayList<>();
 
     public Member(String name) {
         this.name = name;
@@ -53,9 +58,6 @@ public class Member implements UserDetails {
     public Member() {
 
     }
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> roles = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
