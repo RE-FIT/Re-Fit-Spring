@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -99,7 +98,12 @@ public class CommunityService {
 
     /*선택한 카테고리에 맞는 글 리스트*/
     public List<Posts> findPostList(Integer postType, Integer gender, Integer category, List<Long> blockMemIds){
-        List<Posts> posts = communityRepository.findByPostTypeAndGenderAndCategoryAndPostState(postType, gender, category, 0);
+        if(postType == 0){
+            List<Posts> posts = communityRepository.findByPostTypeAndGenderAndCategoryAndPostState(postType, gender, category, 0);
+            posts = filterBlockedPosts(posts, blockMemIds);
+            return posts;
+        }
+        List<Posts> posts = communityRepository.findByPostTypeAndGenderAndCategoryAndPostState(postType, gender, category, 1);
         posts = filterBlockedPosts(posts, blockMemIds);
         return posts;
     }
