@@ -29,6 +29,13 @@ public class CommunityController {
     private final ScrapService scrapService;
 
 
+    private static void checkAuthentication(Authentication authentication, HttpServletRequest request) {
+        if (authentication == null) {
+            ExceptionType exception = (ExceptionType) request.getAttribute("exception");
+            throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
+        }
+    }
+
     /*커뮤니티 메인 화면 API*/
     @GetMapping
     public List<PostMainResponseDto> communityMain(
@@ -37,10 +44,7 @@ public class CommunityController {
             @RequestParam(value = "category", defaultValue = "0") Integer category,
             Authentication authentication, HttpServletRequest request){
 
-        if (authentication == null) {
-            ExceptionType exception = (ExceptionType) request.getAttribute("exception");
-            throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
-        }
+        checkAuthentication(authentication, request);
 
         //게시글 타입 범위 오류
         if(postType < 0 || postType > 1){
@@ -67,10 +71,7 @@ public class CommunityController {
     @GetMapping("/{postId}")
     public PostClickResponseDto clickPost(@PathVariable Long postId,
                                           Authentication authentication, HttpServletRequest request) {
-        if (authentication == null) {
-            ExceptionType exception = (ExceptionType) request.getAttribute("exception");
-            throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
-        }
+        checkAuthentication(authentication, request);
 
         PostClickResponseDto post = communityService.clickPost(postId, authentication);
 
@@ -85,10 +86,7 @@ public class CommunityController {
              @Valid @RequestPart PostDto postDto,
              Authentication authentication, HttpServletRequest request) throws IOException{
 
-         if (authentication == null) {
-             ExceptionType exception = (ExceptionType) request.getAttribute("exception");
-             throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
-         }
+         checkAuthentication(authentication, request);
 
          checkPostException(postDto, multipartFiles);
 
@@ -102,10 +100,7 @@ public class CommunityController {
     public void deletePost(
             @PathVariable Long postId, Authentication authentication, HttpServletRequest request){
 
-        if (authentication == null) {
-            ExceptionType exception = (ExceptionType) request.getAttribute("exception");
-            throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
-        }
+        checkAuthentication(authentication, request);
 
         communityService.deletePost(postId, authentication);
     }
@@ -115,10 +110,7 @@ public class CommunityController {
     public PostClickResponseDto changeState(
             @PathVariable Long postId, Authentication authentication, HttpServletRequest request){
 
-        if (authentication == null) {
-            ExceptionType exception = (ExceptionType) request.getAttribute("exception");
-            throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
-        }
+        checkAuthentication(authentication, request);
 
         PostClickResponseDto post = communityService.changeState(postId, authentication);
         return post;
@@ -130,10 +122,7 @@ public class CommunityController {
     public void scrap(
             @PathVariable Long postId, Authentication authentication, HttpServletRequest request){
 
-        if (authentication == null) {
-            ExceptionType exception = (ExceptionType) request.getAttribute("exception");
-            throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
-        }
+        checkAuthentication(authentication, request);
 
         scrapService.scrap(postId, authentication);
     }
@@ -144,10 +133,7 @@ public class CommunityController {
             @RequestParam String keyword,
             Authentication authentication, HttpServletRequest request) {
 
-        if (authentication == null) {
-            ExceptionType exception = (ExceptionType) request.getAttribute("exception");
-            throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
-        }
+        checkAuthentication(authentication, request);
 
         return communityService.searchPosts(keyword);
     }
@@ -160,10 +146,7 @@ public class CommunityController {
             @Valid @RequestPart PostDto postDto,
             Authentication authentication, HttpServletRequest request) throws IOException {
 
-        if (authentication == null) {
-            ExceptionType exception = (ExceptionType) request.getAttribute("exception");
-            throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
-        }
+        checkAuthentication(authentication, request);
 
         checkPostException(postDto, multipartFiles);
 
