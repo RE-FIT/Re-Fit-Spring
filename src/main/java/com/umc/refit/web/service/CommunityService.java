@@ -94,7 +94,7 @@ public class CommunityService {
         List<Long> blockMemIds = blockService.getBlockMemIds(member);
 
         List<Posts> posts = findPostList(postType, gender, category, blockMemIds);
-        List<PostMainResponseDto> mainPosts = convertToDtoList(posts, scrapService, member);
+        List<PostMainResponseDto> mainPosts = convertToDtoListMain(posts, scrapService, member);
 
         return mainPosts;
     }
@@ -119,9 +119,8 @@ public class CommunityService {
                 .collect(Collectors.toList());
     }
 
-    /*커뮤니티 초기화면 - Posts 객체를 PostMainResponseDto 객체로 변환*/
-    public List<PostMainResponseDto> convertToDtoList(List<Posts> postsList, ScrapService scrapService, Member member) {
-
+    /*Posts 객체를 PostMainResponseDto 객체로 변환*/
+    public List<PostMainResponseDto> convertToDtoListMain(List<Posts> postsList, ScrapService scrapService, Member member) {
         return postsList.stream()
                 .map(posts -> {
                     boolean scrapFlag = scrapService.isPostScrappedByUser(member, posts.getId());
@@ -142,26 +141,22 @@ public class CommunityService {
                 .collect(Collectors.toList());
     }
 
-    /*마이페이지 내 피드 - Posts 객체를 PostMainResponseDto 객체로 변환*/
-    public List<PostMainResponseDto> convertToDtoListMyFeed(List<Posts> postsList) {
-
+    /*Posts 객체를 PostMyPageResponseDto 객체로 변환*/
+    public List<PostMyPageResponseDto> convertToDtoListMyFeed(List<Posts> postsList) {
         return postsList.stream()
-                .map(posts -> {
-                    boolean scrapFlag = false;
-                    return new PostMainResponseDto(
-                            posts.getId(),
-                            posts.getTitle(),
-                            posts.getImage().get(0).getImageUrl(),
-                            posts.getGender(),
-                            posts.getDeliveryType(),
-                            posts.getSido(),
-                            posts.getSigungu(),
-                            posts.getBname(),
-                            posts.getBname2(),
-                            posts.getPrice(),
-                            posts.getSize(),
-                            scrapFlag);
-                })
+                .map(posts -> new PostMyPageResponseDto(
+                        posts.getId(),
+                        posts.getTitle(),
+                        posts.getImage().get(0).getImageUrl(),
+                        posts.getGender(),
+                        posts.getDeliveryType(),
+                        posts.getSido(),
+                        posts.getSigungu(),
+                        posts.getBname(),
+                        posts.getBname2(),
+                        posts.getPrice(),
+                        posts.getSize()
+                ))
                 .collect(Collectors.toList());
     }
 
@@ -359,7 +354,7 @@ public class CommunityService {
         Member member = memberService.findMemberByLoginId(userId)
                 .orElseThrow(() -> new CommunityException(NO_SUCH_MEMBER, NO_SUCH_MEMBER.getCode(), NO_SUCH_MEMBER.getErrorMessage()));
 
-        return convertToDtoList(communityRepository.findByTitleContainingIgnoreCaseAndPostStateCustom(keyword), scrapService, member);
+        return convertToDtoListMain(communityRepository.findByTitleContainingIgnoreCaseAndPostStateCustom(keyword), scrapService, member);
     }
 
 
@@ -428,7 +423,7 @@ public class CommunityService {
 
 
     /*마이페이지 내 피드 - 구매*/
-    public List<PostMainResponseDto> myFeedBuy(Authentication authentication){
+    public List<PostMyPageResponseDto> myFeedBuy(Authentication authentication){
         //로그인 유저
         String userId = authentication.getName();
         Member member = memberService.findMemberByLoginId(userId)
@@ -436,12 +431,12 @@ public class CommunityService {
 
         List<Posts> posts = communityRepository.findByBuyer(member);
 
-        List<PostMainResponseDto> postList = convertToDtoListMyFeed(posts);
+        List<PostMyPageResponseDto> postList = convertToDtoListMyFeed(posts);
         return postList;
     }
 
     /*마이페이지 내 피드 - 내 판매,나눔 글*/
-    public List<PostMainResponseDto> myFeedPosts(Integer postType, Authentication authentication){
+    public List<PostMyPageResponseDto> myFeedPosts(Integer postType, Authentication authentication){
         //로그인 유저
         String userId = authentication.getName();
         Member member = memberService.findMemberByLoginId(userId)
@@ -449,7 +444,7 @@ public class CommunityService {
 
         List<Posts> posts = communityRepository.findByMemberAndPostType(member, postType);
 
-        List<PostMainResponseDto> postList = convertToDtoListMyFeed(posts);
+        List<PostMyPageResponseDto> postList = convertToDtoListMyFeed(posts);
         return postList;
     }
 
