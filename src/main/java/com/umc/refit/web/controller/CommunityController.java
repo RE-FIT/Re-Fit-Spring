@@ -61,7 +61,7 @@ public class CommunityController {
 
         /*카테고리 선택에 맞는 게시글 리스트*/
         List<PostMainResponseDto> postList = null;
-        postList = communityService.communityMainPosts(postType, gender, category, authentication);
+        postList = communityService.communityMainPosts(postType, gender, category, authentication, scrapService);
 
         return postList;
     }
@@ -73,7 +73,7 @@ public class CommunityController {
                                           Authentication authentication, HttpServletRequest request) {
         checkAuthentication(authentication, request);
 
-        PostClickResponseDto post = communityService.clickPost(postId, authentication);
+        PostClickResponseDto post = communityService.clickPost(postId, authentication, scrapService);
 
         return post;
     }
@@ -135,7 +135,7 @@ public class CommunityController {
 
         checkAuthentication(authentication, request);
 
-        return communityService.searchPosts(keyword);
+        return communityService.searchPosts(authentication, keyword, scrapService);
     }
 
     /*게시글 수정*/
