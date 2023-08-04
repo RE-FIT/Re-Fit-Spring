@@ -42,11 +42,10 @@ public class ClotheController {
     // 옷장 전체 조회
     @GetMapping
     public ResponseEntity<List<GetClotheListResponseDto>> showClotheMain(
-            @RequestParam Integer category,
-            @RequestParam Integer season,
-            @RequestParam String sort) {
+            @Valid @RequestBody ShowClotheMainRequestDto request
+    ) {
         return new ResponseEntity<>(
-                this.clotheService.showClotheMain(category, season, sort), HttpStatus.OK);
+                this.clotheService.showClotheMain(request), HttpStatus.OK);
     }
 
     // 옷장 세부 조회

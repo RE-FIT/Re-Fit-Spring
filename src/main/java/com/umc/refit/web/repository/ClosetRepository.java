@@ -1,6 +1,8 @@
 package com.umc.refit.web.repository;
 
 import com.umc.refit.domain.entity.Clothe;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -14,4 +16,6 @@ public interface ClosetRepository extends JpaRepository<Clothe, Long> {
 
     @Query("select Count(c) from Clothe c where c.category = :category and c.lastDate = :today")
     int getCountOneCategoryPerOnDay(int category, LocalDate today);
+
+    Page<Clothe> findAll(Pageable pageable);
 }

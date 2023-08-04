@@ -53,12 +53,19 @@ public class Clothe extends BaseTimeEntity {
     @Column(name = "last_dt")
     private LocalDate lastDate;
 
+    @Column(name = "target_completed_dt")
+    private LocalDate completedDate;
+
     @Column(name = "image_url")
     private String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public static void showHi() {
+        System.out.println("hi");
+    }
 
     public GetClotheListResponseDto from(Integer remainedDay) {
         return GetClotheListResponseDto.builder()
@@ -112,14 +119,18 @@ public class Clothe extends BaseTimeEntity {
         this.targetCnt = request.getTargetCnt();
         this.targetPeriod = request.getTargetPeriod();
         this.isPlan = request.getIsPlan();
-        log.info(isPlan ? "true" : "false");
         this.cntPerMonth = request.getCntPerMonth();
         this.cntPerWeek = request.getCntPerWeek();
         this.editCnt += 1;
     }
 
+    // 이미 달성한 옷이나
+    // 목표 설정을 안한 옷은 불가
     public void wearClothe() {
         this.count += 1;
+        if (this.count == this.targetCnt) {
+            this.completedDate = LocalDate.now();
+        }
         this.lastDate = LocalDate.now();
     }
 }
