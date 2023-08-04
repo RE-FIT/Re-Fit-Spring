@@ -1,6 +1,7 @@
 package com.umc.refit.web.controller;
 
 import com.umc.refit.domain.dto.community.PostMainResponseDto;
+import com.umc.refit.domain.dto.community.PostMyPageResponseDto;
 import com.umc.refit.domain.dto.mypage.GetMyInfoResponseDto;
 import com.umc.refit.domain.dto.mypage.UpdateMyInfoRequestDto;
 import com.umc.refit.exception.ExceptionType;
@@ -40,36 +41,36 @@ public class MypageController {
 
     /*내 피드 - 나눔 API*/
     @GetMapping("/myfeed/give")
-    public List<PostMainResponseDto> myFeedGvie(
+    public List<PostMyPageResponseDto> myFeedGvie(
             Authentication authentication, HttpServletRequest request) {
 
         checkAuthentication(authentication, request);
 
-        List<PostMainResponseDto> postList = communityService.myFeedPosts(give, authentication);
+        List<PostMyPageResponseDto> postList = communityService.myFeedPosts(give, authentication);
 
         return postList;
     }
 
     /*내 피드 - 판매 API*/
     @GetMapping("/myfeed/sell")
-    public List<PostMainResponseDto> myFeedSell(
+    public List<PostMyPageResponseDto> myFeedSell(
             Authentication authentication, HttpServletRequest request) {
 
         checkAuthentication(authentication, request);
 
-        List<PostMainResponseDto> postList = communityService.myFeedPosts(sell, authentication);
+        List<PostMyPageResponseDto> postList = communityService.myFeedPosts(sell, authentication);
 
         return postList;
     }
 
     /*내 피드 - 구매 API*/
     @GetMapping("/myfeed/buy")
-    public List<PostMainResponseDto> myFeedBuy(
+    public List<PostMyPageResponseDto> myFeedBuy(
             Authentication authentication, HttpServletRequest request) {
 
         checkAuthentication(authentication, request);
 
-        List<PostMainResponseDto> postList = communityService.myFeedBuy(authentication);
+        List<PostMyPageResponseDto> postList = communityService.myFeedBuy(authentication);
 
         return postList;
     }
