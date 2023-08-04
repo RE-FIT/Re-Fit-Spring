@@ -18,7 +18,9 @@ public class PostMainResponseDto {
     private Integer price;
     private Integer size;
 
-    public PostMainResponseDto(Long postId, String title, String imgUrl, Integer gender, Integer deliveryType, String sido, String sigungu, String bname, String bname2, Integer price, Integer size) {
+    private boolean scrapFlag;
+
+    public PostMainResponseDto(Long postId, String title, String imgUrl, Integer gender, Integer deliveryType, String sido, String sigungu, String bname, String bname2, Integer price, Integer size, boolean scrapFlag) {
         this.postId = postId;
         this.title = title;
         this.imgUrl = imgUrl;
@@ -30,5 +32,6 @@ public class PostMainResponseDto {
         this.bname2 = bname2;
         this.price = price;
         this.size = size;
+        this.scrapFlag = scrapFlag;
     }
 }

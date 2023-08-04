@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -71,10 +70,16 @@ public class ScrapService {
                 .orElseThrow(() -> new CommunityException(NO_SUCH_MEMBER, NO_SUCH_MEMBER.getCode(), NO_SUCH_MEMBER.getErrorMessage()));
 
         List<Scrap> scraps = scrapRepository.findByMember(member);
-        return convertToDtoList(scraps.stream()
+        return convertToDtoListScrap(scraps.stream()
                 .map(Scrap::getPost)
                 .filter(post -> post.getPostType() == postType)
                 .collect(Collectors.toList()));
+    }
+
+    /*해당 게시글에 대한 유저의 스크랩 여부 판별*/
+    public boolean isPostScrappedByUser(Member member, Long postId) {
+        //사용자가 특정 게시글을 스크랩했는지 확인
+        return scrapRepository.existsByMemberAndPostId(member, postId);
     }
 
 
@@ -85,21 +90,24 @@ public class ScrapService {
         scrapRepository.delete(scrap);
     }
 
-    public List<PostMainResponseDto> convertToDtoList(List<Posts> postsList) {
+    public List<PostMainResponseDto> convertToDtoListScrap(List<Posts> postsList) {
         return postsList.stream()
-                .map(posts -> new PostMainResponseDto(
-                        posts.getId(),
-                        posts.getTitle(),
-                        posts.getImage().get(0).getImageUrl(),
-                        posts.getGender(),
-                        posts.getDeliveryType(),
-                        posts.getSido(),
-                        posts.getSigungu(),
-                        posts.getBname(),
-                        posts.getBname2(),
-                        posts.getPrice(),
-                        posts.getSize()
-                ))
+                .map(posts -> {
+                    boolean scrapFlag = true;
+                    return new PostMainResponseDto(
+                            posts.getId(),
+                            posts.getTitle(),
+                            posts.getImage().get(0).getImageUrl(),
+                            posts.getGender(),
+                            posts.getDeliveryType(),
+                            posts.getSido(),
+                            posts.getSigungu(),
+                            posts.getBname(),
+                            posts.getBname2(),
+                            posts.getPrice(),
+                            posts.getSize(),
+                            scrapFlag);
+                })
                 .collect(Collectors.toList());
     }
 }
