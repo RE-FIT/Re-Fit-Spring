@@ -6,6 +6,7 @@ import com.umc.refit.domain.entity.Clothe;
 import com.umc.refit.exception.clothe.ClotheException;
 import com.umc.refit.web.repository.ClosetRepository;
 import com.umc.refit.web.repository.MemberRepository;
+import com.umc.refit.web.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import static com.umc.refit.exception.ExceptionType.CLOTHE_EMPTY;
@@ -33,6 +35,8 @@ public class ClotheService {
     private final ClosetRepository closetRepository;
 
     private final MemberRepository memberRepository;
+
+    private final QuestionRepository questionRepository;
 
     private final S3UploadService s3UploadService;
     private final String bucketDirName = "closet";
@@ -111,10 +115,19 @@ public class ClotheService {
         return getClothe(id).toClotheForestResponseDto();
     }
 
+    @Transactional(readOnly = true)
+    public GetClotheForestRandomQuestionResponseDto getClotheForestQuestion(Long id) {
+        getClothe(id);
+        int randomIndex = new Random().nextInt((int) getCount());
+        return GetClotheForestRandomQuestionResponseDto
+                .from(this.questionRepository.findAll().get(randomIndex));
+    }
+
     private Clothe getClothe(Long id) {
         return this.closetRepository.findById(id)
                 .orElseThrow(() -> new ClotheException(CLOTHE_EMPTY, CLOTHE_EMPTY.getCode(), CLOTHE_EMPTY.getErrorMessage()));
     }
+
 
     // 목표 미설정(is plan == false) -> -7777
     // 목표 달성(closet.getCount() >= closet.getTargetCnt()) -> +7777
@@ -130,5 +143,9 @@ public class ClotheService {
         return (int) targetAt.until(LocalDateTime.now(), ChronoUnit.DAYS);
         // 기간이 남아있다면 -
         // 기간이 지났다면 +
+    }
+
+    private long getCount() {
+        return this.questionRepository.count();
     }
 }
