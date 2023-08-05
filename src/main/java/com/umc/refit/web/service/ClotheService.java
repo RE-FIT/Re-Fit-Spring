@@ -10,7 +10,6 @@ import com.umc.refit.web.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -64,15 +62,10 @@ public class ClotheService {
     }
 
     @Transactional(readOnly = true)
-    public List<GetClotheListResponseDto> showClotheMain(ShowClotheMainRequestDto request) {
-        if (request.getSort().equals("d-day")) {
+    public List<GetClotheListResponseDto> showClotheMain(int category, int season, String sort) {
+        if (sort.equals("d-day")) {
 
-            List<Clothe> clothes
-                    = this.closetRepository.findAll(PageRequest.of(request.getPage(), request.getSize()))
-                    .getContent();
-
-            clothes = new ArrayList<>(clothes);
-
+            List<Clothe> clothes = this.closetRepository.findAllByCategoryAndSeason(category, season);
             if (clothes.isEmpty()) {
                 return null;
             }
@@ -111,13 +104,13 @@ public class ClotheService {
                     .map(clothe -> clothe.from(this.calculateRemainedDay(clothe)))
                     .collect(Collectors.toList());
 
-        } else if (request.getSort().equals("most_worn")) {
-            return this.closetRepository.findAllByOrderByCountDesc()
+        } else if (sort.equals("most_worn")) {
+            return this.closetRepository.findAllByCategoryAndSeasonOrderByCountDesc(category, season)
                     .stream()
                     .map(clothe -> clothe.from(this.calculateRemainedDay(clothe)))
                     .collect(Collectors.toList());
         } else {
-            return this.closetRepository.findAllByOrderByCountAsc()
+            return this.closetRepository.findAllByCategoryAndSeasonOrderByCountAsc(category, season)
                     .stream()
                     .map(clothe -> clothe.from(this.calculateRemainedDay(clothe)))
                     .collect(Collectors.toList());
