@@ -31,6 +31,7 @@ public enum ExceptionType {
     //회원 아이디 찾기 및 패스워드 재설정 예외
     MEMBER_IS_NOT_EXIST(BAD_REQUEST, 10004, "아이디 찾기에 실패했습니다."),
     PASSWORD_RESET_FAIL(BAD_REQUEST, 10005, "비밀번호 재설정에 실패하였습니다."),
+    PASSWORD_IS_NOT_MATCH(BAD_REQUEST, 1006, "현재 비밀번호와 입력하신 비밀번호가 일치하지 않습니다."),
 
     // Token 예외
     TOKEN_NOT_EXIST(BAD_REQUEST, 10100, "JWT Token이 존재하지 않습니다."),
@@ -92,7 +93,6 @@ public enum ExceptionType {
 
     /*파일 업로드 관련 예외*/
     FILE_UPLOAD_FAILED(INTERNAL_SERVER_ERROR, 50001, "파일 업로드 중 오류가 발생하였습니다.");
-
 
 
     private final HttpStatus httpStatus;

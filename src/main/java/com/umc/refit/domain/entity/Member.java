@@ -98,4 +98,8 @@ public class Member implements UserDetails {
         gender = request.getGender();
         imageUrl = requestedImageUrl;
     }
+
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
+    }
 }
