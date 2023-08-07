@@ -16,7 +16,7 @@ public interface ClosetRepository extends JpaRepository<Clothe, Long> {
     @Query("select Count(c) from Clothe c where c.category = :category and c.lastDate = :today")
     int getCountOneCategoryPerOnDay(int category, LocalDate today);
 
-    List<Clothe> findAllByCategoryAndSeason(int category, int season);
+    List<Clothe> findAllByCategoryAndSeason(Integer category, Integer season);
 
 
 }

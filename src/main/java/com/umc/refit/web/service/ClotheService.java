@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -62,17 +63,18 @@ public class ClotheService {
     }
 
     @Transactional(readOnly = true)
-    public List<GetClotheListResponseDto> showClotheMain(int category, int season, String sort) {
+    public List<GetClotheListResponseDto> showClotheMain(Integer category, Integer season, String sort) {
         if (sort.equals("d-day")) {
 
             List<Clothe> clothes = this.closetRepository.findAllByCategoryAndSeason(category, season);
-            if (clothes.isEmpty()) {
-                return null;
+
+            if (clothes.size() == 0) {
+                return new ArrayList<GetClotheListResponseDto>();
             }
 
             clothes.sort((c1, c2) -> {
-                int remainedDay1 = calculateRemainedDay(c1);
-                int remainedDay2 = calculateRemainedDay(c2);
+                Integer remainedDay1 = calculateRemainedDay(c1);
+                Integer remainedDay2 = calculateRemainedDay(c2);
 
                 boolean isPositive1 = remainedDay1 >= 0 && remainedDay1 != 7777;
                 boolean isPositive2 = remainedDay2 >= 0 && remainedDay2 != 7777;
@@ -87,16 +89,18 @@ public class ClotheService {
                     return Integer.compare(remainedDay1, remainedDay2);
                 } else if (isNegative1) {
                     // -7777 인 값들은 lastDate 기준으로 내림차순 정렬
-                    return c2.getLastDate().compareTo(c1.getLastDate());
+                    // getLastDate() == null 인 경우에는 뒤로
+                    return c2.getLastDate() != null ? c2.getLastDate().compareTo(c1.getLastDate()) : 1;
                 } else if (isNegative2) {
                     // -7777 인 값들은 lastDate 기준으로 내림차순 정렬
-                    return c2.getLastDate().compareTo(c1.getLastDate());
+                    // getLastDate() == null 인 경우에는 뒤로
+                    return c1.getLastDate() != null ? c2.getLastDate().compareTo(c1.getLastDate()) : -1;
                 } else if (isPositive1) {
                     // +7777 인 값들은 completedDate 기준으로 내림차순 정렬
-                    return c2.getCompletedDate().compareTo(c1.getCompletedDate());
+                    return c2.getCompletedDate() != null ? c2.getCompletedDate().compareTo(c1.getCompletedDate()) : 1;
                 } else {
                     // +7777 인 값들은 completedDate 기준으로 내림차순 정렬
-                    return c2.getCompletedDate().compareTo(c1.getCompletedDate());
+                    return c2.getCompletedDate() != null ? c2.getCompletedDate().compareTo(c1.getCompletedDate()) : -1;
                 }
             });
 
@@ -177,8 +181,8 @@ public class ClotheService {
     // 목표 미설정(is plan == false) -> -7777
     // 목표 달성(closet.getCount() >= closet.getTargetCnt()) -> +7777
     // else(목표 미달성) -> 남은 or 지난 기간
-    private int calculateRemainedDay(Clothe clothe) {
-        if (checkHasNoPlanAndTimeIsNotSame(clothe)) {
+    private Integer calculateRemainedDay(Clothe clothe) {
+        if (checkIfHasNotGoal(clothe)) {
             // 목표 미설정
             return -7777;
         }
@@ -192,7 +196,7 @@ public class ClotheService {
         // 기간이 지났다면 +
     }
 
-    private boolean checkHasNoPlanAndTimeIsNotSame(Clothe clothe) {
+    private boolean checkIfHasNotGoal(Clothe clothe) {
         return (!clothe.isPlan()) && (clothe.getTargetCnt() == null) && (clothe.getTargetPeriod() == null)
                 && (clothe.getCntPerMonth() == null) && (clothe.getCntPerWeek() == null);
     }
