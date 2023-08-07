@@ -5,7 +5,6 @@ import com.umc.refit.domain.dto.community.*;
 import com.umc.refit.domain.entity.Member;
 import com.umc.refit.domain.entity.PostImage;
 import com.umc.refit.domain.entity.Posts;
-import com.umc.refit.domain.entity.Scrap;
 import com.umc.refit.exception.community.CommunityException;
 import com.umc.refit.web.repository.CommunityRepository;
 import lombok.RequiredArgsConstructor;
@@ -66,6 +65,8 @@ public class CommunityService {
                 post.getMember().getName(),
                 imgUrls,
                 post.getSize(),
+                post.getCategory(),
+                post.getGender(),
                 post.getDeliveryType(),
                 post.getDeliveryFee(),
                 post.getSido(),
@@ -103,11 +104,11 @@ public class CommunityService {
     /*선택한 카테고리에 맞는 글 리스트*/
     public List<Posts> findPostList(Integer postType, Integer gender, Integer category, List<Long> blockMemIds){
         if(postType == 0){
-            List<Posts> posts = communityRepository.findByPostTypeAndGenderAndCategoryAndPostState(postType, gender, category, 0);
+            List<Posts> posts = communityRepository.findByPostTypeAndGenderAndCategoryAndPostStateOrderByCreatedAtDesc(postType, gender, category, 0);
             posts = filterBlockedPosts(posts, blockMemIds);
             return posts;
         }
-        List<Posts> posts = communityRepository.findByPostTypeAndGenderAndCategoryAndPostState(postType, gender, category, 1);
+        List<Posts> posts = communityRepository.findByPostTypeAndGenderAndCategoryAndPostStateOrderByCreatedAtDesc(postType, gender, category, 1);
         posts = filterBlockedPosts(posts, blockMemIds);
         return posts;
     }
@@ -208,10 +209,32 @@ public class CommunityService {
         }
         //판매 완료된 글 수정할 때 거래방식이 ‘나눔’일 경우 나눔 중으로 상태 변경
         if(findPost.getPostState()==2 && postDto.getPostType() == 1){
-            postDto.setPostState(1);
+            postDto.setPostState(0);
             postDto.setPrice(0);
             findPost.removeBuyer();
         }
+        //나눔 중 글 수정할 때 거래방식이 '나눔'일 경우 나눔 중으로 유지
+        if(findPost.getPostState()==0 && postDto.getPostType() == 0){
+            postDto.setPostState(0);
+            postDto.setPrice(0);
+        }
+
+        //나눔 중 글 수정할 때 거래방식이 '판매'일 경우 판매 중으로 변경
+        if(findPost.getPostState()==0 && postDto.getPostType() == 1){
+            postDto.setPostState(1);
+        }
+
+        //판매 중 글 수정할 때 거래방식이 '판매'일 경우 판매 중으로 유지
+        if(findPost.getPostState()==1 && postDto.getPostType() == 1){
+            postDto.setPostState(1);
+        }
+
+        //판매 중 글 수정할 때 거래방식이 '나눔'일 경우 나눔 중으로 변경
+        if(findPost.getPostState()==1 && postDto.getPostType() == 0){
+            postDto.setPostState(0);
+            postDto.setPrice(0);
+        }
+
         //직거래면 배송비 0원으로 설정
         if (postDto.getDeliveryType() == 0){
             postDto.setDeliveryFee(0);
@@ -257,6 +280,8 @@ public class CommunityService {
                 findPost.getMember().getName(),
                 imgUrls,
                 findPost.getSize(),
+                findPost.getCategory(),
+                findPost.getGender(),
                 findPost.getDeliveryType(),
                 findPost.getDeliveryFee(),
                 findPost.getSido(),
@@ -333,6 +358,8 @@ public class CommunityService {
                 findPost.getMember().getName(),
                 imgUrls,
                 findPost.getSize(),
+                findPost.getCategory(),
+                findPost.getGender(),
                 findPost.getDeliveryType(),
                 findPost.getDeliveryFee(),
                 findPost.getSido(),
@@ -349,16 +376,19 @@ public class CommunityService {
     }
 
     /*게시글 검색*/
-    public List<PostMainResponseDto> searchPosts(Authentication authentication, String keyword, ScrapService scrapService) {
+    public List<PostMainResponseDto> searchPosts(Authentication authentication, String keyword, ScrapService scrapService, Integer postType, Integer gender, Integer category) {
         String userId = authentication.getName();
         Member member = memberService.findMemberByLoginId(userId)
                 .orElseThrow(() -> new CommunityException(NO_SUCH_MEMBER, NO_SUCH_MEMBER.getCode(), NO_SUCH_MEMBER.getErrorMessage()));
 
-        return convertToDtoListMain(communityRepository.findByTitleContainingIgnoreCaseAndPostStateCustom(keyword), scrapService, member);
+        List<Posts> postsList = communityRepository.findByTitleContainingIgnoreCaseAndPostStateCustom(keyword);
+
+        //List<Posts> postsList = communityRepository.searchPosts(keyword, postType, gender, category);
+        return convertToDtoListMain(postsList, scrapService, member);
     }
 
 
-    /*게시글 수정*/
+    /*게시글 수정 - 이미지 수정 o*/
     public PostClickResponseDto update(Long postId, PostDto postDto, List<MultipartFile> multipartFiles, Authentication authentication) throws IOException {
         //로그인 유저
         String userId = authentication.getName();
@@ -405,6 +435,54 @@ public class CommunityService {
                 findPost.getMember().getName(),
                 imgUrls,
                 findPost.getSize(),
+                findPost.getCategory(),
+                findPost.getGender(),
+                findPost.getDeliveryType(),
+                findPost.getDeliveryFee(),
+                findPost.getSido(),
+                findPost.getSigungu(),
+                findPost.getBname(),
+                findPost.getBname2(),
+                findPost.getPrice(),
+                findPost.getDetail(),
+                findPost.getPostType(),
+                findPost.getPostState(),
+                findPost.getCreatedAt(),
+                false);
+        return clickedPost;
+    }
+
+
+    /*게시글 수정 - 이미지 수정 x*/
+    public PostClickResponseDto updateWithoutImage(Long postId, PostDto postDto, Authentication authentication) throws IOException {
+        //로그인 유저
+        String userId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(userId)
+                .orElseThrow(() -> new CommunityException(NO_SUCH_MEMBER, NO_SUCH_MEMBER.getCode(), NO_SUCH_MEMBER.getErrorMessage()));
+
+        Posts findPost = findPostById(postId)
+                .orElseThrow(() -> new CommunityException(NO_SUCH_POST, NO_SUCH_POST.getCode(), NO_SUCH_POST.getErrorMessage()));
+
+        if(!member.getId().equals(findPost.getMember().getId())){
+            throw new CommunityException(PERMISSION_DENIED, PERMISSION_DENIED.getCode(), PERMISSION_DENIED.getErrorMessage());
+        }
+
+        PostDto newPostDto = setChangePostDto(postDto, findPost);
+        findPost.update(newPostDto);
+
+        List<String> imgUrls = findPost.getImage().stream()
+                .map(PostImage::getImageUrl)
+                .collect(Collectors.toList());
+
+        PostClickResponseDto clickedPost = new PostClickResponseDto(
+                member.getName(),
+                findPost.getId(),
+                findPost.getTitle(),
+                findPost.getMember().getName(),
+                imgUrls,
+                findPost.getSize(),
+                findPost.getCategory(),
+                findPost.getGender(),
                 findPost.getDeliveryType(),
                 findPost.getDeliveryFee(),
                 findPost.getSido(),
@@ -429,7 +507,7 @@ public class CommunityService {
         Member member = memberService.findMemberByLoginId(userId)
                 .orElseThrow(() -> new CommunityException(NO_SUCH_MEMBER, NO_SUCH_MEMBER.getCode(), NO_SUCH_MEMBER.getErrorMessage()));
 
-        List<Posts> posts = communityRepository.findByBuyer(member);
+        List<Posts> posts = communityRepository.findByBuyerOrderByCreatedAtDesc(member);
 
         List<PostMyPageResponseDto> postList = convertToDtoListMyFeed(posts);
         return postList;
@@ -442,7 +520,7 @@ public class CommunityService {
         Member member = memberService.findMemberByLoginId(userId)
                 .orElseThrow(() -> new CommunityException(NO_SUCH_MEMBER, NO_SUCH_MEMBER.getCode(), NO_SUCH_MEMBER.getErrorMessage()));
 
-        List<Posts> posts = communityRepository.findByMemberAndPostType(member, postType);
+        List<Posts> posts = communityRepository.findByMemberAndPostTypeOrderByCreatedAtDesc(member, postType);
 
         List<PostMyPageResponseDto> postList = convertToDtoListMyFeed(posts);
         return postList;
