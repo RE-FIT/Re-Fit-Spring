@@ -3,7 +3,6 @@ package com.umc.refit.web.service;
 import com.umc.refit.domain.entity.Member;
 import com.umc.refit.web.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,9 +35,24 @@ public class MemberService {
         return memberRepository.findByName(name);
     }
 
+    public Optional<Member> findByLoginId(String loginId) {
+        return memberRepository.findByLoginId(loginId);
+    }
+
+
     /*패스워드 인코딩 후 저장*/
     public void save(Member member) {
         member.setPassword(passwordEncoder.encode(member.getPassword()));
         memberRepository.save(member);
+    }
+
+    /* 회원 패스워드 수정 */
+    public void updateMemberPassword(Member member, String newPassword) {
+        member.updatePassword(passwordEncoder.encode(newPassword));
+    }
+
+    /* 비밀번호 일치 여부 판단 */
+    public boolean isPasswordMatch(String requestCurrentPassword, String encryptPassword) {
+        return passwordEncoder.matches(requestCurrentPassword, encryptPassword);
     }
 }
