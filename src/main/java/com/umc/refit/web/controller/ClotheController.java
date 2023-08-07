@@ -42,8 +42,8 @@ public class ClotheController {
     // 옷장 전체 조회
     @GetMapping
     public ResponseEntity<List<GetClotheListResponseDto>> showClotheMain(
-            @RequestParam(required = false) int category,
-            @RequestParam(required = false) int season,
+            @RequestParam(required = false) Integer category,
+            @RequestParam(required = false) Integer season,
             @RequestParam(required = false) String sort
     ) {
         return new ResponseEntity<>(

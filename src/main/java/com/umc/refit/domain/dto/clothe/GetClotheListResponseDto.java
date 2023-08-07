@@ -2,6 +2,8 @@ package com.umc.refit.domain.dto.clothe;
 
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @Builder
@@ -17,6 +19,9 @@ public class GetClotheListResponseDto {
 
     private Integer cntPerMonth;
     private Integer cntPerWeek;
+
+    private LocalDate lastDate;
+
     /**
      * 목표 기간 남았을 때 : D-00
      * 목표 기간 지났을 때 : D+00

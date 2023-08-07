@@ -29,10 +29,10 @@ public class Clothe extends BaseTimeEntity {
     @Column(name = "season", nullable = false)
     private Integer season;
 
-    @Column(name = "target_cnt") // 목표 착용 횟수
+    @Column(name = "target_cnt")
     private Integer targetCnt;
 
-    @Column(name = "target_period") // 목표 착용 개월
+    @Column(name = "target_period")
     private Integer targetPeriod;
 
     @Column(name = "is_plan")
@@ -63,10 +63,6 @@ public class Clothe extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public static void showHi() {
-        System.out.println("hi");
-    }
-
     public GetClotheListResponseDto from(Integer remainedDay) {
         return GetClotheListResponseDto.builder()
                 .id(id)
@@ -75,6 +71,7 @@ public class Clothe extends BaseTimeEntity {
                 .count(count)
                 .cntPerMonth(cntPerMonth)
                 .cntPerWeek(cntPerWeek)
+                .lastDate(lastDate)
                 .remainedDay(remainedDay)
                 .build();
     }
