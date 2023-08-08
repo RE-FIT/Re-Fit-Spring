@@ -100,10 +100,7 @@ public class ScrapService {
                             posts.getImage().get(0).getImageUrl(),
                             posts.getGender(),
                             posts.getDeliveryType(),
-                            posts.getSido(),
-                            posts.getSigungu(),
-                            posts.getBname(),
-                            posts.getBname2(),
+                            posts.getAddress(),
                             posts.getPrice(),
                             posts.getSize(),
                             scrapFlag);

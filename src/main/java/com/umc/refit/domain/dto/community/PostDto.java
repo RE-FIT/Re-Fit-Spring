@@ -15,10 +15,7 @@ public class PostDto {
     private Integer deliveryType;
     private Integer deliveryFee;
     private Integer price;
-    private String sido;
-    private String sigungu;
-    private String bname;
-    private String bname2;
+    private String address;
     private String detail;
     private Integer postState;
 }
