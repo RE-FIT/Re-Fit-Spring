@@ -56,12 +56,9 @@ public class MyInfoService {
         }
 
         ImageDto imageDto;
-        try {
-            imageDto = this.s3UploadService.uploadFile(Objects.requireNonNull(multipartFile), bucketName, bucketDirName);
-            getMember(authentication).updateMemberByMyInfo(request, imageDto.getImageUrl());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
+        imageDto = this.s3UploadService.uploadFile(Objects.requireNonNull(multipartFile), bucketName, bucketDirName);
+        getMember(authentication).updateMemberByMyInfo(request, imageDto.getImageUrl());
     }
 
     @Transactional

@@ -52,11 +52,9 @@ public class ClotheService {
                                Authentication authentication) {
 
         ImageDto imageDto;
-        try {
-            imageDto = this.s3UploadService.uploadFile(multipartFile, bucketName, bucketDirName);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
+        imageDto = this.s3UploadService.uploadFile(multipartFile, bucketName, bucketDirName);
+
         return this.closetRepository.save(request.toEntity(this.memberRepository.findByLoginId(authentication.getName())
                         .orElseThrow(() -> new UsernameNotFoundException("No member found with this user id")), imageDto))
                 .getId();

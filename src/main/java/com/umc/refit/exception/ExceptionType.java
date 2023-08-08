@@ -91,9 +91,10 @@ public enum ExceptionType {
     //헤당 아이디 게시글 없음
     NO_SUCH_POST(NOT_FOUND, 303001, "해당 게시글이 존재하지 않습니다."),
 
-    /*파일 업로드 관련 예외*/
-    FILE_UPLOAD_FAILED(INTERNAL_SERVER_ERROR, 50001, "파일 업로드 중 오류가 발생하였습니다.");
-
+    /*파일 관련 예외*/
+    FILE_UPLOAD_FAILED(INTERNAL_SERVER_ERROR, 50001, "파일 업로드 중 오류가 발생하였습니다."),
+    FILE_DELETE_FAILED(INTERNAL_SERVER_ERROR, 50002, "이미지 삭제 중 오류가 발생하였습니다."),
+    S3_ERROR(INTERNAL_SERVER_ERROR, 50003, "S3 서비스와 통신 중 오류가 발생했습니다.");
 
     private final HttpStatus httpStatus;
     private final int code;
