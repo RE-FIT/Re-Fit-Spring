@@ -44,6 +44,7 @@ public class JwtAuthorizationRsaFilter extends OncePerRequestFilter {
                 || pathMatcher.match("/auth/find/id", path) //아이디 찾기
                 || pathMatcher.match("/auth/reset/password", path) //패스워드 찾기
                 || pathMatcher.match("/auth/login", path) //일반 로그인
+                || pathMatcher.match("/*.html", path)
 //                || pathMatcher.match("/**", path) //API 테스트를 위해 모든 로직에 대해 인가 제외
         );
     }
