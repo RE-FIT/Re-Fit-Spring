@@ -11,25 +11,19 @@ public class PostMainResponseDto {
     private String imgUrl;
     private Integer gender;
     private Integer deliveryType;
-    private String sido;
-    private String sigungu;
-    private String bname;
-    private String bname2;
+    private String address;
     private Integer price;
     private Integer size;
 
     private boolean scrapFlag;
 
-    public PostMainResponseDto(Long postId, String title, String imgUrl, Integer gender, Integer deliveryType, String sido, String sigungu, String bname, String bname2, Integer price, Integer size, boolean scrapFlag) {
+    public PostMainResponseDto(Long postId, String title, String imgUrl, Integer gender, Integer deliveryType, String address, Integer price, Integer size, boolean scrapFlag) {
         this.postId = postId;
         this.title = title;
         this.imgUrl = imgUrl;
         this.gender = gender;
         this.deliveryType = deliveryType;
-        this.sido = sido;
-        this.sigungu = sigungu;
-        this.bname = bname;
-        this.bname2 = bname2;
+        this.address = address;
         this.price = price;
         this.size = size;
         this.scrapFlag = scrapFlag;

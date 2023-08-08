@@ -222,7 +222,7 @@ public class CommunityController {
             throw new CommunityException(DELIVERY_FEE_EMPTY, DELIVERY_FEE_EMPTY.getCode(), DELIVERY_FEE_EMPTY.getErrorMessage());
         }
         //거래 방식이 직거래인데 거래 희망 지역이 null
-        if (postDto.getDeliveryType() == 0 && postDto.getSido() == null){
+        if (postDto.getDeliveryType() == 0 && postDto.getAddress() == null){
             throw new CommunityException(REGION_EMPTY, REGION_EMPTY.getCode(), REGION_EMPTY.getErrorMessage());
         }
         //이미지 null
@@ -293,7 +293,7 @@ public class CommunityController {
             throw new CommunityException(DELIVERY_FEE_EMPTY, DELIVERY_FEE_EMPTY.getCode(), DELIVERY_FEE_EMPTY.getErrorMessage());
         }
         //거래 방식이 직거래인데 거래 희망 지역이 null
-        if (postDto.getDeliveryType() == 0 && postDto.getSido() == null){
+        if (postDto.getDeliveryType() == 0 && postDto.getAddress() == null){
             throw new CommunityException(REGION_EMPTY, REGION_EMPTY.getCode(), REGION_EMPTY.getErrorMessage());
         }
     }

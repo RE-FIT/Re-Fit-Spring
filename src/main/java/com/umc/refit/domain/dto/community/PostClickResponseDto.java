@@ -20,10 +20,7 @@ public class PostClickResponseDto {
     private Integer gender;
     private Integer deliveryType;
     private Integer deliveryFee;
-    private String sido;
-    private String sigungu;
-    private String bname;
-    private String bname2;
+    private String address;
     private Integer price;
     private String detail;
     private Integer postType;
@@ -33,7 +30,7 @@ public class PostClickResponseDto {
 
     private boolean scrapFlag;
 
-    public PostClickResponseDto(String clickedMember, Long postId, String title, String author, List<String> imgUrls, Integer size, Integer category, Integer gender, Integer deliveryType, Integer deliveryFee, String sido, String sigungu, String bname, String bname2, Integer price, String detail, Integer postType, Integer postState, LocalDateTime createdAt, boolean scrapFlag) {
+    public PostClickResponseDto(String clickedMember, Long postId, String title, String author, List<String> imgUrls, Integer size, Integer category, Integer gender, Integer deliveryType, Integer deliveryFee, String address, Integer price, String detail, Integer postType, Integer postState, LocalDateTime createdAt, boolean scrapFlag) {
         this.clickedMember = clickedMember;
         this.postId = postId;
         this.title = title;
@@ -44,10 +41,7 @@ public class PostClickResponseDto {
         this.gender = gender;
         this.deliveryType = deliveryType;
         this.deliveryFee = deliveryFee;
-        this.sido = sido;
-        this.sigungu = sigungu;
-        this.bname = bname;
-        this.bname2 = bname2;
+        this.address = address;
         this.price = price;
         this.detail = detail;
         this.postType = postType;
