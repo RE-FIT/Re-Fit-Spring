@@ -26,7 +26,7 @@ public class CmImgService {
 
 
     /*이미지 파일을 S3에 저장*/
-    public List<PostImage> uploadPostImg(List<MultipartFile> multipartFiles, String bucketName, String bucketDirName) throws IOException {
+    public List<PostImage> uploadPostImg(List<MultipartFile> multipartFiles, String bucketName, String bucketDirName){
         List<PostImage> imageList = new ArrayList<>();
 
         /*
@@ -36,14 +36,10 @@ public class CmImgService {
         * */
         multipartFiles.forEach(multipartFile -> {
             ImageDto imageDto = null;
-            try {
-                imageDto = s3UploadService.uploadFile(multipartFile, bucketName, bucketDirName);
-            } catch (IOException e) {
-                throw new FileException(FILE_UPLOAD_FAILED, FILE_UPLOAD_FAILED.getCode(), FILE_UPLOAD_FAILED.getErrorMessage());
-            }
+
+            imageDto = s3UploadService.uploadFile(multipartFile, bucketName, bucketDirName);
 
             PostImage image = new PostImage(imageDto);
-
             imageList.add(image);
         });
         return imageList;
