@@ -89,7 +89,10 @@ public enum ExceptionType {
     //해당 아이디 멤버 없음
     NO_SUCH_MEMBER(NOT_FOUND, 30300, "해당 멤버가 존재하지 않습니다."),
     //헤당 아이디 게시글 없음
-    NO_SUCH_POST(NOT_FOUND, 303001, "해당 게시글이 존재하지 않습니다."),
+    NO_SUCH_POST(NOT_FOUND, 30301, "해당 게시글이 존재하지 않습니다."),
+
+    /*거래 관련 예외*/
+    ALREADY_COMPLETED_TRADE(BAD_REQUEST, 40001, "이미 거래 완료된 글입니다."),
 
     /*파일 관련 예외*/
     FILE_UPLOAD_FAILED(INTERNAL_SERVER_ERROR, 50001, "파일 업로드 중 오류가 발생하였습니다."),

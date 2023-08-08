@@ -555,7 +555,7 @@ public class CommunityService {
                 findPost.initializeBuyer(buyer);
             }
         }else{
-            throw new IllegalStateException("이미 거래 완료된 상품입니다.");
+            throw new CommunityException(ALREADY_COMPLETED_TRADE, ALREADY_COMPLETED_TRADE.getCode(), ALREADY_COMPLETED_TRADE.getErrorMessage());
         }
     }
 
