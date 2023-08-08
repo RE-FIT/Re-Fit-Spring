@@ -45,6 +45,7 @@ public class OAuth2ResourceServer {
                                 , "/auth/email" //이메일 찾기
                                 , "/auth/find/id" //아이디 찾기
                                 , "/auth/reset/password" //패스워드 찾기
+                                , "/address.html" //카카오 주소 api 
 //                                , "/**" //임시로 모든 인증 처리 제외
                         ).permitAll()
                 .anyRequest().authenticated())
