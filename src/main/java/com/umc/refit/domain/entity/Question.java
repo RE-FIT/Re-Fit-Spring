@@ -31,4 +31,11 @@ public class Question {
 
     @Column(nullable = false)
     private String explanation;
+
+    public Question(int category, String question, boolean answer, String explanation) {
+        this.category = category;
+        this.question = question;
+        this.answer = answer;
+        this.explanation = explanation;
+    }
 }
