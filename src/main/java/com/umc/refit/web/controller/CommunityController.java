@@ -38,24 +38,32 @@ public class CommunityController {
     /*커뮤니티 메인 화면 API*/
     @GetMapping
     public List<PostMainResponseDto> communityMain(
-            @RequestParam(value = "postType", defaultValue = "0") Integer postType,
-            @RequestParam(value = "gender", defaultValue = "0") Integer gender,
-            @RequestParam(value = "category", defaultValue = "0") Integer category,
+            @RequestParam(required = false) Integer postType,
+            @RequestParam(required = false) Integer gender,
+            @RequestParam(required = false) Integer category,
             Authentication authentication, HttpServletRequest request){
 
         checkAuthentication(authentication, request);
 
         //게시글 타입 범위 오류
-        if(postType < 0 || postType > 1){
-            throw new CommunityException(POST_TYPE_RANGE_ERR, POST_TYPE_RANGE_ERR.getCode(), POST_TYPE_RANGE_ERR.getErrorMessage());
+        if(!(postType == null)){
+            if(postType < 0 || postType > 1){
+                throw new CommunityException(POST_TYPE_RANGE_ERR, POST_TYPE_RANGE_ERR.getCode(), POST_TYPE_RANGE_ERR.getErrorMessage());
+            }
         }
+
         //추천 성별 범위 오류
-        if(gender < 0 || gender > 1){
-            throw new CommunityException(GENDER_RANGE_ERR, GENDER_RANGE_ERR.getCode(), GENDER_RANGE_ERR.getErrorMessage());
+        if(!(gender == null)){
+            if(gender < 0 || gender > 1){
+                throw new CommunityException(GENDER_RANGE_ERR, GENDER_RANGE_ERR.getCode(), GENDER_RANGE_ERR.getErrorMessage());
+            }
         }
+
         //카테고리 범위 오류
-        if(category < 0 || category > 5){
-            throw new CommunityException(CATEGORY_RANGE_ERR, CATEGORY_RANGE_ERR.getCode(), CATEGORY_RANGE_ERR.getErrorMessage());
+        if(!(category == null)){
+            if(category < 0 || category > 5){
+                throw new CommunityException(CATEGORY_RANGE_ERR, CATEGORY_RANGE_ERR.getCode(), CATEGORY_RANGE_ERR.getErrorMessage());
+            }
         }
 
         /*카테고리 선택에 맞는 게시글 리스트*/
