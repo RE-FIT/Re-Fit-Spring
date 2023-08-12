@@ -46,6 +46,10 @@ public class MemberService {
         memberRepository.save(member);
     }
 
+    public void updateFcm(Member member) {
+        memberRepository.save(member);
+    }
+
     /* 회원 패스워드 수정 */
     public void updateMemberPassword(Member member, String newPassword) {
         member.updatePassword(passwordEncoder.encode(newPassword));

@@ -31,6 +31,7 @@ public class Member implements UserDetails {
     private String socialType;
     private Integer gender;
     private String imageUrl;
+    private String fcm;
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
 

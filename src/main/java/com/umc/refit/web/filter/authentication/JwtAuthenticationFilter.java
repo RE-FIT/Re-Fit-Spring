@@ -43,6 +43,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         String loginId = request.getParameter("loginId");
         String password = request.getParameter("password");
+        String fcm = request.getParameter("fcm");
 
         Optional<Member> findMember = memberService.findMemberByLoginId(loginId);
 
@@ -53,6 +54,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                         KAKAO_MEMBER_EXIST.getCode(), KAKAO_MEMBER_EXIST.getErrorMessage());
             }
         }
+
+        //fcm 토큰 저장
+        Member member = findMember.get();
+        member.setFcm(fcm);
+        memberService.updateFcm(member);
 
         AuthenticationManager authenticationManager = httpSecurity.getSharedObject(AuthenticationManager.class);
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginId, password);
