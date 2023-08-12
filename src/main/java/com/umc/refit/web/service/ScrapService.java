@@ -68,9 +68,7 @@ public class ScrapService {
 
     /*내가 스크랩한 글 목록*/
     public List<PostMainResponseDto> findMyScraps(Integer postType, Authentication authentication){
-        String userId = authentication.getName();
-        Member member = memberService.findMemberByLoginId(userId)
-                .orElseThrow(() -> new CommunityException(NO_SUCH_MEMBER, NO_SUCH_MEMBER.getCode(), NO_SUCH_MEMBER.getErrorMessage()));
+        Member member = communityService.findMember(authentication);
 
         List<Scrap> scraps = scrapRepository.findByMember(member);
         return convertToDtoListScrap(scraps.stream()
