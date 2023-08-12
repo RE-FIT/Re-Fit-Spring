@@ -47,8 +47,7 @@ public class MypageController {
             HttpServletRequest httpServletRequest) {
 
         checkAuthentication(authentication, httpServletRequest);
-        List<PostMyPageResponseDto> postList = communityService.myFeedPosts(give, authentication);
-        return postList;
+        return communityService.myFeedPosts(give, authentication);
     }
 
     /*내 피드 - 판매 API*/
@@ -58,8 +57,7 @@ public class MypageController {
             HttpServletRequest httpServletRequest) {
 
         checkAuthentication(authentication, httpServletRequest);
-        List<PostMyPageResponseDto> postList = communityService.myFeedPosts(sell, authentication);
-        return postList;
+        return communityService.myFeedPosts(sell, authentication);
     }
 
     /*내 피드 - 구매 API*/
@@ -69,9 +67,7 @@ public class MypageController {
             HttpServletRequest httpServletRequest) {
 
         checkAuthentication(authentication, httpServletRequest);
-        List<PostMyPageResponseDto> postList = communityService.myFeedBuy(authentication);
-
-        return postList;
+        return communityService.myFeedBuy(authentication);
     }
 
     /*스크랩 - 나눔 API*/
@@ -81,8 +77,7 @@ public class MypageController {
             HttpServletRequest httpServletRequest) {
 
         checkAuthentication(authentication, httpServletRequest);
-        List<PostMainResponseDto> postList = scrapService.findMyScraps(give, authentication);
-        return postList;
+        return scrapService.findMyScraps(give, authentication);
     }
 
     /*스크랩 - 판매 API*/
@@ -92,8 +87,7 @@ public class MypageController {
             HttpServletRequest httpServletRequest) {
 
         checkAuthentication(authentication, httpServletRequest);
-        List<PostMainResponseDto> postList = scrapService.findMyScraps(sell, authentication);
-        return postList;
+        return scrapService.findMyScraps(sell, authentication);
     }
 
     /* 내 정보 조회 API */

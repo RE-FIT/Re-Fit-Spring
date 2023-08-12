@@ -59,10 +59,7 @@ public class CommunityController {
         }
 
         /*카테고리 선택에 맞는 게시글 리스트*/
-        List<PostMainResponseDto> postList = null;
-        postList = communityService.communityMainPosts(postType, gender, category, authentication, scrapService);
-
-        return postList;
+        return communityService.communityMainPosts(postType, gender, category, authentication, scrapService);
     }
 
 
@@ -72,9 +69,7 @@ public class CommunityController {
                                           Authentication authentication, HttpServletRequest request) {
         checkAuthentication(authentication, request);
 
-        PostClickResponseDto post = communityService.clickPost(postId, authentication, scrapService);
-
-        return post;
+        return communityService.clickPost(postId, authentication, scrapService);
     }
 
 
@@ -89,9 +84,7 @@ public class CommunityController {
 
          checkPostException(postDto, multipartFiles);
 
-         PostClickResponseDto post = communityService.create(postDto, multipartFiles, authentication);
-
-         return post;
+         return communityService.create(postDto, multipartFiles, authentication);
      }
 
      /*게시글 삭제 API*/
@@ -111,8 +104,7 @@ public class CommunityController {
 
         checkAuthentication(authentication, request);
 
-        PostClickResponseDto post = communityService.changeState(postId, authentication);
-        return post;
+        return communityService.changeState(postId, authentication);
     }
 
 
@@ -147,20 +139,18 @@ public class CommunityController {
             @RequestPart(value="image", required = false) List<MultipartFile> multipartFiles,
             @RequestPart PostDto postDto,
             @RequestPart(value="image_updated") boolean image_updated,
-            Authentication authentication, HttpServletRequest request) throws IOException {
+            Authentication authentication, HttpServletRequest request){
 
         checkAuthentication(authentication, request);
 
         //이미지가 수정된 경우
-        if (image_updated == true){
+        if (image_updated){
             checkPostException(postDto, multipartFiles);
-            PostClickResponseDto post = communityService.update(postId, postDto, multipartFiles, authentication);
-            return post;
+            return communityService.update(postId, postDto, multipartFiles, authentication);
         }
         //이미지가 수정되지 않은 경우
         checkPostExceptionWithoutImage(postDto);
-        PostClickResponseDto post = communityService.updateWithoutImage(postId, postDto, authentication);
-        return post;
+        return communityService.updateWithoutImage(postId, postDto, authentication);
     }
 
 
