@@ -7,6 +7,7 @@ import com.umc.refit.domain.entity.PostImage;
 import com.umc.refit.domain.entity.Posts;
 import com.umc.refit.exception.community.CommunityException;
 import com.umc.refit.web.repository.CommunityRepository;
+import com.umc.refit.web.repository.CommunityRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +27,7 @@ import static com.umc.refit.exception.ExceptionType.*;
 public class CommunityService {
 
     private final CommunityRepository communityRepository;
-    //private final CommunityRepositoryImpl communityRepositoryImpl;
+    private final CommunityRepositoryImpl communityRepositoryImpl;
     private final BlockService blockService;
     private final MemberService memberService;
     private final CmImgService cmImgService;
@@ -226,8 +227,8 @@ public class CommunityService {
 
         Member member = findMember(authentication);
 
-        List<Posts> postsList = communityRepository.findByTitleContainingIgnoreCaseAndPostStateCustom(keyword);
-        //List<Posts> postsList = communityRepositoryImpl.searchPosts(postType, gender, category, keyword);
+        //List<Posts> postsList = communityRepository.findByTitleContainingIgnoreCaseAndPostStateCustom(keyword);
+        List<Posts> postsList = communityRepositoryImpl.searchPosts(postType, gender, category, keyword);
 
         return convertToDtoListMain(postsList, scrapService, member);
     }
