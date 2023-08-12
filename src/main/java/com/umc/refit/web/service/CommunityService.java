@@ -88,8 +88,10 @@ public class CommunityService {
         //유저가 차단한 멤버
         List<Long> blockMemIds = blockService.getBlockMemIds(member);
 
-        List<Posts> posts = findPostList(postType, gender, category, blockMemIds);
-        return convertToDtoListMain(posts, scrapService, member);
+        List<Posts> postsList = communityRepositoryImpl.communityMainPage(postType, gender, category);
+        postsList = filterBlockedPosts(postsList, blockMemIds);
+
+        return convertToDtoListMain(postsList, scrapService, member);
     }
 
 
@@ -227,7 +229,6 @@ public class CommunityService {
 
         Member member = findMember(authentication);
 
-        //List<Posts> postsList = communityRepository.findByTitleContainingIgnoreCaseAndPostStateCustom(keyword);
         List<Posts> postsList = communityRepositoryImpl.searchPosts(postType, gender, category, keyword);
 
         return convertToDtoListMain(postsList, scrapService, member);
@@ -374,19 +375,6 @@ public class CommunityService {
         }
     }
 
-
-
-    /*선택한 카테고리에 맞는 글 리스트*/
-    public List<Posts> findPostList(Integer postType, Integer gender, Integer category, List<Long> blockMemIds){
-        if(postType.equals(0)){
-            List<Posts> posts = communityRepository.findByPostTypeAndGenderAndCategoryAndPostStateOrderByCreatedAtDesc(postType, gender, category, 0);
-            posts = filterBlockedPosts(posts, blockMemIds);
-            return posts;
-        }
-        List<Posts> posts = communityRepository.findByPostTypeAndGenderAndCategoryAndPostStateOrderByCreatedAtDesc(postType, gender, category, 1);
-        posts = filterBlockedPosts(posts, blockMemIds);
-        return posts;
-    }
 
     /*차단한 유저의 글 제외*/
     public List<Posts> filterBlockedPosts(List<Posts> posts, List<Long> blockedMemberIds) {
