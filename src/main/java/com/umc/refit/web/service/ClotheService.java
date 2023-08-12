@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -84,7 +83,7 @@ public class ClotheService {
                     return Integer.compare(remainedDay2, remainedDay1);
                 } else if (isNegative1 && isNegative2) {
                     // 음수인 값들은 오름차순 정렬
-                    return Integer.compare(remainedDay1, remainedDay2);
+                    return Integer.compare(remainedDay2, remainedDay1);
                 } else if (isNegative1) {
                     // -7777 인 값들은 lastDate 기준으로 내림차순 정렬
                     // getLastDate() == null 인 경우에는 뒤로
@@ -106,7 +105,7 @@ public class ClotheService {
                     .map(clothe -> clothe.from(this.calculateRemainedDay(clothe)))
                     .collect(Collectors.toList());
 
-        } else if (sort.equals("most_worn")) {
+        } else if (sort.equals("most-worn")) {
             return this.closetRepository.findAllByCategoryAndSeasonOrderByCountDesc(category, season)
                     .stream()
                     .map(clothe -> clothe.from(this.calculateRemainedDay(clothe)))
