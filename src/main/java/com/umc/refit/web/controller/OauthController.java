@@ -9,6 +9,7 @@ import com.umc.refit.web.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,11 +37,12 @@ public class OauthController {
     }
 
     @GetMapping("/oauth2/fcm")
-    public FCM getFcm(HttpServletRequest request) {
-
-        String otherId = request.getParameter("otherId");
+    public FCM getFcm(@RequestHeader("otherId") String otherId) {
 
         Optional<Member> other = memberService.findMemberByName(otherId);
+
+        System.out.println("=====================================");
+        System.out.println(otherId);
 
         return new FCM(other.get().getFcm());
     }
