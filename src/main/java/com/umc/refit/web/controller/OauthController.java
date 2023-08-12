@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Optional;
 
 
@@ -37,9 +39,10 @@ public class OauthController {
     }
 
     @GetMapping("/oauth2/fcm")
-    public FCM getFcm(@RequestHeader("otherId") String otherId) {
+    public FCM getFcm(@RequestHeader("otherId") String otherId) throws UnsupportedEncodingException {
 
-        Optional<Member> other = memberService.findMemberByName(otherId);
+        String decodedValue = URLDecoder.decode(otherId, "UTF-8");
+        Optional<Member> other = memberService.findMemberByName(decodedValue);
 
         System.out.println("=====================================");
         System.out.println(otherId);
