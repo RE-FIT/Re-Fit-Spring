@@ -137,6 +137,27 @@ public class CommunityController {
 
         checkAuthentication(authentication, request);
 
+        //게시글 타입 범위 오류
+        if(!(postType == null)){
+            if(postType < 0 || postType > 1){
+                throw new CommunityException(POST_TYPE_RANGE_ERR, POST_TYPE_RANGE_ERR.getCode(), POST_TYPE_RANGE_ERR.getErrorMessage());
+            }
+        }
+
+        //추천 성별 범위 오류
+        if(!(gender == null)){
+            if(gender < 0 || gender > 1){
+                throw new CommunityException(GENDER_RANGE_ERR, GENDER_RANGE_ERR.getCode(), GENDER_RANGE_ERR.getErrorMessage());
+            }
+        }
+
+        //카테고리 범위 오류
+        if(!(category == null)){
+            if(category < 0 || category > 5){
+                throw new CommunityException(CATEGORY_RANGE_ERR, CATEGORY_RANGE_ERR.getCode(), CATEGORY_RANGE_ERR.getErrorMessage());
+            }
+        }
+
         return communityService.searchPosts(authentication, keyword, scrapService, postType, gender, category);
     }
 
