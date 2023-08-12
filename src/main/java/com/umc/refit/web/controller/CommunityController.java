@@ -217,7 +217,7 @@ public class CommunityController {
             throw new CommunityException(SIZE_EMPTY, SIZE_EMPTY.getCode(), SIZE_EMPTY.getErrorMessage());
         }
         //사이즈 범위 오류
-        if(postDto.getSize() < 0 || postDto.getSize() > 4){
+        if(postDto.getSize() < 0 || postDto.getSize() > 5){
             throw new CommunityException(SIZE_RANGE_ERR, SIZE_RANGE_ERR.getCode(), SIZE_RANGE_ERR.getErrorMessage());
         }
         //배송 방법 null
@@ -288,7 +288,7 @@ public class CommunityController {
             throw new CommunityException(SIZE_EMPTY, SIZE_EMPTY.getCode(), SIZE_EMPTY.getErrorMessage());
         }
         //사이즈 범위 오류
-        if(postDto.getSize() < 0 || postDto.getSize() > 4){
+        if(postDto.getSize() < 0 || postDto.getSize() > 5){
             throw new CommunityException(SIZE_RANGE_ERR, SIZE_RANGE_ERR.getCode(), SIZE_RANGE_ERR.getErrorMessage());
         }
         //배송 방법 null
