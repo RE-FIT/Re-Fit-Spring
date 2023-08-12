@@ -1,5 +1,6 @@
 package com.umc.refit.web.controller;
 
+import com.umc.refit.domain.dto.chat.FCM;
 import com.umc.refit.domain.dto.chat.OAuth2;
 import com.umc.refit.domain.entity.Member;
 import com.umc.refit.exception.ExceptionType;
@@ -32,5 +33,15 @@ public class OauthController {
         Member member = memberByLoginId.get();
 
         return new OAuth2(member.getName());
+    }
+
+    @GetMapping("/oauth2/fcm")
+    public FCM getFcm(HttpServletRequest request) {
+
+        String otherId = request.getParameter("otherId");
+
+        Optional<Member> other = memberService.findMemberByName(otherId);
+
+        return new FCM(other.get().getFcm());
     }
 }

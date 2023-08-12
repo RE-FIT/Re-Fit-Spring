@@ -54,6 +54,12 @@ public class MemberController {
         return new ResEmailDto(auth);
     }
 
+    @PostMapping("/join/name")
+    public void checkName(@RequestBody NameDto nameDto) {
+        String name = nameDto.getName();
+        nameCheck(name);
+    }
+
     /*회원 가입 API*/
     @PostMapping("/join")
     public void join(@RequestBody JoinDto joinDto) {

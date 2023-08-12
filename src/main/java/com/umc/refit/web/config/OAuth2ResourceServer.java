@@ -47,6 +47,8 @@ public class OAuth2ResourceServer {
                                 , "/auth/reset/password" //패스워드 찾기
                                 , "/static/**" //카카오 주소 api
                                 , "/*.html" //카카오 주소 api
+                                , "/oauth2/fcm"
+                                , "/auth/join/name"
 //                                , "/**" //임시로 모든 인증 처리 제외
                         ).permitAll()
                 .anyRequest().authenticated())
