@@ -53,12 +53,7 @@ public class ReportMemService {
             throw new CommunityException(REPORT_REASON_EMPTY, REPORT_REASON_EMPTY.getCode(), REPORT_REASON_EMPTY.getErrorMessage());
         }
 
-
-        save(new ReportMem(reportMemDto));
+        reportMemRepository.save(new ReportMem(reportMemDto));
     }
 
-
-    public void save(ReportMem reportMem) {
-        reportMemRepository.save(reportMem);
-    }
 }

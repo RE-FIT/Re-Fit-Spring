@@ -35,30 +35,33 @@ public class ScrapService {
     * */
     public void scrap(Long postId, Authentication authentication){
 
-        String userId = authentication.getName();
-        Member findMember = memberService.findMemberByLoginId(userId)
-                .orElseThrow(() -> new CommunityException(NO_SUCH_MEMBER, NO_SUCH_MEMBER.getCode(), NO_SUCH_MEMBER.getErrorMessage()));
+        Member member = communityService.findMember(authentication);
+        Posts post = communityService.findPost(postId);
 
-        Posts findPost = communityService.findPostById(postId)
-                .orElseThrow(() -> new CommunityException(NO_SUCH_POST, NO_SUCH_POST.getCode(), NO_SUCH_POST.getErrorMessage()));
+        checkMyPost(member, post);
 
-        if(findPost.getMember().getId().equals(findMember.getId())){
-            throw new CommunityException(SELF_SCRAP_NOT_ALLOWED, SELF_SCRAP_NOT_ALLOWED.getCode(), SELF_SCRAP_NOT_ALLOWED.getErrorMessage());
-        }
-
-        Optional<Scrap> findScrap =findScrapByMemAndPostId(findMember, postId);
+        //스크랩한 글인지 확인
+        Optional<Scrap> findScrap =findScrapByMemAndPostId(member, postId);
 
         /*스크랩이 이미 존재하면 스크랩 해제
         아니면 새로 스크랩*/
         findScrap.ifPresentOrElse(
                 this::remove,
                 () -> {
-                    ScrapDto scrapDto = new ScrapDto(findMember, findPost);
+                    ScrapDto scrapDto = new ScrapDto(member, post);
                     save(new Scrap(scrapDto));
                 }
         );
     }
 
+    public void checkMyPost(Member member, Posts post){
+        if(post.getMember().getId().equals(member.getId())){
+            throw new CommunityException(SELF_SCRAP_NOT_ALLOWED, SELF_SCRAP_NOT_ALLOWED.getCode(), SELF_SCRAP_NOT_ALLOWED.getErrorMessage());
+        }
+    }
+
+
+    /*스크랩한 글인지 확인*/
     public Optional<Scrap> findScrapByMemAndPostId(Member member, Long postId) {
         return scrapRepository.findByMemberAndPostId(member, postId);
     }
@@ -72,7 +75,7 @@ public class ScrapService {
         List<Scrap> scraps = scrapRepository.findByMember(member);
         return convertToDtoListScrap(scraps.stream()
                 .map(Scrap::getPost)
-                .filter(post -> post.getPostType() == postType)
+                .filter(post -> post.getPostType().equals(postType))
                 .collect(Collectors.toList()));
     }
 

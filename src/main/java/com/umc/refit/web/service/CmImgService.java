@@ -3,18 +3,14 @@ package com.umc.refit.web.service;
 import com.umc.refit.domain.dto.s3.ImageDto;
 import com.umc.refit.domain.entity.PostImage;
 import com.umc.refit.domain.entity.Posts;
-import com.umc.refit.exception.community.FileException;
 import com.umc.refit.web.repository.CmImgRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.umc.refit.exception.ExceptionType.FILE_UPLOAD_FAILED;
 
 @Service
 @RequiredArgsConstructor
@@ -35,9 +31,7 @@ public class CmImgService {
         * PostImage 객체 리스트 반환
         * */
         multipartFiles.forEach(multipartFile -> {
-            ImageDto imageDto = null;
-
-            imageDto = s3UploadService.uploadFile(multipartFile, bucketName, bucketDirName);
+            ImageDto imageDto = s3UploadService.uploadFile(multipartFile, bucketName, bucketDirName);
 
             PostImage image = new PostImage(imageDto);
             imageList.add(image);
@@ -50,18 +44,14 @@ public class CmImgService {
     * 이미지 객체 저장
     * */
     public void savePostImg(PostImage image, Posts post){
-        image = save(image);
+        image = cmImgRepository.save(image);
         image.setPost(post);
     }
 
-    public PostImage save(PostImage image) {
-        return cmImgRepository.save(image);
-    }
 
     public void deletePostImg(String bucketName, String keyName){
         s3UploadService.deleteFile(bucketName, keyName);
     }
-
 
 
 }
