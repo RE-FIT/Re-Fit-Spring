@@ -488,7 +488,7 @@ public class CommunityService {
 
     /*로그인 유저가 글 작성자인지 확인*/
     public void checkPostPermisstion(Member member, Posts post){
-        if(post.getMember().getId().equals(member.getId())){
+        if(!post.getMember().getId().equals(member.getId())){
             throw new CommunityException(PERMISSION_DENIED, PERMISSION_DENIED.getCode(), PERMISSION_DENIED.getErrorMessage());
         }
     }
