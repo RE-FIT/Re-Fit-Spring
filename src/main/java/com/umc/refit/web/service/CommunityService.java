@@ -27,7 +27,7 @@ import static com.umc.refit.exception.ExceptionType.*;
 public class CommunityService {
 
     private final CommunityRepository communityRepository;
-    private final CommunityRepositoryImpl communityRepositoryImpl;
+    //private final CommunityRepositoryImpl communityRepositoryImpl;
     private final BlockService blockService;
     private final MemberService memberService;
     private final CmImgService cmImgService;
