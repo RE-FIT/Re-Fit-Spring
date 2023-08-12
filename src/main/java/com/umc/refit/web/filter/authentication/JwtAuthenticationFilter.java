@@ -53,12 +53,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 throw new LoginException(KAKAO_MEMBER_EXIST,
                         KAKAO_MEMBER_EXIST.getCode(), KAKAO_MEMBER_EXIST.getErrorMessage());
             }
-        }
 
-        //fcm 토큰 저장
-        Member member = findMember.get();
-        member.setFcm(fcm);
-        memberService.updateFcm(member);
+            //fcm 토큰 저장
+            Member member = findMember.get();
+            member.setFcm(fcm);
+            memberService.updateFcm(member);
+        }
 
         AuthenticationManager authenticationManager = httpSecurity.getSharedObject(AuthenticationManager.class);
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginId, password);
