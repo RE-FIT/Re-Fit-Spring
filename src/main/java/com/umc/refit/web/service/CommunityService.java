@@ -7,7 +7,6 @@ import com.umc.refit.domain.entity.PostImage;
 import com.umc.refit.domain.entity.Posts;
 import com.umc.refit.exception.community.CommunityException;
 import com.umc.refit.web.repository.CommunityRepository;
-import com.umc.refit.web.repository.CommunityRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Value;
