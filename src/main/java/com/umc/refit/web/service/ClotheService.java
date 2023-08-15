@@ -3,6 +3,7 @@ package com.umc.refit.web.service;
 import com.umc.refit.domain.dto.clothe.*;
 import com.umc.refit.domain.dto.s3.ImageDto;
 import com.umc.refit.domain.entity.Clothe;
+import com.umc.refit.domain.entity.Member;
 import com.umc.refit.exception.clothe.ClotheException;
 import com.umc.refit.web.repository.ClosetRepository;
 import com.umc.refit.web.repository.MemberRepository;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -55,16 +55,22 @@ public class ClotheService {
 
         imageDto = this.s3UploadService.uploadFile(multipartFile, bucketName, bucketDirName);
 
-        return this.closetRepository.save(request.toEntity(this.memberRepository.findByLoginId(authentication.getName())
-                        .orElseThrow(() -> new UsernameNotFoundException("No member found with this user id")), imageDto))
+        return this.closetRepository.save(request.toEntity(getMember(authentication), imageDto))
                 .getId();
     }
 
     @Transactional(readOnly = true)
-    public List<GetClotheListResponseDto> showClotheMain(Integer category, Integer season, String sort) {
-        if (sort.equals("d-day")) {
+    public List<GetClotheListResponseDto> showClotheMain(Integer category, Integer season,
+                                                         String sort,
+                                                         Authentication authentication) {
 
-            List<Clothe> clothes = this.closetRepository.findAllByCategoryAndSeason(category, season);
+        Member member = getMember(authentication);
+
+        System.out.println(member.getEmail());
+        System.out.println(member.getLoginId());
+
+        if (sort.equals("d-day")) {
+            List<Clothe> clothes = this.closetRepository.findAllByCategoryAndSeasonAndMember(category, season, member);
 
             if (clothes.size() == 0) {
                 return new ArrayList<GetClotheListResponseDto>();
@@ -107,12 +113,12 @@ public class ClotheService {
                     .collect(Collectors.toList());
 
         } else if (sort.equals("most_worn")) {
-            return this.closetRepository.findAllByCategoryAndSeasonOrderByCountDesc(category, season)
+            return this.closetRepository.findAllByCategoryAndSeasonAndMemberOrderByCountDesc(category, season, member)
                     .stream()
                     .map(clothe -> clothe.from(this.calculateRemainedDay(clothe)))
                     .collect(Collectors.toList());
         } else {
-            return this.closetRepository.findAllByCategoryAndSeasonOrderByCountAsc(category, season)
+            return this.closetRepository.findAllByCategoryAndSeasonAndMemberOrderByCountAsc(category, season, member)
                     .stream()
                     .map(clothe -> clothe.from(this.calculateRemainedDay(clothe)))
                     .collect(Collectors.toList());
@@ -201,5 +207,10 @@ public class ClotheService {
 
     private long getCount() {
         return this.questionRepository.count();
+    }
+
+    private Member getMember(Authentication authentication) {
+        return this.memberRepository.findByLoginId(authentication.getName())
+                .orElseThrow(() -> new UsernameNotFoundException("No member found with this user id"));
     }
 }

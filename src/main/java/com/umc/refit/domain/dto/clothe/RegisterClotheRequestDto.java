@@ -4,9 +4,8 @@ import com.umc.refit.domain.dto.s3.ImageDto;
 import com.umc.refit.domain.entity.Clothe;
 import com.umc.refit.domain.entity.Member;
 import lombok.*;
+import org.hibernate.validator.constraints.Range;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 @Getter
@@ -17,13 +16,11 @@ import javax.validation.constraints.NotNull;
 public class RegisterClotheRequestDto {
 
     @NotNull(message = "범위에 해당되지 않는 요청값입니다.")
-    @Min(0)
-    @Max(4)
+    @Range(min = 0, max = 4)
     private Integer category;
 
     @NotNull(message = "범위에 해당되지 않는 요청값입니다.")
-    @Min(0)
-    @Max(2)
+    @Range(min = 0, max = 2)
     private Integer season;
 
     private Integer targetCnt;
