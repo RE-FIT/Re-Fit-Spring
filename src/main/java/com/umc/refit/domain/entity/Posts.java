@@ -46,6 +46,13 @@ public class Posts extends BaseTimeEntity {
     )
     private List<PostImage> image = new ArrayList<>();
 
+    @OneToMany(
+            mappedBy = "post",
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            orphanRemoval = true
+    )
+    private List<Scrap> scrap = new ArrayList<>();
+
     public Posts(PostDto postDto) {
         this.member = postDto.getMember();
         this.title = postDto.getTitle();

@@ -38,31 +38,36 @@ public class CommunityController {
     /*커뮤니티 메인 화면 API*/
     @GetMapping
     public List<PostMainResponseDto> communityMain(
-            @RequestParam(value = "postType", defaultValue = "0") Integer postType,
-            @RequestParam(value = "gender", defaultValue = "0") Integer gender,
-            @RequestParam(value = "category", defaultValue = "0") Integer category,
+            @RequestParam(required = false) Integer postType,
+            @RequestParam(required = false) Integer gender,
+            @RequestParam(required = false) Integer category,
             Authentication authentication, HttpServletRequest request){
 
         checkAuthentication(authentication, request);
 
         //게시글 타입 범위 오류
-        if(postType < 0 || postType > 1){
-            throw new CommunityException(POST_TYPE_RANGE_ERR, POST_TYPE_RANGE_ERR.getCode(), POST_TYPE_RANGE_ERR.getErrorMessage());
+        if(!(postType == null)){
+            if(postType < 0 || postType > 1){
+                throw new CommunityException(POST_TYPE_RANGE_ERR, POST_TYPE_RANGE_ERR.getCode(), POST_TYPE_RANGE_ERR.getErrorMessage());
+            }
         }
+
         //추천 성별 범위 오류
-        if(gender < 0 || gender > 1){
-            throw new CommunityException(GENDER_RANGE_ERR, GENDER_RANGE_ERR.getCode(), GENDER_RANGE_ERR.getErrorMessage());
+        if(!(gender == null)){
+            if(gender < 0 || gender > 1){
+                throw new CommunityException(GENDER_RANGE_ERR, GENDER_RANGE_ERR.getCode(), GENDER_RANGE_ERR.getErrorMessage());
+            }
         }
+
         //카테고리 범위 오류
-        if(category < 0 || category > 5){
-            throw new CommunityException(CATEGORY_RANGE_ERR, CATEGORY_RANGE_ERR.getCode(), CATEGORY_RANGE_ERR.getErrorMessage());
+        if(!(category == null)){
+            if(category < 0 || category > 5){
+                throw new CommunityException(CATEGORY_RANGE_ERR, CATEGORY_RANGE_ERR.getCode(), CATEGORY_RANGE_ERR.getErrorMessage());
+            }
         }
 
         /*카테고리 선택에 맞는 게시글 리스트*/
-        List<PostMainResponseDto> postList = null;
-        postList = communityService.communityMainPosts(postType, gender, category, authentication, scrapService);
-
-        return postList;
+        return communityService.communityMainPosts(postType, gender, category, authentication, scrapService);
     }
 
 
@@ -72,9 +77,7 @@ public class CommunityController {
                                           Authentication authentication, HttpServletRequest request) {
         checkAuthentication(authentication, request);
 
-        PostClickResponseDto post = communityService.clickPost(postId, authentication, scrapService);
-
-        return post;
+        return communityService.clickPost(postId, authentication, scrapService);
     }
 
 
@@ -89,9 +92,7 @@ public class CommunityController {
 
          checkPostException(postDto, multipartFiles);
 
-         PostClickResponseDto post = communityService.create(postDto, multipartFiles, authentication);
-
-         return post;
+         return communityService.create(postDto, multipartFiles, authentication);
      }
 
      /*게시글 삭제 API*/
@@ -111,8 +112,7 @@ public class CommunityController {
 
         checkAuthentication(authentication, request);
 
-        PostClickResponseDto post = communityService.changeState(postId, authentication);
-        return post;
+        return communityService.changeState(postId, authentication);
     }
 
 
@@ -137,6 +137,27 @@ public class CommunityController {
 
         checkAuthentication(authentication, request);
 
+        //게시글 타입 범위 오류
+        if(!(postType == null)){
+            if(postType < 0 || postType > 1){
+                throw new CommunityException(POST_TYPE_RANGE_ERR, POST_TYPE_RANGE_ERR.getCode(), POST_TYPE_RANGE_ERR.getErrorMessage());
+            }
+        }
+
+        //추천 성별 범위 오류
+        if(!(gender == null)){
+            if(gender < 0 || gender > 1){
+                throw new CommunityException(GENDER_RANGE_ERR, GENDER_RANGE_ERR.getCode(), GENDER_RANGE_ERR.getErrorMessage());
+            }
+        }
+
+        //카테고리 범위 오류
+        if(!(category == null)){
+            if(category < 0 || category > 5){
+                throw new CommunityException(CATEGORY_RANGE_ERR, CATEGORY_RANGE_ERR.getCode(), CATEGORY_RANGE_ERR.getErrorMessage());
+            }
+        }
+
         return communityService.searchPosts(authentication, keyword, scrapService, postType, gender, category);
     }
 
@@ -147,20 +168,18 @@ public class CommunityController {
             @RequestPart(value="image", required = false) List<MultipartFile> multipartFiles,
             @RequestPart PostDto postDto,
             @RequestPart(value="image_updated") boolean image_updated,
-            Authentication authentication, HttpServletRequest request) throws IOException {
+            Authentication authentication, HttpServletRequest request){
 
         checkAuthentication(authentication, request);
 
         //이미지가 수정된 경우
-        if (image_updated == true){
+        if (image_updated){
             checkPostException(postDto, multipartFiles);
-            PostClickResponseDto post = communityService.update(postId, postDto, multipartFiles, authentication);
-            return post;
+            return communityService.update(postId, postDto, multipartFiles, authentication);
         }
         //이미지가 수정되지 않은 경우
         checkPostExceptionWithoutImage(postDto);
-        PostClickResponseDto post = communityService.updateWithoutImage(postId, postDto, authentication);
-        return post;
+        return communityService.updateWithoutImage(postId, postDto, authentication);
     }
 
 
@@ -198,7 +217,7 @@ public class CommunityController {
             throw new CommunityException(SIZE_EMPTY, SIZE_EMPTY.getCode(), SIZE_EMPTY.getErrorMessage());
         }
         //사이즈 범위 오류
-        if(postDto.getSize() < 0 || postDto.getSize() > 4){
+        if(postDto.getSize() < 0 || postDto.getSize() > 5){
             throw new CommunityException(SIZE_RANGE_ERR, SIZE_RANGE_ERR.getCode(), SIZE_RANGE_ERR.getErrorMessage());
         }
         //배송 방법 null
@@ -269,7 +288,7 @@ public class CommunityController {
             throw new CommunityException(SIZE_EMPTY, SIZE_EMPTY.getCode(), SIZE_EMPTY.getErrorMessage());
         }
         //사이즈 범위 오류
-        if(postDto.getSize() < 0 || postDto.getSize() > 4){
+        if(postDto.getSize() < 0 || postDto.getSize() > 5){
             throw new CommunityException(SIZE_RANGE_ERR, SIZE_RANGE_ERR.getCode(), SIZE_RANGE_ERR.getErrorMessage());
         }
         //배송 방법 null

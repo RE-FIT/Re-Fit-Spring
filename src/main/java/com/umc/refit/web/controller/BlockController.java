@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/refit/block")
@@ -24,7 +23,7 @@ public class BlockController {
     /*사용자 차단 API*/
     @PostMapping
     public void block(
-            @RequestBody BlockDto blockDto, Authentication authentication, HttpServletRequest request) throws IOException {
+            @RequestBody BlockDto blockDto, Authentication authentication, HttpServletRequest request){
 
         if (authentication == null) {
             ExceptionType exception = (ExceptionType) request.getAttribute("exception");

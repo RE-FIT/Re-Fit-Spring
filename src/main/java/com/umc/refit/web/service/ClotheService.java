@@ -86,24 +86,18 @@ public class ClotheService {
                 boolean isNegative2 = remainedDay2 < 0 && remainedDay2 != -7777;
 
                 if (isPositive1 && isPositive2) {
-                    // 양수인 값들은 내림차순 정렬
                     return Integer.compare(remainedDay2, remainedDay1);
                 } else if (isNegative1 && isNegative2) {
-                    // 음수인 값들은 오름차순 정렬
-                    return Integer.compare(remainedDay1, remainedDay2);
+                    return Integer.compare(remainedDay2, remainedDay1);
                 } else if (isNegative1) {
-                    // -7777 인 값들은 lastDate 기준으로 내림차순 정렬
-                    // getLastDate() == null 인 경우에는 뒤로
                     return c2.getLastDate() != null ? c2.getLastDate().compareTo(c1.getLastDate()) : 1;
                 } else if (isNegative2) {
-                    // -7777 인 값들은 lastDate 기준으로 내림차순 정렬
-                    // getLastDate() == null 인 경우에는 뒤로
+                  
                     return c1.getLastDate() != null ? c2.getLastDate().compareTo(c1.getLastDate()) : -1;
                 } else if (isPositive1) {
-                    // +7777 인 값들은 completedDate 기준으로 내림차순 정렬
+                   
                     return c2.getCompletedDate() != null ? c2.getCompletedDate().compareTo(c1.getCompletedDate()) : 1;
                 } else {
-                    // +7777 인 값들은 completedDate 기준으로 내림차순 정렬
                     return c2.getCompletedDate() != null ? c2.getCompletedDate().compareTo(c1.getCompletedDate()) : -1;
                 }
             });
@@ -111,6 +105,7 @@ public class ClotheService {
             return clothes.stream()
                     .map(clothe -> clothe.from(this.calculateRemainedDay(clothe)))
                     .collect(Collectors.toList());
+
 
         } else if (sort.equals("most_worn")) {
             return this.closetRepository.findAllByCategoryAndSeasonAndMemberOrderByCountDesc(category, season, member)
