@@ -24,6 +24,13 @@ public class ClotheController {
 
     private final ClotheService clotheService;
 
+    private static void checkAuthentication(Authentication authentication, HttpServletRequest request) {
+        if (authentication == null) {
+            ExceptionType exception = (ExceptionType) request.getAttribute("exception");
+            throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
+        }
+    }
+
     // 옷장 등록
     @PostMapping
     public ResponseEntity<Long> registerClothe(
@@ -32,10 +39,7 @@ public class ClotheController {
             Authentication authentication,
             HttpServletRequest request
     ) {
-        if (authentication == null) {
-            ExceptionType exception = (ExceptionType) request.getAttribute("exception");
-            throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
-        }
+        checkAuthentication(authentication, request);
         return new ResponseEntity<>(this.clotheService.registerClothe(requestDto, multipartFile, authentication), HttpStatus.CREATED);
     }
 
@@ -44,10 +48,13 @@ public class ClotheController {
     public ResponseEntity<List<GetClotheListResponseDto>> showClotheMain(
             @RequestParam(required = false) Integer category,
             @RequestParam(required = false) Integer season,
-            @RequestParam(required = false) String sort
+            @RequestParam(required = false) String sort,
+            Authentication authentication,
+            HttpServletRequest request
     ) {
+        checkAuthentication(authentication, request);
         return new ResponseEntity<>(
-                this.clotheService.showClotheMain(category, season, sort), HttpStatus.OK);
+                this.clotheService.showClotheMain(category, season, sort, authentication), HttpStatus.OK);
     }
 
     // 옷장 세부 조회

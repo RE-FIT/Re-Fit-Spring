@@ -3,6 +3,7 @@ package com.umc.refit.web.service;
 import com.umc.refit.domain.dto.clothe.*;
 import com.umc.refit.domain.dto.s3.ImageDto;
 import com.umc.refit.domain.entity.Clothe;
+import com.umc.refit.domain.entity.Member;
 import com.umc.refit.exception.clothe.ClotheException;
 import com.umc.refit.web.repository.ClosetRepository;
 import com.umc.refit.web.repository.MemberRepository;
@@ -54,16 +55,22 @@ public class ClotheService {
 
         imageDto = this.s3UploadService.uploadFile(multipartFile, bucketName, bucketDirName);
 
-        return this.closetRepository.save(request.toEntity(this.memberRepository.findByLoginId(authentication.getName())
-                        .orElseThrow(() -> new UsernameNotFoundException("No member found with this user id")), imageDto))
+        return this.closetRepository.save(request.toEntity(getMember(authentication), imageDto))
                 .getId();
     }
 
     @Transactional(readOnly = true)
-    public List<GetClotheListResponseDto> showClotheMain(Integer category, Integer season, String sort) {
-        if (sort.equals("d-day")) {
+    public List<GetClotheListResponseDto> showClotheMain(Integer category, Integer season,
+                                                         String sort,
+                                                         Authentication authentication) {
 
-            List<Clothe> clothes = this.closetRepository.findAllByCategoryAndSeason(category, season);
+        Member member = getMember(authentication);
+
+        System.out.println(member.getEmail());
+        System.out.println(member.getLoginId());
+
+        if (sort.equals("d-day")) {
+            List<Clothe> clothes = this.closetRepository.findAllByCategoryAndSeasonAndMember(category, season, member);
 
             if (clothes.size() == 0) {
                 return new ArrayList<GetClotheListResponseDto>();
@@ -79,24 +86,18 @@ public class ClotheService {
                 boolean isNegative2 = remainedDay2 < 0 && remainedDay2 != -7777;
 
                 if (isPositive1 && isPositive2) {
-                    // 양수인 값들은 내림차순 정렬
                     return Integer.compare(remainedDay2, remainedDay1);
                 } else if (isNegative1 && isNegative2) {
-                    // 음수인 값들은 오름차순 정렬
                     return Integer.compare(remainedDay2, remainedDay1);
                 } else if (isNegative1) {
-                    // -7777 인 값들은 lastDate 기준으로 내림차순 정렬
-                    // getLastDate() == null 인 경우에는 뒤로
                     return c2.getLastDate() != null ? c2.getLastDate().compareTo(c1.getLastDate()) : 1;
                 } else if (isNegative2) {
-                    // -7777 인 값들은 lastDate 기준으로 내림차순 정렬
-                    // getLastDate() == null 인 경우에는 뒤로
+                  
                     return c1.getLastDate() != null ? c2.getLastDate().compareTo(c1.getLastDate()) : -1;
                 } else if (isPositive1) {
-                    // +7777 인 값들은 completedDate 기준으로 내림차순 정렬
+                   
                     return c2.getCompletedDate() != null ? c2.getCompletedDate().compareTo(c1.getCompletedDate()) : 1;
                 } else {
-                    // +7777 인 값들은 completedDate 기준으로 내림차순 정렬
                     return c2.getCompletedDate() != null ? c2.getCompletedDate().compareTo(c1.getCompletedDate()) : -1;
                 }
             });
@@ -105,13 +106,14 @@ public class ClotheService {
                     .map(clothe -> clothe.from(this.calculateRemainedDay(clothe)))
                     .collect(Collectors.toList());
 
-        } else if (sort.equals("most-worn")) {
-            return this.closetRepository.findAllByCategoryAndSeasonOrderByCountDesc(category, season)
+
+        } else if (sort.equals("most_worn")) {
+            return this.closetRepository.findAllByCategoryAndSeasonAndMemberOrderByCountDesc(category, season, member)
                     .stream()
                     .map(clothe -> clothe.from(this.calculateRemainedDay(clothe)))
                     .collect(Collectors.toList());
         } else {
-            return this.closetRepository.findAllByCategoryAndSeasonOrderByCountAsc(category, season)
+            return this.closetRepository.findAllByCategoryAndSeasonAndMemberOrderByCountAsc(category, season, member)
                     .stream()
                     .map(clothe -> clothe.from(this.calculateRemainedDay(clothe)))
                     .collect(Collectors.toList());
@@ -200,5 +202,10 @@ public class ClotheService {
 
     private long getCount() {
         return this.questionRepository.count();
+    }
+
+    private Member getMember(Authentication authentication) {
+        return this.memberRepository.findByLoginId(authentication.getName())
+                .orElseThrow(() -> new UsernameNotFoundException("No member found with this user id"));
     }
 }
