@@ -17,6 +17,7 @@ import com.umc.refit.web.service.RefreshTokenService;
 import com.umc.refit.web.signature.SecuritySigner;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
@@ -41,6 +42,9 @@ public class MemberController {
     //토큰 재발급
     private final SecuritySigner securitySigner;
     private final JWK jwk;
+
+    @Value("${member.image}")
+    private String imageUrl;
 
     /*이메일 인증 API*/
     @PostMapping("/email")
@@ -80,7 +84,7 @@ public class MemberController {
         genderCheck(gender);
 
         /*예외 처리가 끝나면 회원 저장*/
-        memberService.save(new Member(joinDto));
+        memberService.save(new Member(joinDto, imageUrl));
     }
 
     /*이메일 인증 API*/

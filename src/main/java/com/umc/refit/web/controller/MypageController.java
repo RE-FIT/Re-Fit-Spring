@@ -3,11 +3,14 @@ package com.umc.refit.web.controller;
 import com.umc.refit.domain.dto.community.PostMainResponseDto;
 import com.umc.refit.domain.dto.community.PostMyPageResponseDto;
 import com.umc.refit.domain.dto.mypage.GetMyInfoResponseDto;
+import com.umc.refit.domain.dto.mypage.GetMyResponseDto;
 import com.umc.refit.domain.dto.mypage.UpdateMyInfoRequestDto;
 import com.umc.refit.domain.dto.mypage.UpdatePasswordRequestDto;
+import com.umc.refit.domain.entity.Member;
 import com.umc.refit.exception.ExceptionType;
 import com.umc.refit.exception.member.TokenException;
 import com.umc.refit.web.service.CommunityService;
+import com.umc.refit.web.service.MemberService;
 import com.umc.refit.web.service.MyInfoService;
 import com.umc.refit.web.service.ScrapService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/refit/mypage")
@@ -29,6 +33,7 @@ public class MypageController {
     private final CommunityService communityService;
     private final ScrapService scrapService;
     private final MyInfoService myInfoService;
+    private final MemberService memberService;
 
     Integer give = 0;
     Integer sell = 1;
@@ -38,6 +43,13 @@ public class MypageController {
             ExceptionType exception = (ExceptionType) request.getAttribute("exception");
             throw new TokenException(exception, exception.getCode(), exception.getErrorMessage());
         }
+    }
+
+    @GetMapping
+    public GetMyResponseDto myPage(Authentication authentication, HttpServletRequest request) {
+        checkAuthentication(authentication, request);
+        Optional<Member> findMember = memberService.findMemberByLoginId(authentication.getName());
+        return new GetMyResponseDto(findMember.get());
     }
 
     /*내 피드 - 나눔 API*/

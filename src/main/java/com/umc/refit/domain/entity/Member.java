@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -32,6 +33,8 @@ public class Member implements UserDetails {
     private Integer gender;
     private String imageUrl;
     private String fcm;
+    private LocalDate joinDate;
+
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
 
@@ -55,6 +58,19 @@ public class Member implements UserDetails {
         this.birth = joinDto.getBirth();
         this.gender = joinDto.getGender();
         this.getRoles().add("USER");
+        this.joinDate = LocalDate.now();
+    }
+
+    public Member(JoinDto joinDto, String imageUrl) {
+        this.loginId = joinDto.getLoginId();
+        this.password = joinDto.getPassword();
+        this.email = joinDto.getEmail();
+        this.name = joinDto.getName();
+        this.birth = joinDto.getBirth();
+        this.gender = joinDto.getGender();
+        this.getRoles().add("USER");
+        this.joinDate = LocalDate.now();
+        this.imageUrl = imageUrl;
     }
 
     public Member() {

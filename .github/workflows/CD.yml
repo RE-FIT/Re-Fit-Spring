@@ -37,6 +37,7 @@ jobs:
         cloud.aws.s3.bucket: ${{ secrets.BUCKETNAME}}
         cloud.aws.credentials.access-key: ${{ secrets.S3ACCESSKEY}}
         cloud.aws.credentials.secret-key: ${{ secrets.S3SECRETKEY}}
+        member.image: ${{ secrets.BASICIMAGE}}
 
     - name: Set up JDK 17
       uses: actions/setup-java@v3

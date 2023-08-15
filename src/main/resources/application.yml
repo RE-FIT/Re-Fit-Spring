@@ -17,7 +17,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
 
     properties:
       hibernate:
@@ -75,3 +75,6 @@ logging:
 
 token:
   issuer: http://localhost:8080
+
+member:
+  image:
