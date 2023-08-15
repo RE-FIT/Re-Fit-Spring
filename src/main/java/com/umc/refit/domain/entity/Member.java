@@ -61,6 +61,18 @@ public class Member implements UserDetails {
         this.joinDate = LocalDate.now();
     }
 
+    public Member(JoinDto joinDto, String imageUrl) {
+        this.loginId = joinDto.getLoginId();
+        this.password = joinDto.getPassword();
+        this.email = joinDto.getEmail();
+        this.name = joinDto.getName();
+        this.birth = joinDto.getBirth();
+        this.gender = joinDto.getGender();
+        this.getRoles().add("USER");
+        this.joinDate = LocalDate.now();
+        this.imageUrl = imageUrl;
+    }
+
     public Member() {
 
     }
