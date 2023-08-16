@@ -48,6 +48,7 @@ public class OAuth2ResourceServer {
                                 , "/static/**" //카카오 주소 api
                                 , "/*.html" //카카오 주소 api
                                 , "/oauth2/fcm"
+                                , "/oauth2/image"
                                 , "/auth/join/name"
 //                                , "/**" //임시로 모든 인증 처리 제외
                         ).permitAll()
