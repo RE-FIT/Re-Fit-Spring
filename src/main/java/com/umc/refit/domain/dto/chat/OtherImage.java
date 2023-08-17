@@ -9,4 +9,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class OtherImage {
     private String otherImage;
+    private Integer postState;
 }
