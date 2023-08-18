@@ -86,7 +86,7 @@ public class JwtKakaoAuthenticationFilter extends UsernamePasswordAuthentication
             }
 
             Member member = new Member(EMAIL, DEFAULT_PASSWORD, name, fcm);
-            memberService.save(member);
+            memberService.kakaoSave(member);
         }
 
         AuthenticationManager authenticationManager = httpSecurity.getSharedObject(AuthenticationManager.class);
