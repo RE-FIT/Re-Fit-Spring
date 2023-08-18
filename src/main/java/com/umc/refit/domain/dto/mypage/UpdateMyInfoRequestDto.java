@@ -14,4 +14,5 @@ public class UpdateMyInfoRequestDto {
     private String name;
     private String birth;
     private Integer gender;
+    private String image;
 }
