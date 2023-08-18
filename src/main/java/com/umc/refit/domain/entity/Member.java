@@ -42,11 +42,16 @@ public class Member implements UserDetails {
         this.name = name;
     }
 
-    public Member(String email, String password, String name) {
-        this.password = password;
+    public Member(String email, String password, String name, String fcm) {
         this.email = email;
         this.loginId = email;
+        this.password = password;
         this.name = name;
+        this.birth = LocalDate.now().toString().replace('-', '/');
+        this.gender = 0;
+        this.getRoles().add("USER");
+        this.joinDate = LocalDate.now();
+        this.fcm = fcm;
         this.socialType = "KAKAO";
     }
 

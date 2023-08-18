@@ -56,6 +56,7 @@ public class JwtKakaoAuthenticationFilter extends UsernamePasswordAuthentication
         String KAKAO_API_URL = "https://kapi.kakao.com/v2/user/me";
         String DEFAULT_PASSWORD = "KAKAO_LOGIN";
         String accessToken = request.getHeader("Authorization");
+        String fcm = request.getParameter("fcm");
 
         String EMAIL = getEmailFromKakao(accessToken, KAKAO_API_URL);
 
@@ -65,6 +66,11 @@ public class JwtKakaoAuthenticationFilter extends UsernamePasswordAuthentication
                 throw new LoginException(BASIC_MEMBER_EXIST,
                         BASIC_MEMBER_EXIST.getCode(), BASIC_MEMBER_EXIST.getErrorMessage());
             }
+
+            //fcm 토큰 저장
+            Member member = findMember.get();
+            member.setFcm(fcm);
+            memberService.updateFcm(member);
         } else {
 
             /*카카오 로그인 시 유일한 멤버 닉네임 생성*/
@@ -79,8 +85,7 @@ public class JwtKakaoAuthenticationFilter extends UsernamePasswordAuthentication
                 }
             }
 
-            Member member = new Member(EMAIL, DEFAULT_PASSWORD, name);
-            member.getRoles().add("USER");
+            Member member = new Member(EMAIL, DEFAULT_PASSWORD, name, fcm);
             memberService.save(member);
         }
 
