@@ -50,7 +50,7 @@ public class MyInfoService {
     public void updateMyInfo(MultipartFile multipartFile, UpdateMyInfoRequestDto request, Authentication authentication) {
 
         if (null == multipartFile) {
-            getMember(authentication).updateMemberByMyInfo(request, null);
+            getMember(authentication).updateMemberByMyInfo(request, request.getImage());
             return;
         }
 
