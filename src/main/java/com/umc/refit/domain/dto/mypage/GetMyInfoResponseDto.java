@@ -15,6 +15,7 @@ public class GetMyInfoResponseDto {
     private String name;
     private String birth;
     private Integer gender;
+    private String type;
 
     public static GetMyInfoResponseDto from(Member member) {
         return GetMyInfoResponseDto.builder()
@@ -24,7 +25,7 @@ public class GetMyInfoResponseDto {
                 .name(member.getName())
                 .birth(member.getBirth())
                 .gender(member.getGender())
+                .type(member.getSocialType())
                 .build();
-
     }
 }
