@@ -99,9 +99,12 @@ public class ClotheController {
     // 옷장 옷 입기
     @PatchMapping("/{id}/wear")
     public ResponseEntity<Void> wearClothe(
-            @PathVariable Long id
+            @PathVariable Long id,
+            Authentication authentication,
+            HttpServletRequest request
     ) {
-        this.clotheService.wearClothe(id);
+        checkAuthentication(authentication, request);
+        this.clotheService.wearClothe(id, authentication);
         return ResponseEntity.ok().build();
     }
 
