@@ -92,10 +92,10 @@ public class ClotheService {
                 } else if (isNegative1) {
                     return c2.getLastDate() != null ? c2.getLastDate().compareTo(c1.getLastDate()) : 1;
                 } else if (isNegative2) {
-                  
+
                     return c1.getLastDate() != null ? c2.getLastDate().compareTo(c1.getLastDate()) : -1;
                 } else if (isPositive1) {
-                   
+
                     return c2.getCompletedDate() != null ? c2.getCompletedDate().compareTo(c1.getCompletedDate()) : 1;
                 } else {
                     return c2.getCompletedDate() != null ? c2.getCompletedDate().compareTo(c1.getCompletedDate()) : -1;
@@ -107,7 +107,7 @@ public class ClotheService {
                     .collect(Collectors.toList());
 
 
-        } else if (sort.equals("most_worn")) {
+        } else if (sort.equals("most-worn")) {
             return this.closetRepository.findAllByCategoryAndSeasonAndMemberOrderByCountDesc(category, season, member)
                     .stream()
                     .map(clothe -> clothe.from(this.calculateRemainedDay(clothe)))
@@ -145,9 +145,10 @@ public class ClotheService {
     }
 
     @Transactional
-    public void wearClothe(Long id) {
+    public void wearClothe(Long id, Authentication authentication) {
         Clothe clothe = getClothe(id);
-        if (this.closetRepository.getCountOneCategoryPerOnDay(clothe.getCategory(), LocalDate.now()) >= 2) {
+        Member member = getMember(authentication);
+        if (this.closetRepository.getCountOneCategoryPerOnDay(clothe.getCategory(), LocalDate.now(), member) >= 2) {
             throw new ClotheException(
                     ONE_CATEGORY_OVER_TWO_COUNT, ONE_CATEGORY_OVER_TWO_COUNT.getCode(), ONE_CATEGORY_OVER_TWO_COUNT.getErrorMessage());
         }
