@@ -123,7 +123,7 @@ public class ClotheService {
     public void wearClothe(Long id, Authentication authentication) {
         Clothe clothe = getClothe(id);
         Member member = getMember(authentication);
-        if (this.closetRepository.getCountOneCategoryPerOnDay(clothe.getCategory(), LocalDate.now(), member) >= 2) {
+        if (this.closetRepository.getCountOneCategoryPerOnDay(clothe.getCategory(), LocalDate.now(), member) >= 1) {
             throw new ClotheException(
                     ONE_CATEGORY_OVER_TWO_COUNT, ONE_CATEGORY_OVER_TWO_COUNT.getCode(), ONE_CATEGORY_OVER_TWO_COUNT.getErrorMessage());
         }
