@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -66,43 +67,17 @@ public class ClotheService {
 
         Member member = getMember(authentication);
 
-        System.out.println(member.getEmail());
-        System.out.println(member.getLoginId());
-
         if (sort.equals("d-day")) {
             List<Clothe> clothes = this.closetRepository.findAllByCategoryAndSeasonAndMember(category, season, member);
 
             if (clothes.size() == 0) {
-                return new ArrayList<GetClotheListResponseDto>();
+                return new ArrayList<>();
             }
 
-            clothes.sort((c1, c2) -> {
-                Integer remainedDay1 = calculateRemainedDay(c1);
-                Integer remainedDay2 = calculateRemainedDay(c2);
+            List<Clothe> sortedClothes = sortClothes(clothes);
 
-                boolean isPositive1 = remainedDay1 >= 0 && remainedDay1 != 7777;
-                boolean isPositive2 = remainedDay2 >= 0 && remainedDay2 != 7777;
-                boolean isNegative1 = remainedDay1 < 0 && remainedDay1 != -7777;
-                boolean isNegative2 = remainedDay2 < 0 && remainedDay2 != -7777;
 
-                if (isPositive1 && isPositive2) {
-                    return Integer.compare(remainedDay2, remainedDay1);
-                } else if (isNegative1 && isNegative2) {
-                    return Integer.compare(remainedDay2, remainedDay1);
-                } else if (isNegative1) {
-                    return c2.getLastDate() != null ? c2.getLastDate().compareTo(c1.getLastDate()) : 1;
-                } else if (isNegative2) {
-
-                    return c1.getLastDate() != null ? c2.getLastDate().compareTo(c1.getLastDate()) : -1;
-                } else if (isPositive1) {
-
-                    return c2.getCompletedDate() != null ? c2.getCompletedDate().compareTo(c1.getCompletedDate()) : 1;
-                } else {
-                    return c2.getCompletedDate() != null ? c2.getCompletedDate().compareTo(c1.getCompletedDate()) : -1;
-                }
-            });
-
-            return clothes.stream()
+            return sortClothes(sortedClothes).stream()
                     .map(clothe -> clothe.from(this.calculateRemainedDay(clothe)))
                     .collect(Collectors.toList());
 
@@ -168,6 +143,58 @@ public class ClotheService {
                 .from(this.questionRepository.findAll().get(randomIndex));
     }
 
+    private List<Clothe> sortClothes(List<Clothe> clothes) {
+        Comparator<Object> comparator = Comparator
+                .comparingInt(clothe -> {
+                    int remainedDay = calculateRemainedDay((Clothe) clothe);
+                    if (remainedDay > 0 && remainedDay != 7777) {
+                        return -remainedDay; // 양수이면서 7777이 아닌 경우, 내림차순으로 정렬
+                    } else if (remainedDay < 0 && remainedDay != -7777) {
+                        return -remainedDay; // 음수이면서 -7777이 아닌 경우, 내림차순으로 정렬
+                    } else {
+                        return remainedDay; // 나머지는 오름차순으로 정렬
+                    }
+                })
+                .thenComparing((clothe1, clothe2) -> {
+                    int remainedDay1 = calculateRemainedDay((Clothe) clothe1);
+                    int remainedDay2 = calculateRemainedDay((Clothe) clothe2);
+
+                    if (remainedDay1 == -7777 && remainedDay2 == -7777) {
+                        return -((Clothe) clothe1).getCreatedAt().compareTo(((Clothe) clothe2).getCreatedAt()); // -7777인 값들은 getCreatedAt 기준 내림차순
+                    } else if (remainedDay1 == 7777 && remainedDay2 == 7777) {
+                        return -((Clothe) clothe1).getCreatedAt().compareTo(((Clothe) clothe2).getCreatedAt()); // +7777인 값들은 getCreatedAt 기준 내림차순
+                    } else {
+                        return 0;
+                    }
+                });
+
+        clothes.sort(comparator);
+        return checkSorting(clothes);
+    }
+
+    private List<Clothe> checkSorting(List<Clothe> clothes) {
+
+        ArrayList<Clothe> resultClothes = new ArrayList<>();
+        ArrayList<Clothe> clothesWithNoGoal = new ArrayList<>();
+        ArrayList<Clothe> clothesToRemove = new ArrayList<>();
+
+        for (Clothe clothe : clothes) {
+            if (checkIfHasNotGoal(clothe)) {
+                clothesWithNoGoal.add(clothe); // 미설정 clothes list 추가
+            } else {
+                resultClothes.add(clothe);
+            }
+        }
+
+        List<Clothe> sortedClothes = clothesWithNoGoal.stream()
+                .sorted(Comparator.comparing(Clothe::getCreatedAt).reversed())
+                .toList();
+
+        resultClothes.addAll(clothesWithNoGoal);
+        return resultClothes;
+    }
+
+
     private Clothe getClothe(Long id) {
         return this.closetRepository.findById(id)
                 .orElseThrow(() -> new ClotheException(CLOTHE_EMPTY, CLOTHE_EMPTY.getCode(), CLOTHE_EMPTY.getErrorMessage()));
@@ -198,12 +225,13 @@ public class ClotheService {
 
     private boolean checkIfHasNotGoal(Clothe clothe) {
         return (!clothe.isPlan()) && (clothe.getTargetCnt() == null) && (clothe.getTargetPeriod() == null)
-                && (clothe.getCntPerMonth() == null) && (clothe.getCntPerWeek() == null);
+                && (clothe.getCntPerMonth() == null) && (clothe.getCntPerWeek() == null) && (clothe.getCompletedDate() == null);
     }
 
     private long getCount() {
         return this.questionRepository.count();
     }
+
 
     private Member getMember(Authentication authentication) {
         return this.memberRepository.findByLoginId(authentication.getName())
