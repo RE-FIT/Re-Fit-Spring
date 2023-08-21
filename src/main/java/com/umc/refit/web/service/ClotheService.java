@@ -160,9 +160,9 @@ public class ClotheService {
                     int remainedDay2 = calculateRemainedDay((Clothe) clothe2);
 
                     if (remainedDay1 == -7777 && remainedDay2 == -7777) {
-                        return -((Clothe) clothe1).getCreatedAt().compareTo(((Clothe) clothe2).getCreatedAt()); // -7777인 값들은 getCreatedAt 기준 내림차순
+                        return -((Clothe) clothe1).getCreatedAt().compareTo(((Clothe) clothe2).getCreatedAt());
                     } else if (remainedDay1 == 7777 && remainedDay2 == 7777) {
-                        return -((Clothe) clothe1).getCreatedAt().compareTo(((Clothe) clothe2).getCreatedAt()); // +7777인 값들은 getCreatedAt 기준 내림차순
+                        return -((Clothe) clothe1).getCreatedAt().compareTo(((Clothe) clothe2).getCreatedAt());
                     } else {
                         return 0;
                     }
@@ -180,7 +180,7 @@ public class ClotheService {
 
         for (Clothe clothe : clothes) {
             if (checkIfHasNotGoal(clothe)) {
-                clothesWithNoGoal.add(clothe); // 미설정 clothes list 추가
+                clothesWithNoGoal.add(clothe);
             } else {
                 resultClothes.add(clothe);
             }
@@ -200,27 +200,16 @@ public class ClotheService {
                 .orElseThrow(() -> new ClotheException(CLOTHE_EMPTY, CLOTHE_EMPTY.getCode(), CLOTHE_EMPTY.getErrorMessage()));
     }
 
-    // case 1. 등록한 계절과 현재 계절이 일치하는 경우 -> targetPeriod,targetCnt,cntPerMonth,cntPerWeek is not null & isPlan = false
-    // case 2. 등록한 계절과 현재 계절이 일치하지 않는 경우 + 당분간 계획이 [있는] 경우 -> targetPeriod,targetCnt,cntPerMonth,cntPerWeek is not null & isPlan = true
-    // case 2. 등록한 계절과 현재 계절이 일치하지 않는 경우 + 당분간 계획이 [없는] 경우 -> targetPeriod,targetCnt,cntPerMonth,cntPerWeek is null & isPlan = false
 
-
-    // 목표 미설정(is plan == false) -> -7777
-    // 목표 달성(closet.getCount() >= closet.getTargetCnt()) -> +7777
-    // else(목표 미달성) -> 남은 or 지난 기간
     private Integer calculateRemainedDay(Clothe clothe) {
         if (checkIfHasNotGoal(clothe)) {
-            // 목표 미설정
             return -7777;
         }
         if (clothe.getCompletedDate() != null) {
-            // 목표 달성
             return 7777;
         }
         LocalDateTime targetAt = clothe.getCreatedAt().plusDays(clothe.getTargetPeriod() * 30);
         return (int) targetAt.until(LocalDateTime.now(), ChronoUnit.DAYS);
-        // 기간이 남아있다면 -
-        // 기간이 지났다면 +
     }
 
     private boolean checkIfHasNotGoal(Clothe clothe) {
