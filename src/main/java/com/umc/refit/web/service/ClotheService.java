@@ -4,6 +4,7 @@ import com.umc.refit.domain.dto.clothe.*;
 import com.umc.refit.domain.dto.s3.ImageDto;
 import com.umc.refit.domain.entity.Clothe;
 import com.umc.refit.domain.entity.Member;
+import com.umc.refit.domain.entity.Question;
 import com.umc.refit.exception.clothe.ClotheException;
 import com.umc.refit.web.repository.ClosetRepository;
 import com.umc.refit.web.repository.MemberRepository;
@@ -23,7 +24,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 import static com.umc.refit.exception.ExceptionType.CLOTHE_EMPTY;
@@ -123,7 +123,7 @@ public class ClotheService {
     public void wearClothe(Long id, Authentication authentication) {
         Clothe clothe = getClothe(id);
         Member member = getMember(authentication);
-        if (this.closetRepository.getCountOneCategoryPerOnDay(clothe.getCategory(), LocalDate.now(), member) >= 1) {
+        if (this.closetRepository.getCountOneCategoryPerOnDay(clothe.getCategory(), LocalDate.now(), member) >= 2) {
             throw new ClotheException(
                     ONE_CATEGORY_OVER_TWO_COUNT, ONE_CATEGORY_OVER_TWO_COUNT.getCode(), ONE_CATEGORY_OVER_TWO_COUNT.getErrorMessage());
         }
@@ -132,16 +132,18 @@ public class ClotheService {
 
     @Transactional(readOnly = true)
     public GetClotheForestResponseDto getClotheForest(Long id) {
-        return getClothe(id).toClotheForestResponseDto();
+        Clothe clothe = getClothe(id);
+        List<Question> randomQuestions = getRandomQuestions(clothe.getCount()); // random questions
+        return GetClotheForestResponseDto.of(clothe, randomQuestions);
     }
 
-    @Transactional(readOnly = true)
-    public GetClotheForestRandomQuestionResponseDto getClotheForestQuestion(Long id) {
-        getClothe(id);
-        int randomIndex = new Random().nextInt((int) getCount());
-        return GetClotheForestRandomQuestionResponseDto
-                .from(this.questionRepository.findAll().get(randomIndex));
-    }
+//    @Transactional(readOnly = true)
+//    public GetClotheForestRandomQuestionResponseDto getClotheForestQuestion(Long id) {
+//        getClothe(id);
+//        int randomIndex = new Random().nextInt((int) getCount());
+//        return GetClotheForestRandomQuestionResponseDto
+//                .from(this.questionRepository.findAll().get(randomIndex));
+//    }
 
     private List<Clothe> sortClothes(List<Clothe> clothes) {
         Comparator<Object> comparator = Comparator
@@ -217,13 +219,29 @@ public class ClotheService {
                 && (clothe.getCntPerMonth() == null) && (clothe.getCntPerWeek() == null) && (clothe.getCompletedDate() == null);
     }
 
-    private long getCount() {
-        return this.questionRepository.count();
-    }
-
-
     private Member getMember(Authentication authentication) {
         return this.memberRepository.findByLoginId(authentication.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("No member found with this user id"));
+    }
+
+    private List<Question> getRandomQuestions(int count) {
+        return randomQuestionSet(this.questionRepository.findRandomQuestions(count));
+    }
+
+    private List<Question> randomQuestionSet(List<Question> randomQuestions) {
+        long c = 0L;
+        List<Question> result = new ArrayList<>();
+
+        for (Question question : randomQuestions) {
+            result.add(Question.builder()
+                    .id(c++)
+                    .question(question.getQuestion())
+                    .category(question.getCategory())
+                    .answer(question.isAnswer())
+                    .explanation(question.getExplanation())
+                    .build()
+            );
+        }
+        return result;
     }
 }
