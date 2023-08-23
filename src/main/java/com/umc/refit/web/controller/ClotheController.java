@@ -115,5 +115,4 @@ public class ClotheController {
     ) {
         return new ResponseEntity<>(this.clotheService.getClotheForest(id), HttpStatus.OK);
     }
-
 }

@@ -118,6 +118,7 @@ public class Clothe extends BaseTimeEntity {
         this.isPlan = request.getIsPlan();
         this.cntPerMonth = request.getCntPerMonth();
         this.cntPerWeek = request.getCntPerWeek();
+        this.completedDate = null;
         this.editCnt += 1;
     }
 

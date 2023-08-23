@@ -115,8 +115,7 @@ public class ClotheService {
 
     @Transactional
     public void updateClotheGoal(Long id, UpdateClotheGoalRequestDto request) {
-        Clothe clothe = getClothe(id);
-        clothe.updateGoal(request);
+        getClothe(id).updateGoal(request);
     }
 
     @Transactional
@@ -136,7 +135,6 @@ public class ClotheService {
         List<Question> randomQuestions = getRandomQuestions(clothe.getCount()); // random questions
         return GetClotheForestResponseDto.of(clothe, randomQuestions);
     }
-
 
     private List<Clothe> sortClothes(List<Clothe> clothes) {
         Comparator<Object> comparator = Comparator
