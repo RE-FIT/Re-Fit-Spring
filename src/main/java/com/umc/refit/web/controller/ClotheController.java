@@ -115,12 +115,4 @@ public class ClotheController {
     ) {
         return new ResponseEntity<>(this.clotheService.getClotheForest(id), HttpStatus.OK);
     }
-
-//    // 옷장 숲 화면 문제 조회
-//    @GetMapping("/{id}/forest/question")
-//    public ResponseEntity<GetClotheForestRandomQuestionResponseDto> getClotheForestQuestion(
-//            @PathVariable Long id
-//    ) {
-//        return new ResponseEntity<>(this.clotheService.getClotheForestQuestion(id), HttpStatus.OK);
-//    }
 }
