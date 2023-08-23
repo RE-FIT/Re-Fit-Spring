@@ -137,13 +137,6 @@ public class ClotheService {
         return GetClotheForestResponseDto.of(clothe, randomQuestions);
     }
 
-//    @Transactional(readOnly = true)
-//    public GetClotheForestRandomQuestionResponseDto getClotheForestQuestion(Long id) {
-//        getClothe(id);
-//        int randomIndex = new Random().nextInt((int) getCount());
-//        return GetClotheForestRandomQuestionResponseDto
-//                .from(this.questionRepository.findAll().get(randomIndex));
-//    }
 
     private List<Clothe> sortClothes(List<Clothe> clothes) {
         Comparator<Object> comparator = Comparator
