@@ -115,8 +115,7 @@ public class ClotheService {
 
     @Transactional
     public void updateClotheGoal(Long id, UpdateClotheGoalRequestDto request) {
-        Clothe clothe = getClothe(id);
-        clothe.updateGoal(request);
+        getClothe(id).updateGoal(request);
     }
 
     @Transactional
