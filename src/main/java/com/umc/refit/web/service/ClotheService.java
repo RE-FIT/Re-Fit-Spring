@@ -74,22 +74,20 @@ public class ClotheService {
                 return new ArrayList<>();
             }
 
-            List<Clothe> sortedClothes = sortClothes(clothes);
-
-
-            return sortClothes(sortedClothes).stream()
+            return sortClothes(clothes).stream()
                     .map(clothe -> clothe.from(this.calculateRemainedDay(clothe)))
                     .collect(Collectors.toList());
 
 
         } else if (sort.equals("most-worn")) {
-            return this.closetRepository.findAllByCategoryAndSeasonAndMemberOrderByCountDesc(category, season, member)
-                    .stream()
+            List<Clothe> clothes = this.closetRepository.findAllByCategoryAndSeasonAndMemberOrderByCountDesc(category, season, member);
+
+            return checkSorting(clothes).stream()
                     .map(clothe -> clothe.from(this.calculateRemainedDay(clothe)))
                     .collect(Collectors.toList());
         } else {
-            return this.closetRepository.findAllByCategoryAndSeasonAndMemberOrderByCountAsc(category, season, member)
-                    .stream()
+            List<Clothe> clothes = this.closetRepository.findAllByCategoryAndSeasonAndMemberOrderByCountAsc(category, season, member);
+            return checkSorting(clothes).stream()
                     .map(clothe -> clothe.from(this.calculateRemainedDay(clothe)))
                     .collect(Collectors.toList());
         }
@@ -164,6 +162,7 @@ public class ClotheService {
         clothes.sort(comparator);
         return checkSorting(clothes);
     }
+
 
     private List<Clothe> checkSorting(List<Clothe> clothes) {
 
