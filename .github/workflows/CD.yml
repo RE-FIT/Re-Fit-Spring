@@ -57,9 +57,7 @@ jobs:
       run: |
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
         docker build -t ${{ secrets.DOCKER_REPO }}/refit-spring .
-        docker build -f dockerfile-nginx -t ${{ secrets.DOCKER_REPO }}/refit-nginx .
         docker push ${{ secrets.DOCKER_REPO }}/refit-spring
-        docker push ${{ secrets.DOCKER_REPO }}/refit-nginx
 
     - name: Deploy
       uses: appleboy/ssh-action@v0.1.10
@@ -68,8 +66,4 @@ jobs:
         username: ubuntu
         key: ${{ secrets.KEY }}
         script: |
-          sudo docker rm -f $(docker ps -qa)
-          sudo docker pull ${{ secrets.DOCKER_REPO }}/refit-spring
-          sudo docker pull ${{ secrets.DOCKER_REPO }}/refit-nginx
-          docker-compose up -d
-          docker image prune -f
+          ./deploy.sh
