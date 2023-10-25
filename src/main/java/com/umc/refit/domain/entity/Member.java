@@ -3,6 +3,7 @@ package com.umc.refit.domain.entity;
 import com.umc.refit.domain.dto.member.JoinDto;
 import com.umc.refit.domain.dto.mypage.UpdateMyInfoRequestDto;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor()
 public class Member implements UserDetails {
 
     @Id
