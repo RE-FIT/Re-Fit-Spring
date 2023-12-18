@@ -54,7 +54,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
     //JSON Parse 라이브러리
-    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'com.google.code.gson:gson'
 
     // validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'

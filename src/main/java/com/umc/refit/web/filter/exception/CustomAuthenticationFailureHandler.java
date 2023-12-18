@@ -1,7 +1,9 @@
 package com.umc.refit.web.filter.exception;
 
-import com.nimbusds.jose.shaded.json.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.refit.exception.member.LoginException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
@@ -9,9 +11,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
 
 import static com.umc.refit.exception.ExceptionType.LOGIN_FAILED;
 import static com.umc.refit.exception.ExceptionType.LOGIN_FAILED_ALL;
@@ -40,9 +41,12 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
             code = LOGIN_FAILED_ALL.getCode();
         }
 
-        JSONObject responseJson = new JSONObject();
-        responseJson.put("errorMessage", errorMessage);
-        responseJson.put("code", code);
-        response.getWriter().print(responseJson);
+        ObjectMapper mapper = new ObjectMapper();
+        HashMap<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("errorMessage", errorMessage);
+        errorResponse.put("code", code);
+
+        String jsonResponse = mapper.writeValueAsString(errorResponse);
+        response.getWriter().print(jsonResponse);
     }
 }

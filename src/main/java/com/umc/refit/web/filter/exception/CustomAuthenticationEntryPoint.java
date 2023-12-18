@@ -1,15 +1,16 @@
 package com.umc.refit.web.filter.exception;
 
-import com.nimbusds.jose.shaded.json.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.refit.exception.ExceptionType;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
 
 @Slf4j
 @Component
@@ -25,9 +26,12 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-        JSONObject responseJson = new JSONObject();
-        responseJson.put("errorMessage", errorType.getErrorMessage());
-        responseJson.put("code", errorType.getCode());
-        response.getWriter().print(responseJson);
+        ObjectMapper mapper = new ObjectMapper();
+        HashMap<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("errorMessage", errorType.getErrorMessage());
+        errorResponse.put("code", errorType.getCode());
+
+        String jsonResponse = mapper.writeValueAsString(errorResponse);
+        response.getWriter().print(jsonResponse);
     }
 }
