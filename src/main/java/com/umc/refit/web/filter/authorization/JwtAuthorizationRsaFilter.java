@@ -23,7 +23,6 @@ import java.util.UUID;
 
 import static com.umc.refit.exception.ExceptionType.*;
 
-/*Bearer 토큰을 RSA 알고리즘에 의해 검증하며 검증 성공시 인증 및 인가를 처리하는 필터*/
 public class JwtAuthorizationRsaFilter extends OncePerRequestFilter {
 
     private RSAKey jwk;
@@ -32,23 +31,21 @@ public class JwtAuthorizationRsaFilter extends OncePerRequestFilter {
         this.jwk = rsaKey;
     }
 
-    /*인가 처리를 거치지 않는 URL 설정 필터*/
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
         request.getMethod();
         AntPathMatcher pathMatcher = new AntPathMatcher();
-        return (pathMatcher.match("/auth/join", path) //일반 회원 가입
-                || pathMatcher.match("/auth/kakao", path) //카카오 로그인
-                || pathMatcher.match("/auth/email", path) //이메일 인증
-                || pathMatcher.match("/auth/find/id", path) //아이디 찾기
-                || pathMatcher.match("/auth/reset/password", path) //패스워드 찾기
-                || pathMatcher.match("/auth/login", path) //일반 로그인
+        return (pathMatcher.match("/auth/join", path)
+                || pathMatcher.match("/auth/kakao", path)
+                || pathMatcher.match("/auth/email", path)
+                || pathMatcher.match("/auth/find/id", path)
+                || pathMatcher.match("/auth/reset/password", path)
+                || pathMatcher.match("/auth/login", path)
                 || pathMatcher.match("/*.html", path)
                 || pathMatcher.match("/oauth2/fcm", path)
                 || pathMatcher.match("/oauth2/image", path)
                 || pathMatcher.match("/auth/join/name", path)
-//                || pathMatcher.match("/**", path) //API 테스트를 위해 모든 로직에 대해 인가 제외
         );
     }
 

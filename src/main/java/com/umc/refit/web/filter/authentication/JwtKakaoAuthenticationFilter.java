@@ -65,7 +65,6 @@ public class JwtKakaoAuthenticationFilter extends UsernamePasswordAuthentication
                         BASIC_MEMBER_EXIST.getCode(), BASIC_MEMBER_EXIST.getErrorMessage());
             }
 
-            //fcm 토큰 저장
             Member member = findMember.get();
             member.setFcm(fcm);
             memberService.updateFcm(member);
@@ -93,7 +92,6 @@ public class JwtKakaoAuthenticationFilter extends UsernamePasswordAuthentication
         return authentication;
     }
 
-    /*카카오 로그인 인증 성공시 토큰 발행하는 메소드*/
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws ServletException, IOException {
         User user = (User) authResult.getPrincipal();

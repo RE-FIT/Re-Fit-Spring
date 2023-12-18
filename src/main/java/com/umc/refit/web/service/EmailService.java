@@ -2,22 +2,19 @@ package com.umc.refit.web.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import java.security.SecureRandom;
 import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
 public class EmailService {
-
 
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
@@ -59,7 +56,7 @@ public class EmailService {
         String title = "[RE-FIT] 회원가입 인증번호 안내 이메일 입니다.";
 
         MimeMessage message = mailSender.createMimeMessage();
-        message.addRecipients(MimeMessage.RecipientType.TO, email); //보낼 이메일 설정
+        message.addRecipients(MimeMessage.RecipientType.TO, email);
         message.setSubject(title);
         message.setFrom(from);
 

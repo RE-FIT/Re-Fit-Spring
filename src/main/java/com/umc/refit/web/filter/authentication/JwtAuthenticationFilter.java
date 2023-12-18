@@ -36,7 +36,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private final MemberService memberService;
     private final RefreshTokenService refreshTokenService;
 
-    /*일반 로그인 인증 시작 메서드*/
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
@@ -47,14 +46,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         Optional<Member> findMember = memberService.findMemberByLoginId(loginId);
 
-        //이미 카카오 계정이 있는 경우, 예외 발생
         if (findMember.isPresent()) {
             if (!(findMember.get().getSocialType() == null)) {
                 throw new LoginException(KAKAO_MEMBER_EXIST,
                         KAKAO_MEMBER_EXIST.getCode(), KAKAO_MEMBER_EXIST.getErrorMessage());
             }
 
-            //fcm 토큰 저장
             Member member = findMember.get();
             member.setFcm(fcm);
             memberService.updateFcm(member);
@@ -66,7 +63,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         return authentication;
     }
 
-    /*일반 로그인 인증 성공시 토큰 발행하는 메소드*/
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws
             ServletException, IOException {

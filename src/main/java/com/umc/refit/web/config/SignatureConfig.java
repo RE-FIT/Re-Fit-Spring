@@ -18,7 +18,6 @@ public class SignatureConfig {
         return new RSASecuritySigner();
     }
 
-    /*RSA 키 생성*/
     @Bean
     public RSAKey rsaKey512() throws JOSEException {
         return new RSAKeyGenerator(2048)

@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class OAuth2ResourceServer {
+public class SpringSecurityConfig {
 
     private final RSASecuritySigner rsaSecuritySigner;
     private final RSAKey rsaKey;
@@ -29,51 +29,36 @@ public class OAuth2ResourceServer {
     private final CustomAuthenticationFailureHandler authFailureHandler;
     private final MemberService memberService;
     private final RefreshTokenService refreshTokenService;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+
+    private String[] permitAllUrlPatterns() {
+        return new String[] {
+                "/auth/logout", "/auth/join", "/auth/email", "/auth/find/id",
+                "/auth/reset/password", "/static/**", "/*.html", "/oauth2/fcm",
+                "/oauth2/image", "/auth/join/name"
+        };
+    }
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        //세션을 사용하지 않음
-        http.csrf().disable();
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
-        //인증을 거치지 않을 URL 처리 및 인증, 인가 예외 EntryPoint 등록
-        http.authorizeRequests((requests) ->
-
-                requests.antMatchers("/auth/logout" //로그아웃
-                                , "/auth/join" //회원 가입
-                                , "/auth/email" //이메일 찾기
-                                , "/auth/find/id" //아이디 찾기
-                                , "/auth/reset/password" //패스워드 찾기
-                                , "/static/**" //카카오 주소 api
-                                , "/*.html" //카카오 주소 api
-                                , "/oauth2/fcm"
-                                , "/oauth2/image"
-                                , "/auth/join/name"
-//                                , "/**" //임시로 모든 인증 처리 제외
-                        ).permitAll()
+        http.authorizeHttpRequests((requests) ->
+                        requests.requestMatchers(permitAllUrlPatterns()).permitAll()
                 .anyRequest().authenticated())
+                .exceptionHandling(error -> error.authenticationEntryPoint(authenticationEntryPoint));
 
-                .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint());
-
-        //사용자 정보 로드해서 객체 생성
         http.userDetailsService(userDetailsService);
 
-        //일반 로그인 URL 설정
         JwtAuthenticationFilter jwtAuthenticationFilter =
-
                 new JwtAuthenticationFilter(http, rsaSecuritySigner, rsaKey, memberService, refreshTokenService);
-
         jwtAuthenticationFilter.setAuthenticationFailureHandler(authFailureHandler);
         jwtAuthenticationFilter.setFilterProcessesUrl("/auth/login");
 
-        //카카오 로그인 URL 설정
         JwtKakaoAuthenticationFilter jwtKakaoAuthenticationFilter =
                 new JwtKakaoAuthenticationFilter(http, rsaSecuritySigner, rsaKey, memberService, refreshTokenService);
         jwtKakaoAuthenticationFilter.setAuthenticationFailureHandler(authFailureHandler);
         jwtKakaoAuthenticationFilter.setFilterProcessesUrl("/auth/kakao");
 
-        //인가 필터 등록 필터
         http.addFilter(jwtAuthenticationFilter).addFilter(jwtKakaoAuthenticationFilter)
                 .addFilterBefore(new JwtAuthorizationRsaFilter(rsaKey), UsernamePasswordAuthenticationFilter.class);
 
