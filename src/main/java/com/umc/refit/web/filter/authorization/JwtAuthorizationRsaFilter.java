@@ -54,21 +54,16 @@ public class JwtAuthorizationRsaFilter extends OncePerRequestFilter {
 
         ExceptionType errorType = null;
 
-        /*토큰 헤더 검증*/
         if (tokenResolve(request, response, chain)){
             errorType = TOKEN_NOT_EXIST;
         } else {
 
-            //Bearer를 제거한 토큰 값만 추출(header + payload + signature)
             String token = getToken(request);
             SignedJWT signedJWT;
             try {
-
-                //header와 payload와 signature 값이 속성으로 매핑됨
                 signedJWT = SignedJWT.parse(token);
                 RSASSAVerifier jwsVerifier = new RSASSAVerifier(jwk.toRSAPublicKey());
 
-                /*토큰 만료기간 검증*/
                 Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
                 Date now = new Date();
                 if (now.after(expirationTime)) {
@@ -81,7 +76,6 @@ public class JwtAuthorizationRsaFilter extends OncePerRequestFilter {
                         String username = signedJWT.getJWTClaimsSet().getClaim("id").toString();
                         List<String> authority = (List) signedJWT.getJWTClaimsSet().getClaim("role");
 
-                        //사용자 정보를 만들어서 인증 객체 생성 후 Security Context에 보관
                         if (username != null) {
                             UserDetails user = User.builder().username(username)
                                     .password(UUID.randomUUID().toString())
@@ -98,19 +92,16 @@ public class JwtAuthorizationRsaFilter extends OncePerRequestFilter {
                 errorType = TOKEN_INVALID;
             }
         }
-        /*토큰 예외 처리*/
         if (errorType != null) {
             request.setAttribute("exception", errorType);
         }
-        chain.doFilter(request, response); //다음 필터로 넘어감
+        chain.doFilter(request, response);
     }
 
-    /*Authorization 헤더로 넘어온 엑세스 토큰 값 추출*/
     protected String getToken(HttpServletRequest request) {
         return request.getHeader("Authorization").replace("Bearer ", "");
     }
 
-    /*헤더 유효성 검사*/
     protected boolean tokenResolve(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         String header = request.getHeader("Authorization");
         return header == null || !header.startsWith("Bearer ");
