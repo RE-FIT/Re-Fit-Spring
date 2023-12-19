@@ -1,8 +1,7 @@
 package com.umc.refit.domain.dto.mypage;
 
 import lombok.*;
-
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 @Getter
 @Setter

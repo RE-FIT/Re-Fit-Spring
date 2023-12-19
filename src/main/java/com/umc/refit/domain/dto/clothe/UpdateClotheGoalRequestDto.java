@@ -2,9 +2,7 @@ package com.umc.refit.domain.dto.clothe;
 
 import lombok.*;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 
 @Getter
 @Setter

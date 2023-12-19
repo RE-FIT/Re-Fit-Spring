@@ -40,8 +40,10 @@ public enum ExceptionType {
 
     //로그인 예외
     LOGIN_FAILED(BAD_REQUEST, 10103, "존재하지 않는 계정입니다."),
-    LOGIN_FAILED_ALL(BAD_REQUEST, 10104, "알 수 없는 이유로 로그인 할 수 없습니다."),
+    LOGIN_FAILED_UNKNOWN(BAD_REQUEST, 10104, "알 수 없는 이유로 로그인 할 수 없습니다."),
     KAKAO_MEMBER_EXIST(BAD_REQUEST, 10105, "카카오 로그인 계정이 존재합니다."),
+    GOOGLE_MEMBER_EXIST(BAD_REQUEST, 10505, "구글 로그인 계정이 존재합니다."),
+    NAVER_MEMBER_EXIST(BAD_REQUEST, 10605, "네이버 로그인 계정이 존재합니다."),
     BASIC_MEMBER_EXIST(BAD_REQUEST, 10106, "일반 로그인 계정이 존재합니다."),
 
 

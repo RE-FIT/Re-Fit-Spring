@@ -9,7 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,10 +43,10 @@ public class Member implements UserDetails {
         this.name = name;
     }
 
-    public Member(String email, String password, String name, String fcm) {
+    public Member(String email, String name, String fcm) {
         this.email = email;
         this.loginId = email;
-        this.password = password;
+        this.password = email;
         this.name = name;
         this.birth = LocalDate.now().toString().replace('-', '/');
         this.gender = 0;

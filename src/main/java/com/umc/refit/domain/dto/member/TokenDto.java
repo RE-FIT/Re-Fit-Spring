@@ -6,7 +6,8 @@ import lombok.Setter;
 
 @Getter @Setter
 @AllArgsConstructor
-public class ResLoginDto {
+public class TokenDto {
 
+    private String accessToken;
     private String refreshToken;
 }

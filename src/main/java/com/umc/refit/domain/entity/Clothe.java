@@ -1,13 +1,13 @@
 package com.umc.refit.domain.entity;
 
 import com.umc.refit.domain.dto.clothe.*;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.persistence.*;
 import java.time.LocalDate;
 
 @Slf4j

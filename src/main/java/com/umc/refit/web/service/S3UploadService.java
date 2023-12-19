@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -23,9 +23,7 @@ import static com.umc.refit.exception.ExceptionType.*;
 @Transactional
 public class S3UploadService {
 
-    private final AmazonS3Client amazonS3Client;
     private final AmazonS3 s3;
-
 
     /*멀티파트파일을 지정한 s3 버킷의 폴더에 저장
     * ImageDto 객체에 key name, url 넣어서 반환
@@ -43,7 +41,7 @@ public class S3UploadService {
             PutObjectRequest request = new PutObjectRequest(bucketName, keyName, multipartFile.getInputStream(), metadata).withCannedAcl(CannedAccessControlList.PublicRead);
             s3.putObject(request);
 
-            String uploadImageUrl = amazonS3Client.getUrl(bucketName, keyName).toString();
+            String uploadImageUrl = s3.getUrl(bucketName, keyName).toString();
             ImageDto imageDto = new ImageDto(keyName, uploadImageUrl);
 
             return imageDto;
