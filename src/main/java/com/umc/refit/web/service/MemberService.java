@@ -1,13 +1,19 @@
 package com.umc.refit.web.service;
 
+import com.umc.refit.domain.dto.member.TokenDto;
 import com.umc.refit.domain.entity.Member;
 import com.umc.refit.web.repository.MemberRepository;
+import com.umc.refit.web.signature.JWTSigner;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+
+import static com.umc.refit.Util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +21,8 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenService refreshTokenService;
+    private final JWTSigner securitySigner;
 
     @Value("${member.image}")
     private String imageUrl;
@@ -69,5 +77,20 @@ public class MemberService {
     /* 비밀번호 일치 여부 판단 */
     public boolean isPasswordMatch(String requestCurrentPassword, String encryptPassword) {
         return passwordEncoder.matches(requestCurrentPassword, encryptPassword);
+    }
+
+    public void deleteRefreshToken(String token) {
+        refreshTokenService.deleteRefreshToken(token);
+        return;
+    }
+
+    public TokenDto refreshAuthenticationToken(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        String accessToken = securitySigner.getJwtToken(user, ONE_HOUR);
+        String refreshToken = securitySigner.getJwtToken(user, ONE_WEEK);
+
+        refreshTokenService.saveRefreshToken(user.getUsername(), refreshToken);
+
+        return new TokenDto(accessToken, refreshToken);
     }
 }

@@ -3,7 +3,7 @@ package com.umc.refit.web.filter.authentication;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.umc.refit.domain.dto.member.ResLoginDto;
+import com.umc.refit.domain.dto.member.RefreshTokenDto;
 import com.umc.refit.domain.entity.Member;
 import com.umc.refit.exception.member.LoginException;
 import com.umc.refit.web.service.MemberService;
@@ -100,7 +100,7 @@ public class JwtKakaoAuthenticationFilter extends UsernamePasswordAuthentication
 
         refreshTokenService.saveRefreshToken(user.getUsername(), refreshToken);
 
-        ResLoginDto resEmailDto = new ResLoginDto(refreshToken);
+        RefreshTokenDto resEmailDto = new RefreshTokenDto(refreshToken);
         response.setContentType("application/json");
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = objectMapper.writeValueAsString(resEmailDto);
