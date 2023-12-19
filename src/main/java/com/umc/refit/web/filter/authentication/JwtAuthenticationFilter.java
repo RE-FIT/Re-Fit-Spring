@@ -1,17 +1,13 @@
 package com.umc.refit.web.filter.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.jwk.JWK;
 import com.umc.refit.domain.dto.member.ResLoginDto;
 import com.umc.refit.domain.entity.Member;
 import com.umc.refit.exception.member.LoginException;
 import com.umc.refit.web.service.MemberService;
 import com.umc.refit.web.service.RefreshTokenService;
 import com.umc.refit.web.signature.JWTSigner;
-import com.umc.refit.web.signature.SecuritySigner;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -32,9 +28,7 @@ import static com.umc.refit.exception.ExceptionType.KAKAO_MEMBER_EXIST;
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final HttpSecurity httpSecurity;
-//    private final SecuritySigner securitySigner;
     private final JWTSigner securitySigner;
-//    private final JWK jwk;
     private final MemberService memberService;
     private final RefreshTokenService refreshTokenService;
 

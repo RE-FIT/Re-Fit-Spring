@@ -4,13 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.jwk.JWK;
 import com.umc.refit.domain.dto.member.ResLoginDto;
 import com.umc.refit.domain.entity.Member;
 import com.umc.refit.exception.member.LoginException;
 import com.umc.refit.web.service.MemberService;
 import com.umc.refit.web.service.RefreshTokenService;
-import com.umc.refit.web.signature.SecuritySigner;
+import com.umc.refit.web.signature.JWTSigner;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,8 +37,7 @@ import static com.umc.refit.exception.ExceptionType.BASIC_MEMBER_EXIST;
 public class JwtKakaoAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final HttpSecurity httpSecurity;
-    private final SecuritySigner securitySigner;
-    private final JWK jwk;
+    private final JWTSigner securitySigner;
     private final MemberService memberService;
     private final RefreshTokenService refreshTokenService;
 
@@ -95,27 +93,19 @@ public class JwtKakaoAuthenticationFilter extends UsernamePasswordAuthentication
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws ServletException, IOException {
         User user = (User) authResult.getPrincipal();
-        try {
-            //엑세스 토큰 및 리프레쉬 토큰 발행
-            String accessToken = securitySigner.getJwtToken(user, jwk, 216000000);
-            String refreshToken = securitySigner.getJwtToken(user, jwk, 216000000);
 
-            //엑세스 토큰 헤더를 통해 전달
-            response.addHeader("Authorization", "Bearer " + accessToken); //발행받은 토큰을 response 헤더에 담아 응답
+        String accessToken = securitySigner.getJwtToken(user, 216000000);
+        String refreshToken = securitySigner.getJwtToken(user, 216000000);
 
-            //리프레쉬 토큰 저장
-            refreshTokenService.saveRefreshToken(user.getUsername(), refreshToken);
+        response.addHeader("Authorization", "Bearer " + accessToken); //발행받은 토큰을 response 헤더에 담아 응답
 
-            //리프레쉬 토큰 바디에 담아 전달
-            ResLoginDto resEmailDto = new ResLoginDto(refreshToken);
-            response.setContentType("application/json");
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonString = objectMapper.writeValueAsString(resEmailDto);
-            response.getWriter().write(jsonString);
+        refreshTokenService.saveRefreshToken(user.getUsername(), refreshToken);
 
-        } catch (JOSEException e) {
-            e.printStackTrace();
-        }
+        ResLoginDto resEmailDto = new ResLoginDto(refreshToken);
+        response.setContentType("application/json");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = objectMapper.writeValueAsString(resEmailDto);
+        response.getWriter().write(jsonString);
     }
 
     /*카카오 인가 서버에 이메일 정보 요청*/

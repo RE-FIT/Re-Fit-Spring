@@ -13,8 +13,8 @@ import com.umc.refit.web.service.EmailService;
 import com.umc.refit.web.service.MemberService;
 
 import com.umc.refit.web.service.RefreshTokenService;
-import com.umc.refit.web.signature.SecuritySigner;
 
+import com.umc.refit.web.signature.JWTSigner;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,10 +37,7 @@ public class MemberController {
     private final EmailService emailService;
     private final MemberService memberService;
     private final RefreshTokenService refreshTokenService;
-
-    //토큰 재발급
-    private final SecuritySigner securitySigner;
-    private final JWK jwk;
+    private final JWTSigner securitySigner;
 
     @Value("${member.image}")
     private String imageUrl;
@@ -179,8 +176,8 @@ public class MemberController {
         //토큰 재발급 코드
         User user = (User) authentication.getPrincipal();
 
-        String accessToken = securitySigner.getJwtToken(user, jwk, 216000000);
-        String refreshToken = securitySigner.getJwtToken(user, jwk, 216000000);
+        String accessToken = securitySigner.getJwtToken(user, 216000000);
+        String refreshToken = securitySigner.getJwtToken(user, 216000000);
 
         //리프레쉬 토큰 저장
         refreshTokenService.saveRefreshToken(user.getUsername(), refreshToken);

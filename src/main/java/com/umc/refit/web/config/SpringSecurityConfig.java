@@ -10,17 +10,12 @@ import com.umc.refit.web.filter.exception.CustomAuthenticationFailureHandler;
 import com.umc.refit.web.service.MemberService;
 import com.umc.refit.web.service.RefreshTokenService;
 import com.umc.refit.web.signature.JWTSigner;
-import com.umc.refit.web.signature.RSASecuritySigner;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -31,8 +26,6 @@ import java.security.Key;
 @RequiredArgsConstructor
 public class SpringSecurityConfig {
 
-    private final RSASecuritySigner rsaSecuritySigner;
-    private final RSAKey rsaKey;
     private final CustomUserDetailsService userDetailsService;
     private final CustomAuthenticationFailureHandler authFailureHandler;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
@@ -70,7 +63,7 @@ public class SpringSecurityConfig {
         jwtAuthenticationFilter.setFilterProcessesUrl("/auth/login");
 
         JwtKakaoAuthenticationFilter jwtKakaoAuthenticationFilter =
-                new JwtKakaoAuthenticationFilter(http, rsaSecuritySigner, rsaKey, memberService, refreshTokenService);
+                new JwtKakaoAuthenticationFilter(http, jwtSigner, memberService, refreshTokenService);
         jwtKakaoAuthenticationFilter.setAuthenticationFailureHandler(authFailureHandler);
         jwtKakaoAuthenticationFilter.setFilterProcessesUrl("/auth/kakao");
 

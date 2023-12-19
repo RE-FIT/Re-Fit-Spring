@@ -1,7 +1,5 @@
 package com.umc.refit.web.filter.authorization;
 
-import com.nimbusds.jose.crypto.RSASSAVerifier;
-import com.nimbusds.jwt.SignedJWT;
 import com.umc.refit.exception.ExceptionType;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
