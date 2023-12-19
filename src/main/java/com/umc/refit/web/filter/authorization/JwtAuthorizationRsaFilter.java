@@ -51,54 +51,65 @@ public class JwtAuthorizationRsaFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-
-        ExceptionType errorType = null;
-
-        if (tokenResolve(request, response, chain)){
-            errorType = TOKEN_NOT_EXIST;
-        } else {
-            try {
-                String token = getToken(request);
-                Claims claims = Jwts.parserBuilder()
-                        .setSigningKey(key)
-                        .build()
-                        .parseClaimsJws(token)
-                        .getBody();
-
-                Date expirationTime = claims.getExpiration();
-                Date now = new Date();
-                if (now.after(expirationTime)) {
-                    errorType = TOKEN_EXPIRED;
-                } else {
-                    String username = claims.getSubject();
-                    List<String> authority = (List<String>) claims.get("role");
-
-                    if (username != null) {
-                        UserDetails user = User.builder().username(username)
-                                .password(UUID.randomUUID().toString())
-                                .authorities(authority.get(0))
-                                .build();
-                        Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
-                    } else {
-                        errorType = TOKEN_INVALID;
-                    }
-                }
-            } catch (Exception e) {
-                errorType = TOKEN_INVALID;
+        try {
+            if (tokenResolve(request)) {
+                setException(request, TOKEN_NOT_EXIST, chain, response);
+                return;
             }
+
+            String token = getToken(request);
+            if (token == null) {
+                setException(request, TOKEN_INVALID, chain, response);
+                return;
+            }
+
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            if (isTokenExpired(claims)) {
+                setException(request, TOKEN_EXPIRED, chain, response);
+                return;
+            }
+
+            createAuthentication(claims);
+        } catch (Exception e) {
+            setException(request, TOKEN_INVALID, chain, response);
+            return;
         }
-        if (errorType != null) {
-            request.setAttribute("exception", errorType);
-        }
+
         chain.doFilter(request, response);
+    }
+
+    private void setException(HttpServletRequest request, ExceptionType errorType, FilterChain chain, HttpServletResponse response) throws IOException, ServletException {
+        request.setAttribute("exception", errorType);
+        chain.doFilter(request, response);
+    }
+
+    private boolean isTokenExpired(Claims claims) {
+        return new Date().after(claims.getExpiration());
+    }
+
+    private void createAuthentication(Claims claims) {
+        String username = claims.getSubject();
+        List<String> authority = (List<String>) claims.get("role");
+        if (username != null && !authority.isEmpty()) {
+            UserDetails user = User.builder().username(username)
+                    .password(UUID.randomUUID().toString())
+                    .authorities(authority.get(0))
+                    .build();
+            Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
     }
 
     protected String getToken(HttpServletRequest request) {
         return request.getHeader("Authorization").replace("Bearer ", "");
     }
 
-    protected boolean tokenResolve(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+    protected boolean tokenResolve(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
         return header == null || !header.startsWith("Bearer ");
     }
