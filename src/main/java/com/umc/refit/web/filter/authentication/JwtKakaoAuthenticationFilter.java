@@ -3,7 +3,6 @@ package com.umc.refit.web.filter.authentication;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.nimbusds.jose.JOSEException;
 import com.umc.refit.domain.dto.member.ResLoginDto;
 import com.umc.refit.domain.entity.Member;
 import com.umc.refit.exception.member.LoginException;
@@ -15,6 +14,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,18 +25,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Optional;
-import java.util.Random;
-
-import static com.umc.refit.Util.ONE_HOUR;
-import static com.umc.refit.Util.ONE_WEEK;
-import static com.umc.refit.exception.ExceptionType.BASIC_MEMBER_EXIST;
+import static com.umc.refit.Util.*;
+import static com.umc.refit.Util.KAKAO_API;
+import static com.umc.refit.exception.ExceptionType.*;
 
 @RequiredArgsConstructor
 public class JwtKakaoAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -42,54 +40,53 @@ public class JwtKakaoAuthenticationFilter extends UsernamePasswordAuthentication
     private final JWTSigner securitySigner;
     private final MemberService memberService;
     private final RefreshTokenService refreshTokenService;
+    private final RestTemplate restTemplate;
 
-    //랜덤 문자열
-    private String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
-
-    /*카카오 로그인 인증 시작*/
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
 
-        String KAKAO_API_URL = "https://kapi.kakao.com/v2/user/me";
-        String DEFAULT_PASSWORD = "KAKAO_LOGIN";
         String accessToken = request.getHeader("Authorization");
         String fcm = request.getParameter("fcm");
 
-        String EMAIL = getEmailFromKakao(accessToken, KAKAO_API_URL);
+        String userEmail = getEmailFromKakao(accessToken);
+        findOrCreateMember(userEmail, fcm);
 
-        Optional<Member> findMember = memberService.findMemberByEmail(EMAIL);
-        if (findMember.isPresent()) { //멤버가 존재할 경우
-            if (findMember.get().getSocialType() == (null)) { //일반 로그인일 경우
-                throw new LoginException(BASIC_MEMBER_EXIST,
-                        BASIC_MEMBER_EXIST.getCode(), BASIC_MEMBER_EXIST.getErrorMessage());
-            }
+        return authenticateUser(userEmail);
+    }
 
-            Member member = findMember.get();
-            member.setFcm(fcm);
-            memberService.updateFcm(member);
-        } else {
+    private Member findOrCreateMember(String userEmail, String fcm) {
+        return memberService.findMemberByEmail(userEmail)
+                .map(member -> updateMemberFcm(member, fcm))
+                .orElseGet(() -> createNewMember(userEmail, fcm));
+    }
 
-            /*카카오 로그인 시 유일한 멤버 닉네임 생성*/
-            String name;
-            while (true) {
-                String randomString = generateRandomString(4);
-                name = "환경지킴이" + randomString;
-
-                Optional<Member> member = memberService.findMemberByName(name);
-                if (member.isEmpty()) {
-                    break;
-                }
-            }
-
-            Member member = new Member(EMAIL, DEFAULT_PASSWORD, name, fcm);
-            memberService.kakaoSave(member);
+    private Member updateMemberFcm(Member member, String fcm) {
+        if (!("KAKAO".equals(member.getSocialType()))) {
+            throw new LoginException(BASIC_MEMBER_EXIST,
+                    BASIC_MEMBER_EXIST.getCode(), BASIC_MEMBER_EXIST.getErrorMessage());
         }
+        member.setFcm(fcm);
+        memberService.updateFcm(member);
+        return member;
+    }
 
+    private Member createNewMember(String userEmail, String fcm) {
+        String name;
+        do {
+            String randomString = generateRandomString(4);
+            name = "환경지킴이" + randomString;
+        } while (memberService.findMemberByName(name).isPresent());
+
+        Member member = new Member(userEmail, name, fcm);
+        memberService.kakaoSave(member);
+        return member;
+    }
+
+    private Authentication authenticateUser(String userEmail) {
         AuthenticationManager authenticationManager = httpSecurity.getSharedObject(AuthenticationManager.class);
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(EMAIL, DEFAULT_PASSWORD);
-        Authentication authentication = authenticationManager.authenticate(authenticationToken);
-        return authentication;
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userEmail, userEmail);
+        return authenticationManager.authenticate(authenticationToken);
     }
 
     @Override
@@ -110,44 +107,20 @@ public class JwtKakaoAuthenticationFilter extends UsernamePasswordAuthentication
         response.getWriter().write(jsonString);
     }
 
-    /*카카오 인가 서버에 이메일 정보 요청*/
-    private String getEmailFromKakao(String accessToken, String KAKAO_API_URL) {
-        String email = "";
+    private String getEmailFromKakao(String accessToken) {
         try {
-            URL url = new URL(KAKAO_API_URL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", "Bearer " + accessToken);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
 
-            conn.setRequestMethod("POST");
-            conn.setDoOutput(true);
-            conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+            ResponseEntity<String> response = restTemplate.exchange(
+                    KAKAO_API, HttpMethod.POST, entity, String.class);
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            StringBuilder result = new StringBuilder();
-
-            String line;
-            while ((line = br.readLine()) != null) {
-                result.append(line);
-            }
-
-            JsonElement element = JsonParser.parseString(result.toString());
-            email = element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email").getAsString();
-            br.close();
-        } catch (IOException exception) {
-            exception.printStackTrace();
+            JsonElement element = JsonParser.parseString(response.getBody());
+            return element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email").getAsString();
+        } catch (RestClientException e) {
+            throw new LoginException(LOGIN_FAILED_UNKNOWN,
+                    LOGIN_FAILED_UNKNOWN.getCode(), LOGIN_FAILED_UNKNOWN.getErrorMessage());
         }
-        return email;
-    }
-
-    /*랜덤 문자열 생성 메서드*/
-    public String generateRandomString(int length) {
-        Random random = new Random();
-        StringBuilder stringBuilder = new StringBuilder(length);
-
-        for (int i = 0; i < length; i++) {
-            int randomIndex = random.nextInt(CHARACTERS.length());
-            stringBuilder.append(CHARACTERS.charAt(randomIndex));
-        }
-
-        return stringBuilder.toString();
     }
 }

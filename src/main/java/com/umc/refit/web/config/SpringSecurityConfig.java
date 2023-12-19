@@ -17,6 +17,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.client.RestTemplate;
 
 import java.security.Key;
 
@@ -32,6 +33,7 @@ public class SpringSecurityConfig {
     private final RefreshTokenService refreshTokenService;
     private final JWTSigner jwtSigner;
     private final Key key;
+    private final RestTemplate restTemplate;
 
     private String[] permitAllUrlPatterns() {
         return new String[] {
@@ -62,7 +64,7 @@ public class SpringSecurityConfig {
         jwtAuthenticationFilter.setFilterProcessesUrl("/auth/login");
 
         JwtKakaoAuthenticationFilter jwtKakaoAuthenticationFilter =
-                new JwtKakaoAuthenticationFilter(http, jwtSigner, memberService, refreshTokenService);
+                new JwtKakaoAuthenticationFilter(http, jwtSigner, memberService, refreshTokenService, restTemplate);
         jwtKakaoAuthenticationFilter.setAuthenticationFailureHandler(authFailureHandler);
         jwtKakaoAuthenticationFilter.setFilterProcessesUrl("/auth/kakao");
 

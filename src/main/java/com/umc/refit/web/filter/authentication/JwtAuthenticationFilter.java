@@ -54,7 +54,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             });
 
             AuthenticationManager authenticationManager = httpSecurity.getSharedObject(AuthenticationManager.class);
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginId, password);
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(findMember.get().getEmail(), password);
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
             return authentication;
         } catch (IOException e) {

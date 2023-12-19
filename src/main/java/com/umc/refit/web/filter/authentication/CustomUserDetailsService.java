@@ -18,8 +18,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final MemberRepository memberRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String loginId) {
-        return memberRepository.findByLoginId(loginId)
+    public UserDetails loadUserByUsername(String email) {
+        return memberRepository.findByEmail(email)
                 .map(this::createUserDetails)
                 .orElseThrow(() ->
                         new UsernameNotFoundException(MEMBER_IS_NOT_EXIST.getErrorMessage()));
@@ -27,7 +27,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private UserDetails createUserDetails(Member member) {
         return User.builder()
-                .username(member.getLoginId())
+                .username(member.getEmail())
                 .password(member.getPassword())
                 .roles(member.getRoles().toArray(new String[0]))
                 .build();
