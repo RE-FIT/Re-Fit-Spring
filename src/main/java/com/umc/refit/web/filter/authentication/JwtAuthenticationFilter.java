@@ -1,6 +1,7 @@
 package com.umc.refit.web.filter.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.umc.refit.domain.dto.member.LoginDto;
 import com.umc.refit.domain.dto.member.ResLoginDto;
 import com.umc.refit.domain.entity.Member;
 import com.umc.refit.exception.member.LoginException;
@@ -22,7 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.io.IOException;
 import java.util.Optional;
 
-import static com.umc.refit.exception.ExceptionType.KAKAO_MEMBER_EXIST;
+import static com.umc.refit.exception.ExceptionType.*;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -35,28 +36,46 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
+        try {
+            LoginDto loginDto = new ObjectMapper().readValue(request.getInputStream(), LoginDto.class);
 
-        String loginId = request.getParameter("loginId");
-        String password = request.getParameter("password");
-        String fcm = request.getParameter("fcm");
+            String loginId = loginDto.getLoginId();
+            String password = loginDto.getPassword();
+            String fcm = loginDto.getFcm();
 
-        Optional<Member> findMember = memberService.findMemberByLoginId(loginId);
+            Optional<Member> findMember = memberService.findMemberByLoginId(loginId);
 
-        if (findMember.isPresent()) {
-            if (!(findMember.get().getSocialType() == null)) {
-                throw new LoginException(KAKAO_MEMBER_EXIST,
-                        KAKAO_MEMBER_EXIST.getCode(), KAKAO_MEMBER_EXIST.getErrorMessage());
-            }
+            findMember.ifPresent(member -> {
+                validateSocialMember(member);
+                member.setFcm(fcm);
+                memberService.updateFcm(member);
+            });
 
-            Member member = findMember.get();
-            member.setFcm(fcm);
-            memberService.updateFcm(member);
+            AuthenticationManager authenticationManager = httpSecurity.getSharedObject(AuthenticationManager.class);
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginId, password);
+            Authentication authentication = authenticationManager.authenticate(authenticationToken);
+            return authentication;
+        } catch (IOException e) {
+            throw new LoginException(LOGIN_FAILED_UNKNOWN,
+                    LOGIN_FAILED_UNKNOWN.getCode(), LOGIN_FAILED_UNKNOWN.getErrorMessage());
+        }
+    }
+
+    private void validateSocialMember(Member member) {
+        if ("KAKAO".equals(member.getSocialType())) {
+            throw new LoginException(KAKAO_MEMBER_EXIST,
+                    KAKAO_MEMBER_EXIST.getCode(), KAKAO_MEMBER_EXIST.getErrorMessage());
         }
 
-        AuthenticationManager authenticationManager = httpSecurity.getSharedObject(AuthenticationManager.class);
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginId, password);
-        Authentication authentication = authenticationManager.authenticate(authenticationToken);
-        return authentication;
+        if ("GOOGLE".equals(member.getSocialType())) {
+            throw new LoginException(GOOGLE_MEMBER_EXIST,
+                    GOOGLE_MEMBER_EXIST.getCode(), GOOGLE_MEMBER_EXIST.getErrorMessage());
+        }
+
+        if ("NAVER".equals(member.getSocialType())) {
+            throw new LoginException(NAVER_MEMBER_EXIST,
+                    NAVER_MEMBER_EXIST.getCode(), NAVER_MEMBER_EXIST.getErrorMessage());
+        }
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.umc.refit.web.config;
 
-import com.nimbusds.jose.jwk.RSAKey;
 import com.umc.refit.web.filter.authentication.CustomUserDetailsService;
 import com.umc.refit.web.filter.authentication.JwtAuthenticationFilter;
 import com.umc.refit.web.filter.authentication.JwtKakaoAuthenticationFilter;
