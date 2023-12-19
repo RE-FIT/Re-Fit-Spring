@@ -23,6 +23,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.io.IOException;
 import java.util.Optional;
 
+import static com.umc.refit.Util.ONE_HOUR;
+import static com.umc.refit.Util.ONE_WEEK;
 import static com.umc.refit.exception.ExceptionType.*;
 
 @RequiredArgsConstructor
@@ -82,17 +84,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
                                             FilterChain chain, Authentication authResult) throws IOException {
         User user = (User) authResult.getPrincipal();
-        //엑세스 토큰 및 리프레쉬 토큰 발행
-        String accessToken = securitySigner.getJwtToken(user, 216000000);
-        String refreshToken = securitySigner.getJwtToken(user, 216000000);
 
-        //리프레쉬 토큰 저장
+        String accessToken = securitySigner.getJwtToken(user, ONE_HOUR);
+        String refreshToken = securitySigner.getJwtToken(user, ONE_WEEK);
+
         refreshTokenService.saveRefreshToken(user.getUsername(), refreshToken);
 
-        //엑세스 토큰 헤더를 통해 전달
-        response.addHeader("Authorization", "Bearer " + accessToken); //발행받은 토큰을 response 헤더에 담아 응답
+        response.addHeader("Authorization", "Bearer " + accessToken);
 
-        //리프레쉬 토큰 바디에 담아 전달
         ResLoginDto resEmailDto = new ResLoginDto(refreshToken);
         response.setContentType("application/json");
         ObjectMapper objectMapper = new ObjectMapper();

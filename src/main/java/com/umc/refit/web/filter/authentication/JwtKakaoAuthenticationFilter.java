@@ -31,6 +31,8 @@ import java.net.URL;
 import java.util.Optional;
 import java.util.Random;
 
+import static com.umc.refit.Util.ONE_HOUR;
+import static com.umc.refit.Util.ONE_WEEK;
 import static com.umc.refit.exception.ExceptionType.BASIC_MEMBER_EXIST;
 
 @RequiredArgsConstructor
@@ -94,10 +96,10 @@ public class JwtKakaoAuthenticationFilter extends UsernamePasswordAuthentication
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws ServletException, IOException {
         User user = (User) authResult.getPrincipal();
 
-        String accessToken = securitySigner.getJwtToken(user, 216000000);
-        String refreshToken = securitySigner.getJwtToken(user, 216000000);
+        String accessToken = securitySigner.getJwtToken(user, ONE_HOUR);
+        String refreshToken = securitySigner.getJwtToken(user, ONE_WEEK);
 
-        response.addHeader("Authorization", "Bearer " + accessToken); //발행받은 토큰을 response 헤더에 담아 응답
+        response.addHeader("Authorization", "Bearer " + accessToken);
 
         refreshTokenService.saveRefreshToken(user.getUsername(), refreshToken);
 
