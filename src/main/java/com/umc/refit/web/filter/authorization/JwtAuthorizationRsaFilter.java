@@ -1,13 +1,15 @@
 package com.umc.refit.web.filter.authorization;
 
 import com.nimbusds.jose.crypto.RSASSAVerifier;
-import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jwt.SignedJWT;
 import com.umc.refit.exception.ExceptionType;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,19 +19,17 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.security.Key;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import static com.umc.refit.exception.ExceptionType.*;
 
+@RequiredArgsConstructor
 public class JwtAuthorizationRsaFilter extends OncePerRequestFilter {
 
-    private RSAKey jwk;
-
-    public JwtAuthorizationRsaFilter(RSAKey rsaKey) {
-        this.jwk = rsaKey;
-    }
+    private final Key key;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -57,33 +57,29 @@ public class JwtAuthorizationRsaFilter extends OncePerRequestFilter {
         if (tokenResolve(request, response, chain)){
             errorType = TOKEN_NOT_EXIST;
         } else {
-
-            String token = getToken(request);
-            SignedJWT signedJWT;
             try {
-                signedJWT = SignedJWT.parse(token);
-                RSASSAVerifier jwsVerifier = new RSASSAVerifier(jwk.toRSAPublicKey());
+                String token = getToken(request);
+                Claims claims = Jwts.parserBuilder()
+                        .setSigningKey(key)
+                        .build()
+                        .parseClaimsJws(token)
+                        .getBody();
 
-                Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+                Date expirationTime = claims.getExpiration();
                 Date now = new Date();
                 if (now.after(expirationTime)) {
                     errorType = TOKEN_EXPIRED;
                 } else {
+                    String username = claims.getSubject();
+                    List<String> authority = (List<String>) claims.get("role");
 
-                    boolean verify = signedJWT.verify(jwsVerifier);
-
-                    if (verify) {
-                        String username = signedJWT.getJWTClaimsSet().getClaim("id").toString();
-                        List<String> authority = (List) signedJWT.getJWTClaimsSet().getClaim("role");
-
-                        if (username != null) {
-                            UserDetails user = User.builder().username(username)
-                                    .password(UUID.randomUUID().toString())
-                                    .authorities(authority.get(0))
-                                    .build();
-                            Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-                            SecurityContextHolder.getContext().setAuthentication(authentication);
-                        }
+                    if (username != null) {
+                        UserDetails user = User.builder().username(username)
+                                .password(UUID.randomUUID().toString())
+                                .authorities(authority.get(0))
+                                .build();
+                        Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
                     } else {
                         errorType = TOKEN_INVALID;
                     }
